@@ -1,7 +1,10 @@
 <script>
+import TreeView from "@grapoza/vue-tree"
+import VueSimpleContextMenu from 'vue-simple-context-menu';
+import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
+
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
-import TreeView from "@grapoza/vue-tree"
 import { VueElement } from 'vue'
 import HiddenIcon from './components/HiddenIcon.vue'
 import LockedIcon from './components/LockedIcon.vue'
@@ -14,6 +17,7 @@ import MoreChildrenIcon from './components/MoreChildrenIcon.vue'
 export default {
   components: {
     TreeView,
+    VueSimpleContextMenu,
     HelloWorld,
     TheWelcome,
     HiddenIcon,
@@ -97,15 +101,74 @@ export default {
               }
             }
           ],
-    time: null
+    time: null,
+    itemArray1: [
+        {
+          name: 'Jim',
+          job: 'Salesman',
+        },
+        {
+          name: 'Dwight',
+          job: 'Assistant to the Regional Manager',
+        },
+        {
+          name: 'Pam',
+          job: 'Receptionist',
+        },
+      ],
+      itemArray2: [
+        {
+          name: 'Leslie',
+          job: 'Deputy Director',
+        },
+        {
+          name: 'Ron',
+          job: 'Parks Director',
+        },
+        {
+          name: 'Andy',
+          job: 'Shoeshiner',
+        },
+      ],
+      optionsArray1: [
+        {
+          name: 'Duplicate',
+          slug: 'duplicate',
+        },
+        {
+          type: 'divider',
+        },
+        {
+          name: 'Edit',
+          slug: 'edit',
+        },
+        {
+          name: '<em>Delete</em>',
+          slug: 'delete',
+        },
+      ],
+      optionsArray2: [
+        {
+          name: 'Add Star',
+          slug: 'add-star',
+          class: 'my-custom-class',
+        },
+        {
+          name: 'Remove Star',
+          slug: 'remove-star',
+        },
+      ],
     }
 
 
   },
   mounted: function(){
-    
-    // this.model.pop();
-    // this.model[0] = [];
+    // https://github.com/johndatserakis/vue-simple-context-menu/issues/8
+    var menu = document.getElementById("myFirstMenu");
+    document.firstElementChild.appendChild(menu);
+    var menu = document.getElementById("mySecondMenu");
+    document.firstElementChild.appendChild(menu);
+
     this.time = 'bobobo';
     // let connection = new WebSocket('ws://localhost:3000/');
     console.log("mounted")
@@ -136,6 +199,18 @@ export default {
     }
   },
   methods: {
+    handleClick1(event, item) {
+      this.$refs.vueSimpleContextMenu1.showMenu(event, item);
+    },
+    handleClick2(event, item) {
+      this.$refs.vueSimpleContextMenu2.showMenu(event, item);
+    },
+    optionClicked1(event) {
+      window.alert(JSON.stringify(event));
+    },
+    optionClicked2(event) {
+      window.alert(JSON.stringify(event));
+    },
     doReport() {
       console.log("hi")
     },
@@ -158,7 +233,59 @@ export default {
   <main>
     <TheWelcome />
   </main> -->
+  <vue-simple-context-menu
+        element-id="myFirstMenu"
+        :options="optionsArray1"
+        ref="vueSimpleContextMenu1"
+        @option-clicked="optionClicked1"
+      >
+      </vue-simple-context-menu>
+  
+      <vue-simple-context-menu
+        element-id="mySecondMenu"
+        :options="optionsArray2"
+        ref="vueSimpleContextMenu2"
+        @option-clicked="optionClicked2"
+      >
+      </vue-simple-context-menu>
   <h2 @click="doReport">Time: {{time}}</h2>
+
+
+    <div class="container pt-2 pb-4">
+        <div class="row">
+          <div class="col-lg-6 mb-4 mb-lg-0">
+            <p>Right click on an item below.</p>
+  
+            <div class="list-group">
+              <div
+                v-for="(item, index) in itemArray1"
+                :key="index"
+                @contextmenu.prevent.stop="handleClick1($event, item)"
+                class="list-group-item list-group-item-action"
+              >
+                {{ item.name }}
+              </div>
+            </div>
+          </div>
+  
+          <div class="col-lg-6">
+            <p>Left click on an item below.</p>
+  
+            <div class="list-group">
+              <div
+                v-for="(item, index) in itemArray2"
+                :key="index"
+                @click.prevent.stop="handleClick2($event, item)"
+                class="list-group-item list-group-item-action"
+              >
+                {{ item.name }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      
 
   <tree-view  id="my-tree" :initial-model="model" :doReport="doReport" :doReport2="doReport2">
     <template v-slot:text="{ model, customClasses }">
@@ -172,6 +299,7 @@ export default {
         <div 
           @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)" 
           style="color: blue;display: flex;gap: 10px;"
+          @contextmenu.prevent.stop='handleClick1($event, model)'
         >
           <span>{{ model[model.treeNodeSpec.labelProperty] }}</span>
           <!-- <span>Custom Classes: {{ JSON.stringify(customClasses) }}</span> -->
@@ -250,5 +378,9 @@ a,
   .logo {
     margin: 0 2rem 0 0;
   }
+
+  /* .vue-simple-context-menu {
+    position: fixed !important;
+  } */
 }
 </style>
