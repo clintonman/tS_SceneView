@@ -166,7 +166,8 @@ export default {
         { insert: 'Gandalf', attributes: { bold: true } },
         { insert: ' the ' },
         { insert: 'Grey', attributes: { color: '#ccc' } },
-      ])
+      ]),
+      editor: null
     }
 
 
@@ -230,6 +231,8 @@ export default {
       // console.log("hello")
       // console.log(this.mycontent.getContents())
       console.log(this.mycontent.ops)
+      // console.log(this.editor.root.innerHTML)
+      console.log(this.$refs.editor.getHTML()) //.$el.querySelector('.ql-editor').innerHTML)
     }
   }
 }
@@ -265,7 +268,7 @@ export default {
 
   <h2 @click="doReport">Time: {{time}}</h2>
 
-  <QuillEditor theme="snow" toolbar="full" v-model:content="mycontent"/>
+  <QuillEditor theme="snow" toolbar="full" v-model:content="mycontent" ref="editor"/>
   <button @click="PrintQuill">print</button>
 
 
