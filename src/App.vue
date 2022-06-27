@@ -167,7 +167,7 @@ export default {
         { insert: ' the ' },
         { insert: 'Grey', attributes: { color: '#ccc' } },
       ]),
-      editor: null
+      showNoteEditor: false
     }
 
 
@@ -227,50 +227,24 @@ export default {
     doReport2(label, nodetype) {
       console.log(label, nodetype)
     },
-    PrintQuill() {
+    SaveNote() {
       // console.log("hello")
       // console.log(this.mycontent.getContents())
       console.log(this.mycontent.ops)
       // console.log(this.editor.root.innerHTML)
       console.log(this.$refs.editor.getHTML()) //.$el.querySelector('.ql-editor').innerHTML)
+      this.showNoteEditor=false
+    },
+    ShowEditor() {
+      this.showNoteEditor=true;
     }
   }
 }
 </script>
 
 <template>
-  <!-- <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main> -->
-  <vue-simple-context-menu
-        element-id="myFirstMenu"
-        :options="optionsArray1"
-        ref="vueSimpleContextMenu1"
-        @option-clicked="optionClicked1"
-      >
-      </vue-simple-context-menu>
-  
-      <vue-simple-context-menu
-        element-id="mySecondMenu"
-        :options="optionsArray2"
-        ref="vueSimpleContextMenu2"
-        @option-clicked="optionClicked2"
-      >
-      </vue-simple-context-menu>
-
-  <h2 @click="doReport">Time: {{time}}</h2>
-
-  <QuillEditor theme="snow" toolbar="full" v-model:content="mycontent" ref="editor"/>
-  <button @click="PrintQuill">print</button>
-
+  <h2 @click="doReport">Time: {{time}} - {{showNoteEditor}}</h2>
 
     <div class="container pt-2 pb-4">
         <div class="row">
@@ -318,25 +292,52 @@ export default {
           {{ model[model.treeNodeSpec.labelProperty] }}. Custom Classes: {{ JSON.stringify(customClasses) }}
         </span> -->
         <div 
-          @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)" 
+           
           style="color: blue;display: flex;gap: 10px;"
-          @contextmenu.prevent.stop='handleClick1($event, model)'
+          
         >
-          <span>{{ model[model.treeNodeSpec.labelProperty] }}</span>
+          <span 
+            @contextmenu.prevent.stop='handleClick1($event, model)'
+            @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)"
+          >{{ model[model.treeNodeSpec.labelProperty] }}</span>
           <!-- <span>Custom Classes: {{ JSON.stringify(customClasses) }}</span> -->
           <VisibleIcon style="fill:green;stroke:green;" v-if="customClasses.visible == 'yes'"/>
           <HiddenIcon style="fill:red;" v-if="customClasses.visible == 'no'"/>
           <NAIcon v-if="customClasses.visible == 'na'"/>
-          <LockedIcon style="fill:red;" v-if="customClasses.locked == 'yes'"/>
-          <UnlockedIcon style="fill:green;" v-if="customClasses.locked == 'no'"/>
+          <LockedIcon style="fill:red;" v-if="customClasses.locked == 'yes'" @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)"/>
+          <UnlockedIcon style="fill:green;" v-if="customClasses.locked == 'no'" @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)"/>
           <NAIcon v-if="customClasses.locked == 'na'"/>
-          <NoteIcon style="fill:green;" v-if="customClasses.note == 'yes'"/>
-          <NoteIcon style="fill:lightgray;" v-if="customClasses.note == 'no'"/>
+          <NoteIcon style="fill:green;" v-if="customClasses.note == 'yes'" @click="ShowEditor"/>
+          <NoteIcon style="fill:lightgray;" v-if="customClasses.note == 'no'" @click="ShowEditor"/>
           <NAIcon v-if="customClasses.note == 'na'"/>
           <MoreChildrenIcon v-if="!model.treeNodeSpec.state.expanded && customClasses.numchildren > 0 && model[model.treeNodeSpec.childrenProperty].length == 0" />
         </div>
       </template>
   </tree-view>
+
+  <div id="quill-container" v-if="showNoteEditor">
+    <QuillEditor theme="snow" toolbar="full" 
+      v-model:content="mycontent" 
+      ref="editor"
+    />
+    <button @click="SaveNote">save</button>
+  </div>
+
+  <vue-simple-context-menu
+    element-id="myFirstMenu"
+    :options="optionsArray1"
+    ref="vueSimpleContextMenu1"
+    @option-clicked="optionClicked1"
+  >
+  </vue-simple-context-menu>
+
+  <vue-simple-context-menu
+    element-id="mySecondMenu"
+    :options="optionsArray2"
+    ref="vueSimpleContextMenu2"
+    @option-clicked="optionClicked2"
+  >
+  </vue-simple-context-menu>
 </template>
 
 <style>
@@ -348,6 +349,7 @@ export default {
   padding: 2rem;
 
   font-weight: normal;
+  position: relative;
 }
 
 header {
@@ -366,6 +368,14 @@ a,
   transition: 0.4s;
 }
 
+#quill-container{
+   position: absolute;
+   top:3em;
+   background-color:white;
+   max-width:50em;
+   padding: 2em;
+}
+
 @media (hover: hover) {
   a:hover {
     background-color: hsla(160, 100%, 37%, 0.2);
@@ -373,13 +383,13 @@ a,
 }
 
 @media (min-width: 1024px) {
-  body {
+  /* body {
     display: flex;
     place-items: center;
-  }
+  } */
 
   #app {
-    display: grid;
+    /* display: grid; */
     /* grid-template-columns: 1fr 1fr; */
     padding: 0 2rem;
   }
