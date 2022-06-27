@@ -2,6 +2,8 @@
 import TreeView from "@grapoza/vue-tree"
 import VueSimpleContextMenu from 'vue-simple-context-menu';
 import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
+import { QuillEditor, Delta } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
@@ -18,6 +20,8 @@ export default {
   components: {
     TreeView,
     VueSimpleContextMenu,
+    QuillEditor,
+    Delta,
     HelloWorld,
     TheWelcome,
     HiddenIcon,
@@ -158,6 +162,11 @@ export default {
           slug: 'remove-star',
         },
       ],
+      mycontent: new Delta([
+        { insert: 'Gandalf', attributes: { bold: true } },
+        { insert: ' the ' },
+        { insert: 'Grey', attributes: { color: '#ccc' } },
+      ])
     }
 
 
@@ -166,8 +175,8 @@ export default {
     // https://github.com/johndatserakis/vue-simple-context-menu/issues/8
     var menu = document.getElementById("myFirstMenu");
     document.firstElementChild.appendChild(menu);
-    var menu = document.getElementById("mySecondMenu");
-    document.firstElementChild.appendChild(menu);
+    var menu2 = document.getElementById("mySecondMenu");
+    document.firstElementChild.appendChild(menu2);
 
     this.time = 'bobobo';
     // let connection = new WebSocket('ws://localhost:3000/');
@@ -216,6 +225,11 @@ export default {
     },
     doReport2(label, nodetype) {
       console.log(label, nodetype)
+    },
+    PrintQuill() {
+      // console.log("hello")
+      // console.log(this.mycontent.getContents())
+      console.log(this.mycontent.ops)
     }
   }
 }
@@ -248,7 +262,11 @@ export default {
         @option-clicked="optionClicked2"
       >
       </vue-simple-context-menu>
+
   <h2 @click="doReport">Time: {{time}}</h2>
+
+  <QuillEditor theme="snow" toolbar="full" v-model:content="mycontent"/>
+  <button @click="PrintQuill">print</button>
 
 
     <div class="container pt-2 pb-4">
