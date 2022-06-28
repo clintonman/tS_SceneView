@@ -428,7 +428,7 @@ export default {
         </span> -->
         <div 
            
-          style="color: blue;display: grid;grid-template-columns: 20px 10em 20px 20px 20px 20px 20px;"
+          style="color: blue;display: grid;grid-template-columns: 20px 13em min-content 20px 20px 20px 20px;"
           :style="{backgroundColor: model.treeNodeSpec.state.selected ? '#eee' : '#fff'}"
         >
           <MeshIcon style="fill:green;" v-if="customClasses.type == 'renderable'" />
@@ -437,9 +437,15 @@ export default {
           <LightIcon style="fill:green;" v-else-if="customClasses.type == 'light'" />
           <NAIcon style="fill:green;" v-else />
           <span 
+            style="display:block;overflow-wrap: break-word;"
             @contextmenu.prevent.stop='handleClick1($event, model)'
             @click="doReport3(model, customClasses.type)"
           >{{ model[model.treeNodeSpec.labelProperty] }}</span>
+          <!-- <span style="display:block;width:calc(5rem - (1rem + var(--itemSpacing)));">{{customClasses.treedepth}}</span> -->
+          <!-- <span :style="{display:'block',width:(10-customClasses.treedepth*2.4)+'em'}">{{customClasses.treedepth}}</span> -->
+          <!-- <span :style="{display:'block',width:(8-customClasses.treedepth*2.4)+'em'}"></span> -->
+          <span :style="{display:'block',width:(7-customClasses.treedepth*2.3)+'em'}"></span>
+          <!-- <span :style="{display:'block',width:'50px'}">{{customClasses.treedepth}}</span> -->
           <!-- <span>Custom Classes: {{ JSON.stringify(customClasses) }}</span> -->
           <VisibleIcon style="fill:green;stroke:green;" v-if="customClasses.visible == 'yes'"/>
           <HiddenIcon style="fill:red;" v-if="customClasses.visible == 'no'"/>
