@@ -175,8 +175,11 @@ export default {
         selectable: false,
       },
       // selectionMode: 'single',
-      selectionMode: 'multiple',
-      maxdepth: 3
+      // selectionMode: 'multiple',
+      selectionMode: null,
+      maxdepth: 3,
+      newselection: false,
+      lastselection: null
     }
   },
   updated: function(){
@@ -262,6 +265,29 @@ export default {
         this.tsnode = mydata.path;
         this.mycontent = JSON.parse(mydata.delta);
       }
+      if(mydata.command == "NewSelection") {
+        console.log(mydata.selection);
+        this.newselection = true;
+        //clear selection
+        let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+          themodel.treeNodeSpec.state.selected = false;
+          return false;
+        });
+
+        if(mydata.selection.length == 0) return;
+        //do selection
+        for(let i=0;i<mydata.selection.length;i++) {
+          var id = mydata.selection[i].id;
+          let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+            if(themodel.id == id) {
+              themodel.treeNodeSpec.state.selected = true;
+            }
+            return themodel.id == id;
+          });
+          console.log(matchArr)
+        }
+        this.newselection = false;
+      }
     }
   },
 
@@ -284,25 +310,138 @@ export default {
     doReport2(label, nodetype) {
       console.log(label, nodetype)
     },
-    doReport3(model, nodetype) {
-      console.log("hey",model.id, nodetype, model.treeNodeSpec.state.selected)
-      // model.treeNodeSpec.state.selected = true
-      // console.log("hey",model.treeNodeSpec.state, nodetype)
+    // doReport3(model, nodetype) {
+    //   console.log("hey",model.id, nodetype, model.treeNodeSpec.state.selected)
+    //   // model.treeNodeSpec.state.selected = true
+    //   // console.log("hey",model.treeNodeSpec.state, nodetype)
 
-      // if(mydata.command == "SetNoteStatus") {
-      //   console.log(mydata)
+    //   // if(mydata.command == "SetNoteStatus") {
+    //   //   console.log(mydata)
+    //   let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+    //     return themodel.id == model.id;
+    //   });
+    //   if(matchArr.length > 0) {
+    //     // matchArr[0].treeNodeSpec.state.expanded = false;//this works
+    //     // matchArr[0].treeNodeSpec.state.selected = true;//this does not work with selection processing turned off
+    //     //did tests and cannot use selected without enabling click selection in the tree
+    //     //must do own selection processing
+    //     //test shows can use the builtin selected - how style it?
+    //     matchArr[0].treeNodeSpec.state.selected = !matchArr[0].treeNodeSpec.state.selected;
+    //   }
+    //   // }
+    // },
+    rangeselection(model) {
+      //must be same level
+      if(this.lastselection && 
+        model.treeNodeSpec.customizations.classes.treedepth == this.lastselection.treeNodeSpec.customizations.classes.treedepth) {
+          console.log("same level")
+      } else {
+        console.log("nope")
+        return;
+      }
+      //must be same parent node
+      let child1ID = this.lastselection.id;
+      let child2ID = model.id;
+      let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+        if(themodel.children && themodel.children.length > 0) {
+          let childlength = themodel.children.length;
+          let child1found = false;
+          let child2found = false;
+          for(let i=0;i<childlength;i++) {
+            let child = themodel.children[i];
+            if(child.id == child1ID) {
+              child1found = true;
+            }
+            if(child.id == child2ID) {
+              child2found = true;
+            }
+            if(child1found && child2found) {
+              return true;
+            }
+          }
+        }
+        return false;
+      });
+      if(matchArr.length != 1) {
+        return;
+      }
+
+      //use parent to get inbetween based on index of id's
+      console.log(matchArr[0])
+      let child1Index = matchArr[0].children.findIndex(elem => {
+        return elem.id == child1ID;
+      });
+      let child2Index = matchArr[0].children.findIndex(elem => {
+        return elem.id == child2ID;
+      });
+
+      console.log(child1Index, child2Index)
+      //order the indices
+      if(child1Index > child2Index) {
+        let tempIndex = child2Index;
+        child2Index = child1Index;
+        child1Index = tempIndex;
+      }
+
+      let data = {};
+      data.command = "SelectItems";
+      data.selection = [];
+
+      for(let i=child1Index;i<=child2Index;i++) {
+        data.selection.push({fullpath: matchArr[0].children[i].treeNodeSpec.customizations.classes.fullpath});
+        matchArr[0].children[i].treeNodeSpec.state.selected = true;
+      }
+      console.log(data)
+      this.connection.send(JSON.stringify(data));
+
+      return;
+    },
+    toggleselection(model) {
       let matchArr = this.$refs.mytree.getMatching((themodel)=>{
         return themodel.id == model.id;
       });
-      if(matchArr.length > 0) {
-        // matchArr[0].treeNodeSpec.state.expanded = false;//this works
-        // matchArr[0].treeNodeSpec.state.selected = true;//this does not work with selection processing turned off
-        //did tests and cannot use selected without enabling click selection in the tree
-        //must do own selection processing
-        //test shows can use the builtin selected - how style it?
+      if(matchArr.length == 1) {
         matchArr[0].treeNodeSpec.state.selected = !matchArr[0].treeNodeSpec.state.selected;
+        this.lastselection = matchArr[0];
       }
-      // }
+
+      matchArr = this.$refs.mytree.getMatching((themodel)=>{
+        return themodel.treeNodeSpec.state.selected;
+      });
+
+      let data = {};
+      data.command = "SelectItems";
+      data.selection = [];
+      if(matchArr.length > 0) {
+        for(let i=0;i<matchArr.length;i++) {
+          data.selection.push({fullpath: matchArr[i].treeNodeSpec.customizations.classes.fullpath});
+        }
+      }
+        
+      this.connection.send(JSON.stringify(data));
+      console.log(data)
+    },
+    selectonenode(model) {
+      let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+        let idmatch = themodel.id == model.id;
+        themodel.treeNodeSpec.state.selected = false;
+        return idmatch;
+      });
+      if(matchArr.length == 1) {
+        matchArr[0].treeNodeSpec.state.selected = true;
+        this.lastselection = matchArr[0];
+
+        // if($scope.jointboneselection == "bone" && sel.bone != null && sel.bone != "")
+        //     selobj.selecttext = sel.bonepath;
+        // else
+
+        let data = {};
+        data.command = "SelectItem";
+        data.selecttext = matchArr[0].treeNodeSpec.customizations.classes.fullpath;
+        this.connection.send(JSON.stringify(data));
+      }
+
+      
     },
     refreshSelectedList() {
       let sel = this.$refs.mytree.getSelected();
@@ -375,7 +514,7 @@ export default {
     },
     GetMaxDepthAndSetChildExpanded() {
       // note when de-expand the children will remain expanded so visual depth not one to one with expanded state
-
+      if(this.newselection) return;
       console.log("GetMaxDepthAndSetChildExpanded")
       var maxval = -1;
       //getMatching does not include the root node of the tree
@@ -490,13 +629,15 @@ export default {
           <span 
             style="display:block;overflow-wrap: break-word;"
             @contextmenu.prevent.stop='handleClick1($event, model)'
-            @click="doReport3(model, customClasses.type)"
+            @click.exact="selectonenode(model)"
+            @click.ctrl.exact="toggleselection(model)"
+            @click.shift.exact="rangeselection(model)"
           >{{ model[model.treeNodeSpec.labelProperty] }}</span>
           <!-- <span style="display:block;width:calc(5rem - (1rem + var(--itemSpacing)));">{{customClasses.treedepth}}</span> -->
           <!-- <span :style="{display:'block',width:(10-customClasses.treedepth*2.4)+'em'}">{{customClasses.treedepth}}</span> -->
           <!-- <span :style="{display:'block',width:(8-customClasses.treedepth*2.4)+'em'}"></span> -->
           <!-- <span :style="{display:'block',width:(14.5-customClasses.treedepth*2.3)+'em'}">{{customClasses.treedepth}}</span> -->
-          <span :style="{display:'block',width:1 + maxdepth*3.2 - customClasses.treedepth*2.2+'em'}">{{customClasses.treedepth}} - {{maxdepth}}</span>
+          <span :style="{display:'block',width:1.25 + maxdepth*3.2 - customClasses.treedepth*2.2+'em'}">{{customClasses.treedepth}} - {{maxdepth}}</span>
           <!-- <span :style="{display:'block',width:'50px'}">{{customClasses.treedepth}}</span> -->
           <!-- <span>Custom Classes: {{ JSON.stringify(customClasses) }}</span> -->
           <VisibleIcon style="fill:green;stroke:green;" v-if="customClasses.visible == 'yes'"/>
