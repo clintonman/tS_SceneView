@@ -176,9 +176,13 @@ export default {
       },
       // selectionMode: 'single',
       selectionMode: 'multiple',
+      maxdepth: 3
     }
-
   },
+  updated: function(){
+    // this.GetMaxDepthAndSetChildExpanded();
+  },
+
   mounted: function(){
     // https://github.com/johndatserakis/vue-simple-context-menu/issues/8
     var menu = document.getElementById("myFirstMenu");
@@ -216,6 +220,8 @@ export default {
         if(mydata.data.htmlnote != "") {
           this.htmlnote = mydata.data.htmlnote;
         }
+        //only good for first load, so also called in update but still issue switching root
+        // this.GetMaxDepthAndSetChildExpanded();
       }
       if(mydata.command == "AddToTree") {
         // console.log(mydata.data.model)
@@ -237,6 +243,8 @@ export default {
         if(mydata.data.htmlnote != "") {
           this.htmlnote = mydata.data.htmlnote;
         }
+
+        this.GetMaxDepthAndSetChildExpanded();
       }
       if(mydata.command == "SetNoteStatus") {
         console.log(mydata)
@@ -256,6 +264,7 @@ export default {
       }
     }
   },
+
   methods: {
     handleClick1(event, item) {
       this.$refs.vueSimpleContextMenu1.showMenu(event, item);
@@ -311,16 +320,19 @@ export default {
       this.tsnode = "";
     },
     GetScene() {
+      // this.model.length = 0
       this.connection.send('{ "command" : "GetSceneTree3", "root": "current_scene" }');
     },
     GetRoot() {
+      // this.model.length = 0
       this.connection.send('{ "command" : "GetSceneTree3", "root": "/" }');
     },
-    GetTreeBranch(tsnode){
+    GetTreeBranch(tsnode, depth){
       console.log("load branch", tsnode);
       let data = {};
       data.command = "GetTreeBranch";
       data.root = tsnode;
+      data.startdepth = depth;
       this.connection.send(JSON.stringify(data));
     },
     SaveNote() {
@@ -357,6 +369,42 @@ export default {
         return themodel.id == id;
       });
       console.log(matchArr);
+    },
+    ListModel(){
+      console.log(this.model)
+    },
+    GetMaxDepthAndSetChildExpanded() {
+      // note when de-expand the children will remain expanded so visual depth not one to one with expanded state
+
+      console.log("GetMaxDepthAndSetChildExpanded")
+      var maxval = -1;
+      //getMatching does not include the root node of the tree
+      let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+        if(!themodel.treeNodeSpec.customizations.classes) {
+          console.log("no classes")
+          return false;
+        }
+        if(themodel.treeNodeSpec.customizations.classes.treedepth) {
+          if(!themodel.treeNodeSpec.state.expanded && themodel.children) {
+            let childlength = themodel.children.length;
+            if(childlength > 0) {
+              for(let i=0;i<childlength;i++) {
+                let child = themodel.children[i];
+                child.treeNodeSpec.state.expanded = false;
+              }
+            }
+          }
+          let td = themodel.treeNodeSpec.customizations.classes.treedepth;
+          // console.log(themodel.label, td, themodel.treeNodeSpec.state.expanded)
+          if(td > maxval && themodel.treeNodeSpec.state.expanded) maxval = td;
+        }
+        return false;
+      });
+      if(maxval == -1) {
+        this.maxdepth = 1;
+      } else {
+        this.maxdepth = maxval + 1;
+      }
     }
   }
 }
@@ -407,8 +455,10 @@ export default {
   <MeshIcon style="fill:green;"/>
   <button @click="ShowTest">get id=280799308</button>
   <button type="button" @click="refreshSelectedList">What's selected?</button>
-  <button @click="GetScene()">scene root</button>
-  <button @click="GetRoot()">pure root</button>
+  <button @click="GetScene">scene root</button>
+  <button @click="GetRoot">pure root</button>
+  <button @click="GetMaxDepthAndSetChildExpanded">force depth</button>
+  <button @click="ListModel">list</button>
 
   <tree-view  
     ref="mytree" 
@@ -417,6 +467,7 @@ export default {
     :model-defaults="modelDefaults" 
     :selection-mode="selectionMode"
     :doReport="doReport" :doReport2="doReport2"
+    @treeNodeExpandedChange="GetMaxDepthAndSetChildExpanded"
     >
     <template v-slot:text="{ model, customClasses }">
         <!-- <span @click="doReport">say hi</span> -->
@@ -444,7 +495,8 @@ export default {
           <!-- <span style="display:block;width:calc(5rem - (1rem + var(--itemSpacing)));">{{customClasses.treedepth}}</span> -->
           <!-- <span :style="{display:'block',width:(10-customClasses.treedepth*2.4)+'em'}">{{customClasses.treedepth}}</span> -->
           <!-- <span :style="{display:'block',width:(8-customClasses.treedepth*2.4)+'em'}"></span> -->
-          <span :style="{display:'block',width:(7-customClasses.treedepth*2.3)+'em'}"></span>
+          <!-- <span :style="{display:'block',width:(14.5-customClasses.treedepth*2.3)+'em'}">{{customClasses.treedepth}}</span> -->
+          <span :style="{display:'block',width:1 + maxdepth*3.2 - customClasses.treedepth*2.2+'em'}">{{customClasses.treedepth}} - {{maxdepth}}</span>
           <!-- <span :style="{display:'block',width:'50px'}">{{customClasses.treedepth}}</span> -->
           <!-- <span>Custom Classes: {{ JSON.stringify(customClasses) }}</span> -->
           <VisibleIcon style="fill:green;stroke:green;" v-if="customClasses.visible == 'yes'"/>
@@ -457,7 +509,7 @@ export default {
           <NoteIcon style="fill:lightgray;" v-if="customClasses.note == 'no'" @click="ShowEditor(customClasses.fullpath)"/>
           <NAIcon v-if="customClasses.note == 'na'"/>
           <MoreChildrenIcon 
-            @click="GetTreeBranch(customClasses.fullpath)"
+            @click="GetTreeBranch(customClasses.fullpath, customClasses.treedepth )"
             v-if="!model.treeNodeSpec.state.expanded && customClasses.numchildren > 0 && model[model.treeNodeSpec.childrenProperty].length == 0" />
         </div>
       </template>
