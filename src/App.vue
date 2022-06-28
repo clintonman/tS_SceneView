@@ -5,9 +5,6 @@ import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
 import { QuillEditor, Delta } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-import { VueElement } from 'vue'
 import HiddenIcon from './components/HiddenIcon.vue'
 import LockedIcon from './components/LockedIcon.vue'
 import NoteIcon from './components/NoteIcon.vue'
@@ -22,8 +19,6 @@ export default {
     VueSimpleContextMenu,
     QuillEditor,
     Delta,
-    HelloWorld,
-    TheWelcome,
     HiddenIcon,
     LockedIcon, 
     NoteIcon,
@@ -162,14 +157,22 @@ export default {
           slug: 'remove-star',
         },
       ],
-      mycontent: new Delta([
-        { insert: 'Gandalf', attributes: { bold: true } },
-        { insert: ' the ' },
-        { insert: 'Grey', attributes: { color: '#ccc' } },
-      ]),
-      showNoteEditor: false
+      // mycontent: new Delta([
+      //   { insert: 'Gandalf', attributes: { bold: true } },
+      //   { insert: ' the ' },
+      //   { insert: 'Grey', attributes: { color: '#ccc' } },
+      // ]),
+      mycontent: new Delta([]),
+      htmlnote: "<h1>html will go here</h1>",
+      showNoteEditor: false,
+      tsnode: "",
+      connection: null,
+      modelDefaults: {
+        selectable: false,
+      },
+      // selectionMode: 'single',
+      selectionMode: 'multiple',
     }
-
 
   },
   mounted: function(){
@@ -183,14 +186,14 @@ export default {
     // let connection = new WebSocket('ws://localhost:3000/');
     console.log("mounted")
     let myurl = 'ws://127.0.0.1:8080/ws';
-    let connection = new WebSocket(myurl);
+    this.connection = new WebSocket(myurl);
 
-    connection.onopen = function(ev) {
+    this.connection.onopen = (ev) => {
         // connection.send('{ "command" : "GetSceneTree2" }');
-        connection.send('{ "command" : "GetSceneTree3" }');
+        this.connection.send('{ "command" : "GetSceneTree3" }');
     };
 
-    connection.onmessage = (event) => {
+    this.connection.onmessage = (event) => {
       // Vue data binding means you don't need any extra work to
       // update your UI. Just set the `time` and Vue will automatically
       // update the `<h2>`.
@@ -204,7 +207,27 @@ export default {
       if(mydata.command == "DisplaySceneTree3") {
         console.log(mydata.data.model)
         this.model.length = 0
-        this.model.push(...mydata.data.model)
+        this.model.push(...mydata.data.model);
+
+        if(mydata.data.htmlnote != "") {
+          this.htmlnote = mydata.data.htmlnote;
+        }
+      }
+      if(mydata.command == "SetNoteStatus") {
+        console.log(mydata)
+        let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+          return themodel.id == mydata.id;
+        });
+        if(matchArr.length > 0) {
+          console.log()
+          matchArr[0].treeNodeSpec.customizations.classes.note = mydata.status;
+        }
+      }
+      if(mydata.command == "OpenEditor") {
+        console.log(mydata)
+        this.showNoteEditor=true;
+        this.tsnode = mydata.path;
+        this.mycontent = JSON.parse(mydata.delta);
       }
     }
   },
@@ -227,6 +250,41 @@ export default {
     doReport2(label, nodetype) {
       console.log(label, nodetype)
     },
+    doReport3(model, nodetype) {
+      console.log("hey",model.id, nodetype, model.treeNodeSpec.state.selected)
+      // model.treeNodeSpec.state.selected = true
+      // console.log("hey",model.treeNodeSpec.state, nodetype)
+
+      // if(mydata.command == "SetNoteStatus") {
+      //   console.log(mydata)
+      let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+        return themodel.id == model.id;
+      });
+      if(matchArr.length > 0) {
+        // matchArr[0].treeNodeSpec.state.expanded = false;//this works
+        // matchArr[0].treeNodeSpec.state.selected = true;//this does not work with selection processing turned off
+        //did tests and cannot use selected without enabling click selection in the tree
+        //must do own selection processing
+        //test shows can use the builtin selected - how style it?
+        matchArr[0].treeNodeSpec.state.selected = !matchArr[0].treeNodeSpec.state.selected;
+      }
+      // }
+    },
+    refreshSelectedList() {
+      let sel = this.$refs.mytree.getSelected();
+      console.log(sel);
+    },
+    CancelNote() {
+      this.showNoteEditor=false;
+      this.tsnode = "";
+    },
+    DeleteNote() {
+      this.showNoteEditor=false;
+      let msg = {command:"DeleteNotes"};
+      msg.path = this.tsnode;
+      this.connection.send(JSON.stringify(msg));
+      this.tsnode = "";
+    },
     SaveNote() {
       // console.log("hello")
       // console.log(this.mycontent.getContents())
@@ -234,9 +292,33 @@ export default {
       // console.log(this.editor.root.innerHTML)
       console.log(this.$refs.editor.getHTML()) //.$el.querySelector('.ql-editor').innerHTML)
       this.showNoteEditor=false
+      //send to tS here
+      let msg = {command:"AddNotes"};
+      msg.path = this.tsnode;
+      msg.html = this.$refs.editor.getHTML();
+      msg.delta = JSON.stringify(this.mycontent);
+      this.connection.send(JSON.stringify(msg));
+      this.tsnode = "";
     },
-    ShowEditor() {
+    ShowEditor(tsnode) {
       this.showNoteEditor=true;
+      this.tsnode = tsnode;
+      this.mycontent = new Delta([]);
+    },
+    LoadEditor(tsnode){
+      let msg = {command:"GetNotes"};
+      msg.path = tsnode;
+      this.connection.send(JSON.stringify(msg));
+    },
+    ShowTest() {
+      let id=280799308;
+      // console.log(this.$refs.mytree.getSelected());
+      // let rbNodes = this.$refs.mytree.getSelected();
+      let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+        // console.log(themodel)
+        return themodel.id == id;
+      });
+      console.log(matchArr);
     }
   }
 }
@@ -244,9 +326,9 @@ export default {
 
 <template>
 
-  <h2 @click="doReport">Time: {{time}} - {{showNoteEditor}}</h2>
+  <h2 @click="doReport">Time: {{time}} - {{tsnode}}</h2>
 
-    <div class="container pt-2 pb-4">
+    <!-- <div class="container pt-2 pb-4">
         <div class="row">
           <div class="col-lg-6 mb-4 mb-lg-0">
             <p>Right click on an item below.</p>
@@ -278,11 +360,19 @@ export default {
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
   
-      
+  <div id="notehtml" v-html="htmlnote"></div> 
+  <button @click="ShowTest">get id=280799308</button>
+  <button type="button" @click="refreshSelectedList">What's selected?</button>
 
-  <tree-view  id="my-tree" :initial-model="model" :doReport="doReport" :doReport2="doReport2">
+  <tree-view  
+    ref="mytree" 
+    id="my-tree" 
+    :initial-model="model" 
+    :model-defaults="modelDefaults" 
+    :selection-mode="selectionMode"
+    :doReport="doReport" :doReport2="doReport2">
     <template v-slot:text="{ model, customClasses }">
         <!-- <span @click="doReport">say hi</span> -->
         <!-- <span 
@@ -294,11 +384,11 @@ export default {
         <div 
            
           style="color: blue;display: flex;gap: 10px;"
-          
+          :style="{backgroundColor: model.treeNodeSpec.state.selected ? '#eee' : '#fff'}"
         >
           <span 
             @contextmenu.prevent.stop='handleClick1($event, model)'
-            @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)"
+            @click="doReport3(model, customClasses.type)"
           >{{ model[model.treeNodeSpec.labelProperty] }}</span>
           <!-- <span>Custom Classes: {{ JSON.stringify(customClasses) }}</span> -->
           <VisibleIcon style="fill:green;stroke:green;" v-if="customClasses.visible == 'yes'"/>
@@ -307,8 +397,8 @@ export default {
           <LockedIcon style="fill:red;" v-if="customClasses.locked == 'yes'" @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)"/>
           <UnlockedIcon style="fill:green;" v-if="customClasses.locked == 'no'" @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)"/>
           <NAIcon v-if="customClasses.locked == 'na'"/>
-          <NoteIcon style="fill:green;" v-if="customClasses.note == 'yes'" @click="ShowEditor"/>
-          <NoteIcon style="fill:lightgray;" v-if="customClasses.note == 'no'" @click="ShowEditor"/>
+          <NoteIcon style="fill:green;" v-if="customClasses.note == 'yes'" @click="LoadEditor(customClasses.fullpath)"/>
+          <NoteIcon style="fill:lightgray;" v-if="customClasses.note == 'no'" @click="ShowEditor(customClasses.fullpath)"/>
           <NAIcon v-if="customClasses.note == 'na'"/>
           <MoreChildrenIcon v-if="!model.treeNodeSpec.state.expanded && customClasses.numchildren > 0 && model[model.treeNodeSpec.childrenProperty].length == 0" />
         </div>
@@ -321,6 +411,8 @@ export default {
       ref="editor"
     />
     <button @click="SaveNote">save</button>
+    <button @click="CancelNote">cancel</button>
+    <button @click="DeleteNote">delete</button>
   </div>
 
   <vue-simple-context-menu
