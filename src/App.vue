@@ -190,7 +190,7 @@ export default {
 
     this.connection.onopen = (ev) => {
         // connection.send('{ "command" : "GetSceneTree2" }');
-        this.connection.send('{ "command" : "GetSceneTree3" }');
+        this.connection.send('{ "command" : "GetSceneTree3", "root": "current_scene" }');
     };
 
     this.connection.onmessage = (event) => {
@@ -208,6 +208,27 @@ export default {
         console.log(mydata.data.model)
         this.model.length = 0
         this.model.push(...mydata.data.model);
+
+        if(mydata.data.htmlnote != "") {
+          this.htmlnote = mydata.data.htmlnote;
+        }
+      }
+      if(mydata.command == "AddToTree") {
+        // console.log(mydata.data.model)
+
+        let id = mydata.data.model[0].id;
+        // console.log(id);
+
+        let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+          return themodel.id == id;
+        });
+
+        if(matchArr.length > 0) {
+          console.log(mydata.data.model[0].children)
+          matchArr[0].children = mydata.data.model[0].children;
+          matchArr[0].treeNodeSpec.state.expanded = true;
+          // console.log(matchArr[0]);
+        }
 
         if(mydata.data.htmlnote != "") {
           this.htmlnote = mydata.data.htmlnote;
@@ -284,6 +305,19 @@ export default {
       msg.path = this.tsnode;
       this.connection.send(JSON.stringify(msg));
       this.tsnode = "";
+    },
+    GetScene() {
+      this.connection.send('{ "command" : "GetSceneTree3", "root": "current_scene" }');
+    },
+    GetRoot() {
+      this.connection.send('{ "command" : "GetSceneTree3", "root": "/" }');
+    },
+    GetTreeBranch(tsnode){
+      console.log("load branch", tsnode);
+      let data = {};
+      data.command = "GetTreeBranch";
+      data.root = tsnode;
+      this.connection.send(JSON.stringify(data));
     },
     SaveNote() {
       // console.log("hello")
@@ -365,6 +399,8 @@ export default {
   <div id="notehtml" v-html="htmlnote"></div> 
   <button @click="ShowTest">get id=280799308</button>
   <button type="button" @click="refreshSelectedList">What's selected?</button>
+  <button @click="GetScene()">scene root</button>
+  <button @click="GetRoot()">pure root</button>
 
   <tree-view  
     ref="mytree" 
@@ -400,7 +436,9 @@ export default {
           <NoteIcon style="fill:green;" v-if="customClasses.note == 'yes'" @click="LoadEditor(customClasses.fullpath)"/>
           <NoteIcon style="fill:lightgray;" v-if="customClasses.note == 'no'" @click="ShowEditor(customClasses.fullpath)"/>
           <NAIcon v-if="customClasses.note == 'na'"/>
-          <MoreChildrenIcon v-if="!model.treeNodeSpec.state.expanded && customClasses.numchildren > 0 && model[model.treeNodeSpec.childrenProperty].length == 0" />
+          <MoreChildrenIcon 
+            @click="GetTreeBranch(customClasses.fullpath)"
+            v-if="!model.treeNodeSpec.state.expanded && customClasses.numchildren > 0 && model[model.treeNodeSpec.childrenProperty].length == 0" />
         </div>
       </template>
   </tree-view>
