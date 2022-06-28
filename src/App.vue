@@ -5,8 +5,12 @@ import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
 import { QuillEditor, Delta } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
+import CameraIcon from './components/CameraIcon.vue'
+import GroupIcon from './components/GroupIcon.vue'
 import HiddenIcon from './components/HiddenIcon.vue'
+import LightIcon from './components/LightIcon.vue'
 import LockedIcon from './components/LockedIcon.vue'
+import MeshIcon from './components/MeshIcon.vue'
 import NoteIcon from './components/NoteIcon.vue'
 import UnlockedIcon from './components/UnlockedIcon.vue'
 import VisibleIcon from './components/VisibleIcon.vue'
@@ -19,8 +23,12 @@ export default {
     VueSimpleContextMenu,
     QuillEditor,
     Delta,
+    CameraIcon,
+    GroupIcon,
     HiddenIcon,
+    LightIcon,
     LockedIcon, 
+    MeshIcon,
     NoteIcon,
     UnlockedIcon,
     VisibleIcon,
@@ -157,11 +165,7 @@ export default {
           slug: 'remove-star',
         },
       ],
-      // mycontent: new Delta([
-      //   { insert: 'Gandalf', attributes: { bold: true } },
-      //   { insert: ' the ' },
-      //   { insert: 'Grey', attributes: { color: '#ccc' } },
-      // ]),
+
       mycontent: new Delta([]),
       htmlnote: "<h1>html will go here</h1>",
       showNoteEditor: false,
@@ -396,7 +400,11 @@ export default {
         </div>
       </div> -->
   
-  <div id="notehtml" v-html="htmlnote"></div> 
+  <div id="notehtml" v-html="htmlnote"></div>
+  <LightIcon style="fill:green;"/>
+  <CameraIcon style="fill:green;"/>
+  <GroupIcon style="fill:green;"/>
+  <MeshIcon style="fill:green;"/>
   <button @click="ShowTest">get id=280799308</button>
   <button type="button" @click="refreshSelectedList">What's selected?</button>
   <button @click="GetScene()">scene root</button>
@@ -408,7 +416,8 @@ export default {
     :initial-model="model" 
     :model-defaults="modelDefaults" 
     :selection-mode="selectionMode"
-    :doReport="doReport" :doReport2="doReport2">
+    :doReport="doReport" :doReport2="doReport2"
+    >
     <template v-slot:text="{ model, customClasses }">
         <!-- <span @click="doReport">say hi</span> -->
         <!-- <span 
@@ -419,9 +428,14 @@ export default {
         </span> -->
         <div 
            
-          style="color: blue;display: flex;gap: 10px;"
+          style="color: blue;display: grid;grid-template-columns: 20px 10em 20px 20px 20px 20px 20px;"
           :style="{backgroundColor: model.treeNodeSpec.state.selected ? '#eee' : '#fff'}"
         >
+          <MeshIcon style="fill:green;" v-if="customClasses.type == 'renderable'" />
+          <CameraIcon style="fill:green;" v-else-if="customClasses.type == 'camera'" />
+          <GroupIcon style="fill:green;" v-else-if="customClasses.type == 'group'" />
+          <LightIcon style="fill:green;" v-else-if="customClasses.type == 'light'" />
+          <NAIcon style="fill:green;" v-else />
           <span 
             @contextmenu.prevent.stop='handleClick1($event, model)'
             @click="doReport3(model, customClasses.type)"
@@ -505,6 +519,11 @@ a,
    max-width:50em;
    padding: 2em;
 }
+
+/* .grtv-wrapper.grtv-default-skin .grtvn-self{
+  display: grid;
+  width: 90%;
+} */
 
 @media (hover: hover) {
   a:hover {
