@@ -440,8 +440,22 @@ export default {
         data.selecttext = matchArr[0].treeNodeSpec.customizations.classes.fullpath;
         this.connection.send(JSON.stringify(data));
       }
-
-      
+    },
+    ShowNode(model){
+      // console.log("show")
+      model.treeNodeSpec.customizations.classes.visible = "yes";
+      let data = {};
+      data.command = "ShowNode";   
+      data.path = model.treeNodeSpec.customizations.classes.fullpath;
+      this.connection.send(JSON.stringify(data));
+    },
+    HideNode(model){
+      // console.log("hide")
+      model.treeNodeSpec.customizations.classes.visible = "no";
+      let data = {};
+      data.command = "HideNode";   
+      data.path = model.treeNodeSpec.customizations.classes.fullpath;
+      this.connection.send(JSON.stringify(data));
     },
     refreshSelectedList() {
       let sel = this.$refs.mytree.getSelected();
@@ -616,9 +630,12 @@ export default {
         >
           {{ model[model.treeNodeSpec.labelProperty] }}. Custom Classes: {{ JSON.stringify(customClasses) }}
         </span> -->
-        <div 
-           
+        <!-- <div 
           style="color: blue;display: grid;grid-template-columns: 20px 13em min-content 20px 20px 20px 20px;"
+          :style="{backgroundColor: model.treeNodeSpec.state.selected ? '#eee' : '#fff'}"
+        > -->
+        <div 
+          style="color: blue;display: grid;grid-template-columns: 20px 10em min-content 20px 20px 20px 20px;"
           :style="{backgroundColor: model.treeNodeSpec.state.selected ? '#eee' : '#fff'}"
         >
           <MeshIcon style="fill:green;" v-if="customClasses.type == 'renderable'" />
@@ -633,22 +650,21 @@ export default {
             @click.ctrl.exact="toggleselection(model)"
             @click.shift.exact="rangeselection(model)"
           >{{ model[model.treeNodeSpec.labelProperty] }}</span>
-          <!-- <span style="display:block;width:calc(5rem - (1rem + var(--itemSpacing)));">{{customClasses.treedepth}}</span> -->
-          <!-- <span :style="{display:'block',width:(10-customClasses.treedepth*2.4)+'em'}">{{customClasses.treedepth}}</span> -->
-          <!-- <span :style="{display:'block',width:(8-customClasses.treedepth*2.4)+'em'}"></span> -->
-          <!-- <span :style="{display:'block',width:(14.5-customClasses.treedepth*2.3)+'em'}">{{customClasses.treedepth}}</span> -->
-          <span :style="{display:'block',width:1.25 + maxdepth*3.2 - customClasses.treedepth*2.2+'em'}">{{customClasses.treedepth}} - {{maxdepth}}</span>
-          <!-- <span :style="{display:'block',width:'50px'}">{{customClasses.treedepth}}</span> -->
-          <!-- <span>Custom Classes: {{ JSON.stringify(customClasses) }}</span> -->
-          <VisibleIcon style="fill:green;stroke:green;" v-if="customClasses.visible == 'yes'"/>
-          <HiddenIcon style="fill:red;" v-if="customClasses.visible == 'no'"/>
-          <NAIcon v-if="customClasses.visible == 'na'"/>
+          <!-- <span :style="{display:'block',width:1.25 + maxdepth*3.2 - customClasses.treedepth*2.2+'em'}">{{customClasses.treedepth}} - {{maxdepth}}</span> -->
+          <!-- <span :style="{display:'block',width:1.25 + maxdepth*3.2 - customClasses.treedepth*2.2+'em'}"></span> -->
+          <span :style="{display:'block',width:1.25 + maxdepth*3 - customClasses.treedepth*2.2+'em'}"></span>
+
+          <!-- <VisibleIcon style="fill:green;stroke:green;" v-if="customClasses.visible == 'yes'"/>
+          <HiddenIcon style="fill:red;" v-if="customClasses.visible == 'no'"/> -->
+          <VisibleIcon style="fill:green;stroke:green;" v-if="customClasses.visible == 'yes'" @click="HideNode(model)"/>
+          <HiddenIcon style="fill:red;" v-if="customClasses.visible == 'no'" @click="ShowNode(model)"/>
+          <NAIcon style="fill:#eee" v-if="customClasses.visible == 'na'"/>
           <LockedIcon style="fill:red;" v-if="customClasses.locked == 'yes'" @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)"/>
           <UnlockedIcon style="fill:green;" v-if="customClasses.locked == 'no'" @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)"/>
-          <NAIcon v-if="customClasses.locked == 'na'"/>
+          <NAIcon style="fill:#eee" v-if="customClasses.locked == 'na'"/>
           <NoteIcon style="fill:green;" v-if="customClasses.note == 'yes'" @click="LoadEditor(customClasses.fullpath)"/>
           <NoteIcon style="fill:lightgray;" v-if="customClasses.note == 'no'" @click="ShowEditor(customClasses.fullpath)"/>
-          <NAIcon v-if="customClasses.note == 'na'"/>
+          <NAIcon style="fill:#eee" v-if="customClasses.note == 'na'"/>
           <MoreChildrenIcon 
             @click="GetTreeBranch(customClasses.fullpath, customClasses.treedepth )"
             v-if="!model.treeNodeSpec.state.expanded && customClasses.numchildren > 0 && model[model.treeNodeSpec.childrenProperty].length == 0" />
