@@ -441,6 +441,20 @@ export default {
         this.connection.send(JSON.stringify(data));
       }
     },
+    Lock(model){
+      model.treeNodeSpec.customizations.classes.locked = "yes";
+      let data = {};
+      data.command = "LockNode";   
+      data.path = model.treeNodeSpec.customizations.classes.fullpath;
+      this.connection.send(JSON.stringify(data));
+    },
+    Unlock(model) {
+      model.treeNodeSpec.customizations.classes.locked = "no";
+      let data = {};
+      data.command = "UnlockNode";   
+      data.path = model.treeNodeSpec.customizations.classes.fullpath;
+      this.connection.send(JSON.stringify(data));
+    },
     ShowNode(model){
       // console.log("show")
       model.treeNodeSpec.customizations.classes.visible = "yes";
@@ -659,8 +673,10 @@ export default {
           <VisibleIcon style="fill:green;stroke:green;" v-if="customClasses.visible == 'yes'" @click="HideNode(model)"/>
           <HiddenIcon style="fill:red;" v-if="customClasses.visible == 'no'" @click="ShowNode(model)"/>
           <NAIcon style="fill:#eee" v-if="customClasses.visible == 'na'"/>
-          <LockedIcon style="fill:red;" v-if="customClasses.locked == 'yes'" @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)"/>
-          <UnlockedIcon style="fill:green;" v-if="customClasses.locked == 'no'" @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)"/>
+          <!-- <LockedIcon style="fill:red;" v-if="customClasses.locked == 'yes'" @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)"/>
+          <UnlockedIcon style="fill:green;" v-if="customClasses.locked == 'no'" @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)"/> -->
+          <LockedIcon style="fill:red;" v-if="customClasses.locked == 'yes'" @click="Unlock(model)"/>
+          <UnlockedIcon style="fill:green;" v-if="customClasses.locked == 'no'" @click="Lock(model)"/>
           <NAIcon style="fill:#eee" v-if="customClasses.locked == 'na'"/>
           <NoteIcon style="fill:green;" v-if="customClasses.note == 'yes'" @click="LoadEditor(customClasses.fullpath)"/>
           <NoteIcon style="fill:lightgray;" v-if="customClasses.note == 'no'" @click="ShowEditor(customClasses.fullpath)"/>
