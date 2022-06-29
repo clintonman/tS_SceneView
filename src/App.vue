@@ -387,6 +387,8 @@ export default {
         //     selobj.selecttext = sel.bonepath;
         // else
 
+        //TODO change to select item and get note html
+        
         let data = {};
         data.command = "SelectItem";
         data.selecttext = matchArr[0].treeNodeSpec.customizations.classes.fullpath;
