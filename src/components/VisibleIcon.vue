@@ -1,5 +1,22 @@
+<script>
+export default {
+   props: ['connection', 'model'],
+   methods: {
+    HideNode(model){
+      // console.log("hide")
+      model.treeNodeSpec.customizations.classes.visible = "no";
+      let data = {};
+      data.command = "HideNode";   
+      data.path = model.treeNodeSpec.customizations.classes.fullpath;
+      this.connection.send(JSON.stringify(data));
+    }
+   }
+}
+</script>
 <template>
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor">
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" 
+      fill="currentColor"
+      style="fill:green;stroke:green;" @click="HideNode(model)">
     <g
      style="display:inline"
      id="object-visible"

@@ -1,5 +1,23 @@
+<script>
+export default {
+   props: ['connection', 'model'],
+   methods: {
+    ShowNode(model){
+      // console.log("show")
+      model.treeNodeSpec.customizations.classes.visible = "yes";
+      let data = {};
+      data.command = "ShowNode";   
+      data.path = model.treeNodeSpec.customizations.classes.fullpath;
+      this.connection.send(JSON.stringify(data));
+    }
+   }
+}
+</script>
+
 <template>
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor">
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" 
+      fill="currentColor"
+      style="fill:red;" @click="ShowNode(model)">
     <g
      transform="translate(-165,-981.36218)"
      id="object-hidden">

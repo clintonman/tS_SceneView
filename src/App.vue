@@ -421,22 +421,6 @@ export default {
       data.path = model.treeNodeSpec.customizations.classes.fullpath;
       this.connection.send(JSON.stringify(data));
     },
-    ShowNode(model){
-      // console.log("show")
-      model.treeNodeSpec.customizations.classes.visible = "yes";
-      let data = {};
-      data.command = "ShowNode";   
-      data.path = model.treeNodeSpec.customizations.classes.fullpath;
-      this.connection.send(JSON.stringify(data));
-    },
-    HideNode(model){
-      // console.log("hide")
-      model.treeNodeSpec.customizations.classes.visible = "no";
-      let data = {};
-      data.command = "HideNode";   
-      data.path = model.treeNodeSpec.customizations.classes.fullpath;
-      this.connection.send(JSON.stringify(data));
-    },
     refreshSelectedList() {
       let sel = this.$refs.mytree.getSelected();
       console.log(sel);
@@ -604,6 +588,7 @@ export default {
     :selection-mode="selectionMode"
     :doReport="doReport" :doReport2="doReport2"
     @treeNodeExpandedChange="GetMaxDepthAndSetChildExpanded"
+    connection="connection"
     >
     <template v-slot:text="{ model, customClasses }">
         <!-- <span @click="doReport">say hi</span> -->
@@ -640,10 +625,10 @@ export default {
           <!-- <span :style="{display:'block',width:1.25 + maxdepth*3.2 - customClasses.treedepth*2.2+'em'}"></span> -->
           <span :style="{display:'block',width:1.25 + maxdepth*3 - customClasses.treedepth*2.2+'em'}"></span>
 
-          <!-- <VisibleIcon style="fill:green;stroke:green;" v-if="customClasses.visible == 'yes'"/>
-          <HiddenIcon style="fill:red;" v-if="customClasses.visible == 'no'"/> -->
-          <VisibleIcon style="fill:green;stroke:green;" v-if="customClasses.visible == 'yes'" @click="HideNode(model)"/>
-          <HiddenIcon style="fill:red;" v-if="customClasses.visible == 'no'" @click="ShowNode(model)"/>
+          <!-- <VisibleIcon style="fill:green;stroke:green;" v-if="customClasses.visible == 'yes'" @click="HideNode(model)"/>
+          <HiddenIcon style="fill:red;" v-if="customClasses.visible == 'no'" @click="ShowNode(model)"/> -->
+          <VisibleIcon  v-if="customClasses.visible == 'yes'" :connection="connection" :model="model"/>
+          <HiddenIcon v-if="customClasses.visible == 'no'" :connection="connection" :model="model"/>
           <NAIcon style="fill:#eee" v-if="customClasses.visible == 'na'"/>
           <!-- <LockedIcon style="fill:red;" v-if="customClasses.locked == 'yes'" @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)"/>
           <UnlockedIcon style="fill:green;" v-if="customClasses.locked == 'no'" @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)"/> -->
