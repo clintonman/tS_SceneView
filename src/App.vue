@@ -37,77 +37,7 @@ export default {
   },
   data() {
     return {
-      model: [
-            {
-              id: 'inputs-radio-1',
-              label: 'My First Node',
-              treeNodeSpec: {
-                input: {
-                  type: 'radio',
-                  name: 'radio1',
-                  value: 'aValueToSubmit',
-                  isInitialRadioGroupValue: true
-                },
-              deletable: true
-              },
-            },
-            {
-              id: 'inputs-radio-2',
-              label: 'My Second Node',
-              children: [
-                {
-                  id: 'inputs-radio-2-sub-1',
-                  label: 'This is a subnode',
-                  treeNodeSpec: {
-                    input: {
-                      type: 'radio',
-                      name: 'radio2'
-                    }
-                  }
-                },
-                {
-                  id: 'inputs-radio-2-sub-2',
-                  label: 'This is another subnode',
-                  treeNodeSpec: {
-                    input: {
-                      type: 'radio',
-                      name: 'radio2'
-                    }
-                  }
-                }
-              ],
-              treeNodeSpec: {
-                input: {
-                  type: 'radio',
-                  name: 'radio1'
-                },
-                state: {
-                  expanded: true
-                }
-              }
-            },
-            {
-              id: 'inputs-checkbox-1',
-              label: 'Checkbox node',
-              treeNodeSpec: {
-                input: {
-                  type: 'checkbox'
-                },
-                state: {
-                  input: {
-                      value: true
-                  }
-                },
-                addChildTitle: 'Add a new child node',
-                deleteTitle: 'Delete this node',
-                customizations: {
-                  classes: {
-                    "type":"renderable","visible":true,"locked":false
-                  }
-                }
-              }
-            }
-          ],
+      model: [],
     time: null,
     itemArray1: [
         {
@@ -177,9 +107,13 @@ export default {
       // selectionMode: 'single',
       // selectionMode: 'multiple',
       selectionMode: null,
-      maxdepth: 3,
+      maxdepth: 1,
       newselection: false,
-      lastselection: null
+      lastselection: null,
+      lastselectionlabel:"",
+      shownameedit: false,
+      edittop: 0,
+      editleft: 0
     }
   },
   updated: function(){
@@ -292,6 +226,22 @@ export default {
   },
 
   methods: {
+    testinput() {
+      // console.log("testinput")
+      // console.log(this.lastselectionlabel)
+      // console.log(this.lastselection.label)
+      this.lastselection.label = this.lastselectionlabel;
+
+      this.shownameedit = false;
+      let data = {};
+      data.command = "RenameItem";   
+      data.oldpath = this.lastselection.treeNodeSpec.customizations.classes.fullpath;
+      data.newname = this.lastselection.label;
+      this.connection.send(JSON.stringify(data));
+    },
+    cancelnameedit(){
+      this.shownameedit = false;
+    },
     handleClick1(event, item) {
       this.$refs.vueSimpleContextMenu1.showMenu(event, item);
     },
@@ -403,6 +353,7 @@ export default {
       if(matchArr.length == 1) {
         matchArr[0].treeNodeSpec.state.selected = !matchArr[0].treeNodeSpec.state.selected;
         this.lastselection = matchArr[0];
+        this.lastselectionlabel = matchArr[0].label;
       }
 
       matchArr = this.$refs.mytree.getMatching((themodel)=>{
@@ -430,6 +381,7 @@ export default {
       if(matchArr.length == 1) {
         matchArr[0].treeNodeSpec.state.selected = true;
         this.lastselection = matchArr[0];
+        this.lastselectionlabel = matchArr[0].label;
 
         // if($scope.jointboneselection == "bone" && sel.bone != null && sel.bone != "")
         //     selobj.selecttext = sel.bonepath;
@@ -440,6 +392,18 @@ export default {
         data.selecttext = matchArr[0].treeNodeSpec.customizations.classes.fullpath;
         this.connection.send(JSON.stringify(data));
       }
+    },
+    editname(model,e) {
+      console.log("editname")
+      console.log(e)
+      console.log(this.lastselection)
+      this.shownameedit = true;
+      this.edittop = e.pageY;
+      this.editleft = e.pageX;
+      // this.edittop = e.clientY;
+      // this.editleft = e.clientX;
+      // this.edittop = e.screenY;
+      // this.editleft = e.screenX;
     },
     Lock(model){
       model.treeNodeSpec.customizations.classes.locked = "yes";
@@ -627,6 +591,9 @@ export default {
   <button @click="GetMaxDepthAndSetChildExpanded">force depth</button>
   <button @click="ListModel">list</button>
 
+  
+
+
   <tree-view  
     ref="mytree" 
     id="my-tree" 
@@ -657,13 +624,16 @@ export default {
           <GroupIcon style="fill:green;" v-else-if="customClasses.type == 'group'" />
           <LightIcon style="fill:green;" v-else-if="customClasses.type == 'light'" />
           <NAIcon style="fill:green;" v-else />
+
           <span 
             style="display:block;overflow-wrap: break-word;"
             @contextmenu.prevent.stop='handleClick1($event, model)'
             @click.exact="selectonenode(model)"
             @click.ctrl.exact="toggleselection(model)"
             @click.shift.exact="rangeselection(model)"
+            @dblclick.exact="editname(model, $event)"
           >{{ model[model.treeNodeSpec.labelProperty] }}</span>
+
           <!-- <span :style="{display:'block',width:1.25 + maxdepth*3.2 - customClasses.treedepth*2.2+'em'}">{{customClasses.treedepth}} - {{maxdepth}}</span> -->
           <!-- <span :style="{display:'block',width:1.25 + maxdepth*3.2 - customClasses.treedepth*2.2+'em'}"></span> -->
           <span :style="{display:'block',width:1.25 + maxdepth*3 - customClasses.treedepth*2.2+'em'}"></span>
@@ -687,6 +657,26 @@ export default {
         </div>
       </template>
   </tree-view>
+    <!-- <div :style="{backgroundColor:'white', position:'absolute',top:edittop,left:editleft}" v-if="shownameedit"> -->
+    <!-- <div :style="{backgroundColor:'white', padding:'3em', position:'absolute',top:edittop+'px',left:editleft+'px'}" v-if="shownameedit">
+      <p>{{lastselectionlabel}}</p>
+      <input type="text" v-model="lastselectionlabel" @keyup.enter="testinput">
+    </div> -->
+    <!-- <input type="text" 
+      v-model="lastselectionlabel" 
+      @keyup.enter="testinput"
+      :style="{backgroundColor:'white', padding:'8px', position:'absolute',top:edittop-15+'px',left:editleft-25+'px'}" 
+      v-if="shownameedit"> -->
+      <div :style="{backgroundColor:'white', padding:'12px', position:'absolute',top:edittop-18+'px',left:editleft-25+'px', boxShadow: '0 0 10px 5px red'}" 
+          v-if="shownameedit"
+          >
+        <input type="text" 
+          v-model="lastselectionlabel" 
+          @keyup.enter="testinput"
+          >
+        <button style="margin-left: 5px;color:red;" @click="cancelnameedit">X</button>
+      </div>
+
 
   <div id="quill-container" v-if="showNoteEditor">
     <QuillEditor theme="snow" toolbar="full" 
