@@ -3,7 +3,8 @@ import TreeView from "@grapoza/vue-tree"
 import VueSimpleContextMenu from 'vue-simple-context-menu';
 import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
 import { QuillEditor, Delta } from '@vueup/vue-quill'
-import '@vueup/vue-quill/dist/vue-quill.snow.css';
+// import { Delta } from '@vueup/vue-quill'
+// import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 import CameraIcon from './components/CameraIcon.vue'
 import GroupIcon from './components/GroupIcon.vue'
@@ -11,11 +12,13 @@ import HiddenIcon from './components/HiddenIcon.vue'
 import LightIcon from './components/LightIcon.vue'
 import LockedIcon from './components/LockedIcon.vue'
 import MeshIcon from './components/MeshIcon.vue'
-import NoteIcon from './components/NoteIcon.vue'
+import NoteEditIcon from './components/NoteEditIcon.vue'
+import NoteNewIcon from './components/NoteNewIcon.vue'
 import UnlockedIcon from './components/UnlockedIcon.vue'
 import VisibleIcon from './components/VisibleIcon.vue'
 import NAIcon from './components/NAIcon.vue'
 import MoreChildrenIcon from './components/MoreChildrenIcon.vue'
+import Notes from './components/Notes.vue'
   
 export default {
   components: {
@@ -29,11 +32,13 @@ export default {
     LightIcon,
     LockedIcon, 
     MeshIcon,
-    NoteIcon,
+    NoteEditIcon,
+    NoteNewIcon,
     UnlockedIcon,
     VisibleIcon,
     NAIcon,
-    MoreChildrenIcon
+    MoreChildrenIcon,
+    Notes
   },
   data() {
     return {
@@ -407,17 +412,7 @@ export default {
       let sel = this.$refs.mytree.getSelected();
       console.log(sel);
     },
-    CancelNote() {
-      this.showNoteEditor=false;
-      this.tsnode = "";
-    },
-    DeleteNote() {
-      this.showNoteEditor=false;
-      let msg = {command:"DeleteNotes"};
-      msg.path = this.tsnode;
-      this.connection.send(JSON.stringify(msg));
-      this.tsnode = "";
-    },
+   
     GetScene() {
       // this.model.length = 0
       this.connection.send('{ "command" : "GetSceneTree3", "root": "current_scene" }');
@@ -426,32 +421,19 @@ export default {
       // this.model.length = 0
       this.connection.send('{ "command" : "GetSceneTree3", "root": "/" }');
     },
-   
-    SaveNote() {
-      // console.log("hello")
-      // console.log(this.mycontent.getContents())
-      console.log(this.mycontent.ops)
-      // console.log(this.editor.root.innerHTML)
-      console.log(this.$refs.editor.getHTML()) //.$el.querySelector('.ql-editor').innerHTML)
-      this.showNoteEditor=false
-      //send to tS here
-      let msg = {command:"AddNotes"};
-      msg.path = this.tsnode;
-      msg.html = this.$refs.editor.getHTML();
-      msg.delta = JSON.stringify(this.mycontent);
-      this.connection.send(JSON.stringify(msg));
-      this.tsnode = "";
-    },
-    ShowEditor(tsnode) {
+   ShowEditor(tsnode) {
       this.showNoteEditor=true;
       this.tsnode = tsnode;
       this.mycontent = new Delta([]);
     },
-    LoadEditor(tsnode){
-      let msg = {command:"GetNotes"};
-      msg.path = tsnode;
-      this.connection.send(JSON.stringify(msg));
-    },
+   CloseNoteEditor(html) {
+    console.log("closenoteeditor")
+    this.showNoteEditor=false;
+    if(html) {
+      this.htmlnote = html;
+    }
+   },
+   
     ShowTest() {
       let id=280799308;
       // console.log(this.$refs.mytree.getSelected());
@@ -505,6 +487,20 @@ export default {
 <template>
 
   <h2 @click="doReport">Time: {{time}} - {{tsnode}}</h2>
+  <Notes v-if="showNoteEditor" @onNoteClose="CloseNoteEditor" :htmlnote="htmlnote" :initialDelta="mycontent" :tsnode="tsnode"/>
+  <div v-else v-html="htmlnote"></div>
+  <!-- <div>
+  <div id="quill-container">
+    <QuillEditor theme="snow" toolbar="full" 
+      v-model:content="mycontent" 
+      ref="editor"
+    />
+    <button @click="SaveNote">save</button>
+    <button @click="CancelNote">cancel</button>
+    <button @click="DeleteNote">delete</button>
+  </div> -->
+
+  <!-- </div> -->
 
     <!-- <div class="container pt-2 pb-4">
         <div class="row">
@@ -540,7 +536,7 @@ export default {
         </div>
       </div> -->
   
-  <div id="notehtml" v-html="htmlnote"></div>
+  <!-- <div id="notehtml" v-html="htmlnote"></div> -->
   <LightIcon style="fill:green;"/>
   <CameraIcon style="fill:green;"/>
   <GroupIcon style="fill:green;"/>
@@ -608,8 +604,10 @@ export default {
           <UnlockedIcon style="fill:green;" v-if="customClasses.locked == 'no'" :connection="connection" :model="model"/>
           <NAIcon style="fill:#eee" v-if="customClasses.locked == 'na'"/>
 
-          <NoteIcon style="fill:green;" v-if="customClasses.note == 'yes'" @click="LoadEditor(customClasses.fullpath)"/>
-          <NoteIcon style="fill:lightgray;" v-if="customClasses.note == 'no'" @click="ShowEditor(customClasses.fullpath)"/>
+          <!-- <NoteIcon style="fill:green;" v-if="customClasses.note == 'yes'" @click="LoadEditor(customClasses.fullpath)"/>
+          <NoteIcon style="fill:lightgray;" v-if="customClasses.note == 'no'" @click="ShowEditor(customClasses.fullpath)"/> -->
+          <NoteEditIcon v-if="customClasses.note == 'yes'" :connection="connection" :customClasses="customClasses"/>
+          <NoteNewIcon v-if="customClasses.note == 'no'"  @click="ShowEditor(customClasses.fullpath)"/>/>
           <NAIcon style="fill:#eee" v-if="customClasses.note == 'na'"/>
 
           <MoreChildrenIcon 
@@ -628,7 +626,7 @@ export default {
       @keyup.enter="testinput"
       :style="{backgroundColor:'white', padding:'8px', position:'absolute',top:edittop-15+'px',left:editleft-25+'px'}" 
       v-if="shownameedit"> -->
-      <div :style="{backgroundColor:'white', padding:'12px', position:'absolute',top:edittop-18+'px',left:editleft-25+'px', boxShadow: '0 0 10px 5px red'}" 
+      <!-- <div :style="{backgroundColor:'white', padding:'12px', position:'absolute',top:edittop-18+'px',left:editleft-25+'px', boxShadow: '0 0 10px 5px red'}" 
           v-if="shownameedit"
           >
         <input type="text" 
@@ -647,7 +645,18 @@ export default {
     <button @click="SaveNote">save</button>
     <button @click="CancelNote">cancel</button>
     <button @click="DeleteNote">delete</button>
-  </div>
+  </div> -->
+  
+
+  <div :style="{backgroundColor:'white', padding:'12px', position:'absolute',top:edittop-18+'px',left:editleft-25+'px', boxShadow: '0 0 10px 5px red'}" 
+          v-if="shownameedit"
+          >
+        <input type="text" 
+          v-model="lastselectionlabel" 
+          @keyup.enter="testinput"
+          >
+        <button style="margin-left: 5px;color:red;" @click="cancelnameedit">X</button>
+      </div>
 
   <vue-simple-context-menu
     element-id="myFirstMenu"
@@ -695,8 +704,8 @@ a,
 }
 
 #quill-container{
-   position: absolute;
-   top:3em;
+   /* position: absolute;
+   top:3em; */
    background-color:white;
    max-width:50em;
    padding: 2em;
