@@ -402,24 +402,6 @@ export default {
       this.shownameedit = true;
       this.edittop = e.pageY;
       this.editleft = e.pageX;
-      // this.edittop = e.clientY;
-      // this.editleft = e.clientX;
-      // this.edittop = e.screenY;
-      // this.editleft = e.screenX;
-    },
-    Lock(model){
-      model.treeNodeSpec.customizations.classes.locked = "yes";
-      let data = {};
-      data.command = "LockNode";   
-      data.path = model.treeNodeSpec.customizations.classes.fullpath;
-      this.connection.send(JSON.stringify(data));
-    },
-    Unlock(model) {
-      model.treeNodeSpec.customizations.classes.locked = "no";
-      let data = {};
-      data.command = "UnlockNode";   
-      data.path = model.treeNodeSpec.customizations.classes.fullpath;
-      this.connection.send(JSON.stringify(data));
     },
     refreshSelectedList() {
       let sel = this.$refs.mytree.getSelected();
@@ -444,14 +426,7 @@ export default {
       // this.model.length = 0
       this.connection.send('{ "command" : "GetSceneTree3", "root": "/" }');
     },
-    GetTreeBranch(tsnode, depth){
-      console.log("load branch", tsnode);
-      let data = {};
-      data.command = "GetTreeBranch";
-      data.root = tsnode;
-      data.startdepth = depth;
-      this.connection.send(JSON.stringify(data));
-    },
+   
     SaveNote() {
       // console.log("hello")
       // console.log(this.mycontent.getContents())
@@ -625,21 +600,20 @@ export default {
           <!-- <span :style="{display:'block',width:1.25 + maxdepth*3.2 - customClasses.treedepth*2.2+'em'}"></span> -->
           <span :style="{display:'block',width:1.25 + maxdepth*3 - customClasses.treedepth*2.2+'em'}"></span>
 
-          <!-- <VisibleIcon style="fill:green;stroke:green;" v-if="customClasses.visible == 'yes'" @click="HideNode(model)"/>
-          <HiddenIcon style="fill:red;" v-if="customClasses.visible == 'no'" @click="ShowNode(model)"/> -->
           <VisibleIcon  v-if="customClasses.visible == 'yes'" :connection="connection" :model="model"/>
           <HiddenIcon v-if="customClasses.visible == 'no'" :connection="connection" :model="model"/>
           <NAIcon style="fill:#eee" v-if="customClasses.visible == 'na'"/>
-          <!-- <LockedIcon style="fill:red;" v-if="customClasses.locked == 'yes'" @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)"/>
-          <UnlockedIcon style="fill:green;" v-if="customClasses.locked == 'no'" @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)"/> -->
-          <LockedIcon style="fill:red;" v-if="customClasses.locked == 'yes'" @click="Unlock(model)"/>
-          <UnlockedIcon style="fill:green;" v-if="customClasses.locked == 'no'" @click="Lock(model)"/>
+
+          <LockedIcon style="fill:red;" v-if="customClasses.locked == 'yes'" :connection="connection" :model="model"/>
+          <UnlockedIcon style="fill:green;" v-if="customClasses.locked == 'no'" :connection="connection" :model="model"/>
           <NAIcon style="fill:#eee" v-if="customClasses.locked == 'na'"/>
+
           <NoteIcon style="fill:green;" v-if="customClasses.note == 'yes'" @click="LoadEditor(customClasses.fullpath)"/>
           <NoteIcon style="fill:lightgray;" v-if="customClasses.note == 'no'" @click="ShowEditor(customClasses.fullpath)"/>
           <NAIcon style="fill:#eee" v-if="customClasses.note == 'na'"/>
+
           <MoreChildrenIcon 
-            @click="GetTreeBranch(customClasses.fullpath, customClasses.treedepth )"
+             :connection="connection" :customClasses="customClasses"
             v-if="!model.treeNodeSpec.state.expanded && customClasses.numchildren > 0 && model[model.treeNodeSpec.childrenProperty].length == 0" />
         </div>
       </template>

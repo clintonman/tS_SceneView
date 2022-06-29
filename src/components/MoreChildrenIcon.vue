@@ -1,5 +1,22 @@
+<script>
+export default {
+   props: ['connection', 'customClasses'],
+   methods: {
+       GetTreeBranch(tsnode, depth){
+      // console.log("load branch", tsnode);
+      let data = {};
+      data.command = "GetTreeBranch";
+      data.root = tsnode;
+      data.startdepth = depth;
+      this.connection.send(JSON.stringify(data));
+    },
+   }
+}
+</script>
 <template>
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor">
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" 
+   fill="currentColor"
+   @click="GetTreeBranch(customClasses.fullpath, customClasses.treedepth )">
     <g
      id="xml-attribute-delete"
      transform="matrix(0.666667,0,0,0.666667,-797.33333,-371.57479)">

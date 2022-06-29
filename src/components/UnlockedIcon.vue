@@ -1,5 +1,22 @@
+<script>
+export default {
+   props: ['connection', 'model'],
+   methods: {
+      Lock(model){
+      model.treeNodeSpec.customizations.classes.locked = "yes";
+      let data = {};
+      data.command = "LockNode";   
+      data.path = model.treeNodeSpec.customizations.classes.fullpath;
+      this.connection.send(JSON.stringify(data));
+    }
+   }
+}
+</script>
+
 <template>
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor">
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" 
+      fill="currentColor"
+      style="fill:green;" @click="Lock(model)">
     <g
      transform="translate(-195,-961.3622)"
      id="object-unlocked">
