@@ -1,7 +1,7 @@
 <script>
 import TreeView from "@grapoza/vue-tree"
 import VueSimpleContextMenu from 'vue-simple-context-menu';
-// import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
+import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
 // import { QuillEditor, Delta } from '@vueup/vue-quill'
 import { Delta } from '@vueup/vue-quill'
 // import '@vueup/vue-quill/dist/vue-quill.snow.css';
@@ -49,63 +49,25 @@ export default {
     return {
       model: [],
     time: null,
-    itemArray1: [
-        {
-          name: 'Jim',
-          job: 'Salesman',
-        },
-        {
-          name: 'Dwight',
-          job: 'Assistant to the Regional Manager',
-        },
-        {
-          name: 'Pam',
-          job: 'Receptionist',
-        },
-      ],
-      itemArray2: [
-        {
-          name: 'Leslie',
-          job: 'Deputy Director',
-        },
-        {
-          name: 'Ron',
-          job: 'Parks Director',
-        },
-        {
-          name: 'Andy',
-          job: 'Shoeshiner',
-        },
-      ],
       optionsArray1: [
         {
-          name: 'Duplicate',
-          slug: 'duplicate',
+          name: 'Show Node in LE',
+          slug: 'leopento',
+        },
+        {
+          name: 'Open Node in LE',
+          slug: 'openinle',
         },
         {
           type: 'divider',
         },
         {
-          name: 'Edit',
-          slug: 'edit',
-        },
-        {
-          name: '<em>Delete</em>',
+          // name: '<em>Delete</em>',
+          name: 'Delete',
           slug: 'delete',
         },
       ],
-      optionsArray2: [
-        {
-          name: 'Add Star',
-          slug: 'add-star',
-          class: 'my-custom-class',
-        },
-        {
-          name: 'Remove Star',
-          slug: 'remove-star',
-        },
-      ],
-
+ 
       mycontent: new Delta([]),
       htmlnote: "<h1>html will go here</h1>",
       showNoteEditor: false,
@@ -114,8 +76,6 @@ export default {
       modelDefaults: {
         selectable: false,
       },
-      // selectionMode: 'single',
-      // selectionMode: 'multiple',
       selectionMode: null,
       maxdepth: 1,
       newselection: false,
@@ -126,16 +86,11 @@ export default {
       editleft: 0
     }
   },
-  updated: function(){
-    // this.GetMaxDepthAndSetChildExpanded();
-  },
 
   mounted: function(){
     // https://github.com/johndatserakis/vue-simple-context-menu/issues/8
     var menu = document.getElementById("myFirstMenu");
     document.firstElementChild.appendChild(menu);
-    var menu2 = document.getElementById("mySecondMenu");
-    document.firstElementChild.appendChild(menu2);
 
     this.time = 'bobobo';
     // let connection = new WebSocket('ws://localhost:3000/');
@@ -257,18 +212,78 @@ export default {
     cancelnameedit(){
       this.shownameedit = false;
     },
+    DeleteNode(item) {
+      console.log("deletenode")
+      console.log(item.id)
+
+      let data = {};
+      data.command = "DeleteNode";
+      data.path = item.treeNodeSpec.customizations.classes.fullpath;
+      this.connection.send(JSON.stringify(data));
+
+      //find parent
+      let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+        if(themodel.children && themodel.children.length > 0) {
+          let childlength = themodel.children.length;
+
+          for(let i=0;i<childlength;i++) {
+            let child = themodel.children[i];
+            if(child.id == item.id) {
+              return true;
+            }
+          }
+        }
+        return false;
+      });
+      console.log(matchArr)
+      //find index and splice remove
+      let childIndex = matchArr[0].children.findIndex(child => {
+        return child.id == item.id;
+      });
+      console.log(childIndex);
+      matchArr[0].children.splice(childIndex, 1);
+
+    },
+    LEOpenLocation(item) {
+      let data = {};
+      data.command = "LEOpenLocation";
+      data.path = item.treeNodeSpec.customizations.classes.fullpath;
+      this.connection.send(JSON.stringify(data));
+    },
+    LEOpenLocation2(item) {
+      let data = {};
+      data.command = "LEOpenLocation2";
+      data.path = item.treeNodeSpec.customizations.classes.fullpath;
+      this.connection.send(JSON.stringify(data));
+    },
     handleClick1(event, item) {
+      // console.log("handleclick1", event)
+      // console.log("handleclick1", item)
+      // console.log(this.$refs.vueSimpleContextMenu1)
       this.$refs.vueSimpleContextMenu1.showMenu(event, item);
     },
-    handleClick2(event, item) {
-      this.$refs.vueSimpleContextMenu2.showMenu(event, item);
-    },
+    // handleClick2(event, item) {
+    //   this.$refs.vueSimpleContextMenu2.showMenu(event, item);
+    // },
     optionClicked1(event) {
-      window.alert(JSON.stringify(event));
+      // console.log(event)
+      console.log(event.item.label)
+      console.log(event.item.treeNodeSpec.customizations.classes.fullpath)
+      console.log(event.option.slug)
+      // window.alert(JSON.stringify(event));
+      if(event.option.slug == "delete") {
+        this.DeleteNode(event.item);
+      }
+      if(event.option.slug == "leopento") {
+        this.LEOpenLocation2(event.item);
+      }
+      if(event.option.slug == "openinle") {
+        this.LEOpenLocation(event.item);
+      }
     },
-    optionClicked2(event) {
-      window.alert(JSON.stringify(event));
-    },
+    // optionClicked2(event) {
+    //   window.alert(JSON.stringify(event));
+    // },
     doReport() {
       console.log("hi")
     },
@@ -401,8 +416,6 @@ export default {
         // if($scope.jointboneselection == "bone" && sel.bone != null && sel.bone != "")
         //     selobj.selecttext = sel.bonepath;
         // else
-
-        //TODO change to select item and get note html
         
         let data = {};
         data.command = "SelectItem";
@@ -512,40 +525,6 @@ export default {
         <div class="note-readonly-content" v-html="htmlnote"></div>
       </div>
   </div>
-
-    <!-- <div class="container pt-2 pb-4">
-        <div class="row">
-          <div class="col-lg-6 mb-4 mb-lg-0">
-            <p>Right click on an item below.</p>
-  
-            <div class="list-group">
-              <div
-                v-for="(item, index) in itemArray1"
-                :key="index"
-                @contextmenu.prevent.stop="handleClick1($event, item)"
-                class="list-group-item list-group-item-action"
-              >
-                {{ item.name }}
-              </div>
-            </div>
-          </div>
-  
-          <div class="col-lg-6">
-            <p>Left click on an item below.</p>
-  
-            <div class="list-group">
-              <div
-                v-for="(item, index) in itemArray2"
-                :key="index"
-                @click.prevent.stop="handleClick2($event, item)"
-                class="list-group-item list-group-item-action"
-              >
-                {{ item.name }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> -->
   
   <CameraIcon />
   <GeometryIcon />
@@ -614,27 +593,6 @@ export default {
         </div>
       </template>
   </tree-view>
-    <!-- <div :style="{backgroundColor:'white', position:'absolute',top:edittop,left:editleft}" v-if="shownameedit"> -->
-    <!-- <div :style="{backgroundColor:'white', padding:'3em', position:'absolute',top:edittop+'px',left:editleft+'px'}" v-if="shownameedit">
-      <p>{{lastselectionlabel}}</p>
-      <input type="text" v-model="lastselectionlabel" @keyup.enter="testinput">
-    </div> -->
-    <!-- <input type="text" 
-      v-model="lastselectionlabel" 
-      @keyup.enter="testinput"
-      :style="{backgroundColor:'white', padding:'8px', position:'absolute',top:edittop-15+'px',left:editleft-25+'px'}" 
-      v-if="shownameedit"> -->
-      <!-- <div :style="{backgroundColor:'white', padding:'12px', position:'absolute',top:edittop-18+'px',left:editleft-25+'px', boxShadow: '0 0 10px 5px red'}" 
-          v-if="shownameedit"
-          >
-        <input type="text" 
-          v-model="lastselectionlabel" 
-          @keyup.enter="testinput"
-          >
-        <button style="margin-left: 5px;color:red;" @click="cancelnameedit">X</button>
-      </div>
-
-   -->
 
   <div class="rename-box" :style="{top:edittop-18+'px',left:editleft-25+'px'}"
           v-if="shownameedit"
@@ -654,13 +612,13 @@ export default {
   >
   </vue-simple-context-menu>
 
-  <vue-simple-context-menu
+  <!-- <vue-simple-context-menu
     element-id="mySecondMenu"
     :options="optionsArray2"
     ref="vueSimpleContextMenu2"
     @option-clicked="optionClicked2"
   >
-  </vue-simple-context-menu>
+  </vue-simple-context-menu> -->
 </template>
 
 <style>
@@ -846,9 +804,9 @@ a,
     margin: 0 2rem 0 0;
   }
 
-  /* .vue-simple-context-menu {
+  .vue-simple-context-menu {
     position: fixed !important;
-  } */
+  }
 
 }
 </style>
