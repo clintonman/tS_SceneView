@@ -3,6 +3,7 @@ export default {
   props:["connection", "customClasses", "model"],
   methods: {
     LoadEditor(tsnode){
+      this.model.treeNodeSpec.state.selected = true;
       let msg = {command:"GetNotes"};
       msg.path = tsnode;
       this.connection.send(JSON.stringify(msg));

@@ -7,6 +7,7 @@ import { Delta } from '@vueup/vue-quill'
 // import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 import CameraIcon from './components/CameraIcon.vue'
+import GeometryIcon from './components/GeometryIcon.vue'
 import GroupIcon from './components/GroupIcon.vue'
 import HiddenIcon from './components/HiddenIcon.vue'
 import LightIcon from './components/LightIcon.vue'
@@ -26,6 +27,7 @@ export default {
     VueSimpleContextMenu,
     Delta,
     CameraIcon,
+    GeometryIcon,
     GroupIcon,
     HiddenIcon,
     LightIcon,
@@ -202,6 +204,11 @@ export default {
         this.showNoteEditor=true;
         this.tsnode = mydata.path;
         this.mycontent = JSON.parse(mydata.delta);
+      }
+      if(mydata.command == "UpdateHTMLNote") {
+        console.log(mydata)
+        this.showNoteEditor=false;
+        this.htmlnote = mydata.html;
       }
       if(mydata.command == "NewSelection") {
         console.log(mydata.selection);
@@ -420,10 +427,11 @@ export default {
       // this.model.length = 0
       this.connection.send('{ "command" : "GetSceneTree3", "root": "/" }');
     },
-   ShowEditor(tsnode) {
+   ShowEditor(tsnode, model) {
       this.showNoteEditor=true;
       this.tsnode = tsnode;
       this.mycontent = new Delta([]);
+      model.treeNodeSpec.state.selected = true;
     },
    CloseNoteEditor(html) {
     console.log("closenoteeditor")
@@ -493,7 +501,10 @@ export default {
     :htmlnote="htmlnote" 
     :initialDelta="mycontent" 
     :tsnode="tsnode"/>
-  <div style="padding: 3em;" v-else v-html="htmlnote"></div>
+    <!-- must place inside parent with class to get quill styles -->
+    <div class="ql-editor" v-else>
+      <div style="padding: 3em;"  v-html="htmlnote"></div>
+    </div>
 
     <!-- <div class="container pt-2 pb-4">
         <div class="row">
@@ -531,6 +542,7 @@ export default {
   
   <LightIcon style="fill:green;"/>
   <CameraIcon style="fill:green;"/>
+  <GeometryIcon style="fill:green;"/>
   <GroupIcon style="fill:green;"/>
   <MeshIcon style="fill:green;"/>
   <button @click="ShowTest">get id=280799308</button>
@@ -568,6 +580,7 @@ export default {
         >
           <MeshIcon style="fill:green;" v-if="customClasses.type == 'renderable'" />
           <CameraIcon style="fill:green;" v-else-if="customClasses.type == 'camera'" />
+          <GeometryIcon style="fill:green;" v-else-if="customClasses.type == 'geom'" />
           <GroupIcon style="fill:green;" v-else-if="customClasses.type == 'group'" />
           <LightIcon style="fill:green;" v-else-if="customClasses.type == 'light'" />
           <NAIcon style="fill:green;" v-else />
@@ -592,7 +605,7 @@ export default {
           <NAIcon style="fill:#eee" v-if="customClasses.locked == 'na'"/>
 
           <NoteEditIcon v-if="customClasses.note == 'yes'" :connection="connection" :customClasses="customClasses" :model="model"/>
-          <NoteNewIcon v-if="customClasses.note == 'no'"  @click="ShowEditor(customClasses.fullpath)"/>/>
+          <NoteNewIcon v-if="customClasses.note == 'no'"  @click="ShowEditor(customClasses.fullpath, model)"/>
           <NAIcon style="fill:#eee" v-if="customClasses.note == 'na'"/>
 
           <MoreChildrenIcon 
@@ -685,6 +698,7 @@ a,
    max-width:50em;
    padding: 2em;
 }
+/* css of quill is not available easily outside of quill and not available outside the page*/
 
 /* .grtv-wrapper.grtv-default-skin .grtvn-self{
   display: grid;
