@@ -12,9 +12,11 @@ import GroupIcon from './components/GroupIcon.vue'
 import HiddenIcon from './components/HiddenIcon.vue'
 import LightIcon from './components/LightIcon.vue'
 import LockedIcon from './components/LockedIcon.vue'
+import MaterialIcon from './components/MaterialIcon.vue'
 import MeshIcon from './components/MeshIcon.vue'
 import NoteEditIcon from './components/NoteEditIcon.vue'
 import NoteNewIcon from './components/NoteNewIcon.vue'
+import TextIcon from './components/TextIcon.vue'
 import UnlockedIcon from './components/UnlockedIcon.vue'
 import VisibleIcon from './components/VisibleIcon.vue'
 import NAIcon from './components/NAIcon.vue'
@@ -32,9 +34,11 @@ export default {
     HiddenIcon,
     LightIcon,
     LockedIcon, 
+    MaterialIcon,
     MeshIcon,
     NoteEditIcon,
     NoteNewIcon,
+    TextIcon,
     UnlockedIcon,
     VisibleIcon,
     NAIcon,
@@ -540,11 +544,13 @@ export default {
         </div>
       </div> -->
   
-  <LightIcon style="fill:green;"/>
   <CameraIcon style="fill:green;"/>
   <GeometryIcon style="fill:green;"/>
   <GroupIcon style="fill:green;"/>
+  <LightIcon style="fill:green;"/>
   <MeshIcon style="fill:green;"/>
+  <MaterialIcon style="fill:green;stroke-width: 1.1;"/>
+  <TextIcon style="fill:green;"/>
   <button @click="ShowTest">get id=280799308</button>
   <button type="button" @click="refreshSelectedList">What's selected?</button>
   <button @click="GetScene">scene root</button>
@@ -583,6 +589,8 @@ export default {
           <GeometryIcon style="fill:green;" v-else-if="customClasses.type == 'geom'" />
           <GroupIcon style="fill:green;" v-else-if="customClasses.type == 'group'" />
           <LightIcon style="fill:green;" v-else-if="customClasses.type == 'light'" />
+          <MaterialIcon style="fill:green;" v-else-if="customClasses.type == 'material'" />
+          <TextIcon style="fill:green;" v-else-if="customClasses.type == 'text'" />
           <NAIcon style="fill:green;" v-else />
 
           <span 
