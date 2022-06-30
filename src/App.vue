@@ -496,19 +496,22 @@ export default {
 </script>
 
 <template>
-
-  <h2 @click="doReport">Time: {{time}} - {{tsnode}}</h2>
-  <Notes 
-    v-if="showNoteEditor" 
-    :connection="connection"
-    @onNoteClose="CloseNoteEditor" 
-    :htmlnote="htmlnote" 
-    :initialDelta="mycontent" 
-    :tsnode="tsnode"/>
-    <!-- must place inside parent with class to get quill styles -->
-    <div class="ql-editor" v-else>
-      <div style="padding: 3em;"  v-html="htmlnote"></div>
-    </div>
+  <h1>Scene View</h1>
+  <div class="notes-head">
+    <h2 @click="doReport">Time: {{time}} - {{tsnode}}</h2>
+    <Notes 
+      style="margin:1em;"
+      v-if="showNoteEditor" 
+      :connection="connection"
+      @onNoteClose="CloseNoteEditor" 
+      :htmlnote="htmlnote" 
+      :initialDelta="mycontent" 
+      :tsnode="tsnode"/>
+      <!-- must place inside parent with class to get quill styles -->
+      <div class="note-readonly ql-editor" v-else>
+        <div class="note-readonly-content" v-html="htmlnote"></div>
+      </div>
+  </div>
 
     <!-- <div class="container pt-2 pb-4">
         <div class="row">
@@ -544,13 +547,13 @@ export default {
         </div>
       </div> -->
   
-  <CameraIcon style="fill:green;"/>
-  <GeometryIcon style="fill:green;"/>
-  <GroupIcon style="fill:green;"/>
-  <LightIcon style="fill:green;"/>
-  <MeshIcon style="fill:green;"/>
-  <MaterialIcon style="fill:green;stroke-width: 1.1;"/>
-  <TextIcon style="fill:green;"/>
+  <CameraIcon />
+  <GeometryIcon />
+  <GroupIcon />
+  <LightIcon />
+  <MeshIcon />
+  <MaterialIcon />
+  <TextIcon />
   <button @click="ShowTest">get id=280799308</button>
   <button type="button" @click="refreshSelectedList">What's selected?</button>
   <button @click="GetScene">scene root</button>
@@ -568,33 +571,22 @@ export default {
     @treeNodeExpandedChange="GetMaxDepthAndSetChildExpanded"
     connection="connection"
     >
-    <template v-slot:text="{ model, customClasses }">
-        <!-- <span @click="doReport">say hi</span> -->
-        <!-- <span 
-          @click="doReport2(model[model.treeNodeSpec.labelProperty], customClasses.type)" 
-          style="color: blue;"
-        >
-          {{ model[model.treeNodeSpec.labelProperty] }}. Custom Classes: {{ JSON.stringify(customClasses) }}
-        </span> -->
-        <!-- <div 
-          style="color: blue;display: grid;grid-template-columns: 20px 13em min-content 20px 20px 20px 20px;"
-          :style="{backgroundColor: model.treeNodeSpec.state.selected ? '#eee' : '#fff'}"
-        > -->
+      <template v-slot:text="{ model, customClasses }">
         <div 
-          style="color: blue;display: grid;grid-template-columns: 20px 10em min-content 20px 20px 20px 20px;"
-          :style="{backgroundColor: model.treeNodeSpec.state.selected ? '#eee' : '#fff'}"
+          class="tree-line"
+          :style="{backgroundColor: model.treeNodeSpec.state.selected ? '#334' : ''}"
         >
-          <MeshIcon style="fill:green;" v-if="customClasses.type == 'renderable'" />
-          <CameraIcon style="fill:green;" v-else-if="customClasses.type == 'camera'" />
-          <GeometryIcon style="fill:green;" v-else-if="customClasses.type == 'geom'" />
-          <GroupIcon style="fill:green;" v-else-if="customClasses.type == 'group'" />
-          <LightIcon style="fill:green;" v-else-if="customClasses.type == 'light'" />
-          <MaterialIcon style="fill:green;" v-else-if="customClasses.type == 'material'" />
-          <TextIcon style="fill:green;" v-else-if="customClasses.type == 'text'" />
-          <NAIcon style="fill:green;" v-else />
+          <MeshIcon class="label-icon" v-if="customClasses.type == 'renderable'" />
+          <CameraIcon class="label-icon" v-else-if="customClasses.type == 'camera'" />
+          <GeometryIcon class="label-icon" v-else-if="customClasses.type == 'geom'" />
+          <GroupIcon class="label-icon" v-else-if="customClasses.type == 'group'" />
+          <LightIcon class="label-icon" v-else-if="customClasses.type == 'light'" />
+          <MaterialIcon class="label-icon" v-else-if="customClasses.type == 'material'" />
+          <TextIcon class="label-icon" v-else-if="customClasses.type == 'text'" />
+          <NAIcon class="label-icon--na" v-else />
 
           <span 
-            style="display:block;overflow-wrap: break-word;"
+            class="tree-line-label"
             @contextmenu.prevent.stop='handleClick1($event, model)'
             @click.exact="selectonenode(model)"
             @click.ctrl.exact="toggleselection(model)"
@@ -602,21 +594,21 @@ export default {
             @dblclick.exact="editname(model, $event)"
           >{{ model[model.treeNodeSpec.labelProperty] }}</span>
 
-          <span :style="{display:'block',width:1.25 + maxdepth*3 - customClasses.treedepth*2.2+'em'}"></span>
+          <span :style="{display:'block',width:1.25 + maxdepth*3 - customClasses.treedepth*3.2+'em'}"></span>
 
-          <VisibleIcon  v-if="customClasses.visible == 'yes'" :connection="connection" :model="model"/>
-          <HiddenIcon v-if="customClasses.visible == 'no'" :connection="connection" :model="model"/>
-          <NAIcon style="fill:#eee" v-if="customClasses.visible == 'na'"/>
+          <VisibleIcon class="action-label action-label--inactive" v-if="customClasses.visible == 'yes'" :connection="connection" :model="model"/>
+          <HiddenIcon class="action-label action-label--active" v-if="customClasses.visible == 'no'" :connection="connection" :model="model"/>
+          <NAIcon class="action-label action-label--na" v-if="customClasses.visible == 'na'"/>
 
-          <LockedIcon style="fill:red;" v-if="customClasses.locked == 'yes'" :connection="connection" :model="model"/>
-          <UnlockedIcon style="fill:green;" v-if="customClasses.locked == 'no'" :connection="connection" :model="model"/>
-          <NAIcon style="fill:#eee" v-if="customClasses.locked == 'na'"/>
+          <LockedIcon class="action-label action-label--active" v-if="customClasses.locked == 'yes'" :connection="connection" :model="model"/>
+          <UnlockedIcon class="action-label action-label--inactive" v-if="customClasses.locked == 'no'" :connection="connection" :model="model"/>
+          <NAIcon class="action-label action-label--na" v-if="customClasses.locked == 'na'"/>
 
-          <NoteEditIcon v-if="customClasses.note == 'yes'" :connection="connection" :customClasses="customClasses" :model="model"/>
-          <NoteNewIcon v-if="customClasses.note == 'no'"  @click="ShowEditor(customClasses.fullpath, model)"/>
-          <NAIcon style="fill:#eee" v-if="customClasses.note == 'na'"/>
+          <NoteEditIcon class="action-label action-label--note" v-if="customClasses.note == 'yes'" :connection="connection" :customClasses="customClasses" :model="model"/>
+          <NoteNewIcon class="action-label action-label--nonote" v-if="customClasses.note == 'no'"  @click="ShowEditor(customClasses.fullpath, model)"/>
+          <NAIcon class="action-label action-label--na" v-if="customClasses.note == 'na'"/>
 
-          <MoreChildrenIcon 
+          <MoreChildrenIcon class="action-label action-label--children" 
              :connection="connection" :customClasses="customClasses"
             v-if="!model.treeNodeSpec.state.expanded && customClasses.numchildren > 0 && model[model.treeNodeSpec.childrenProperty].length == 0" />
         </div>
@@ -644,7 +636,7 @@ export default {
 
    -->
 
-  <div :style="{backgroundColor:'white', padding:'12px', position:'absolute',top:edittop-18+'px',left:editleft-25+'px', boxShadow: '0 0 10px 5px red'}" 
+  <div class="rename-box" :style="{top:edittop-18+'px',left:editleft-25+'px'}"
           v-if="shownameedit"
           >
         <input type="text" 
@@ -674,6 +666,111 @@ export default {
 <style>
 @import './assets/base.css';
 
+  /* .grtvn-self {
+    background-color: red;
+    border: 2px solid red;
+  } */
+  /* .tree-line {
+    background-color: #ddd;
+  } */
+  #my-tree {
+    border:2px solid rgb(48, 16, 40);
+    margin-top: 1em;
+    padding: 0.5em;
+    /* background-color: rgb(59, 59, 59); */
+    background-color: rgb(107, 107, 107);
+  }
+  .rename-box {
+    background-color:white;
+    padding:12px;
+    position:absolute;
+    box-shadow: 0 0 10px 5px red;
+  }
+  .note-readonly {
+     background-color:white;
+     /* color:black; */
+     opacity:0.7;
+     margin: 1em;
+  }
+  .note-readonly-content {
+    padding: 0.5em;
+  }
+  .notes-head {
+    background-color: initial;
+    color: initial;
+  }
+  .notes-head h2 {
+    color:white;
+    font-size: 1em;
+  }
+  h1 {
+    font-size: 1.6em;
+  }
+
+  .label-icon {
+    fill:rgb(212, 127, 194);
+    width: 1.1em;
+    height: 1.1em;
+  }
+  .label-icon--na {
+    fill:#333344;
+    width: 1.1em;
+    height: 1.1em;
+  }
+  .tree-line {
+    color: rgb(236, 236, 236);
+    display: grid;
+    grid-template-columns: 1.3em 10em min-content repeat(3, 1.5em) 2em;
+    line-height: 1.6em;
+    align-items: center;
+    font-size: 0.75em;
+  }
+  .tree-line-label {
+    display:block;
+    overflow-wrap: break-word;
+  }
+   .tree-line-label:hover {
+    color:yellow;
+    background-color: rgb(33, 33, 100);
+   }
+  .action-label {
+    width: 1.4em;
+    height: 1.4em;
+  }
+  .action-label--inactive {
+    fill:rgb(91, 141, 91);
+  }
+  .action-label--active {
+    fill:rgb(168, 79, 79);
+  }
+  .action-label:not(.action-label--na):hover
+  {
+    fill: yellow;
+  }
+  .action-label--note {
+    fill:rgb(61, 175, 61);
+  }
+  .action-label--nonote {
+    fill: rgb(97, 97, 97);
+  }
+  .action-label--na {
+    fill: rgb(71, 70, 89);
+  }
+  .action-label--children {
+    fill: rgb(255, 255, 255);
+    justify-self: flex-end;
+  }
+  .grtvn:nth-child(even) {
+    background-color: rgb(66, 65, 65);
+  }
+  .grtvn:nth-child(odd) {
+    background-color: rgb(73, 71, 71);
+  }
+
+  .grtv-wrapper.grtv-default-skin .grtvn-self-expander i.grtvn-self-expanded-indicator {
+    color:white;
+  }
+
 #app {
   max-width: 1280px;
   margin: 0 auto;
@@ -681,6 +778,8 @@ export default {
 
   font-weight: normal;
   position: relative;
+  background-color: rgb(59, 55, 59);
+  color: white;
 }
 
 header {
@@ -750,5 +849,6 @@ a,
   /* .vue-simple-context-menu {
     position: fixed !important;
   } */
+
 }
 </style>

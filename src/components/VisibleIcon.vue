@@ -14,9 +14,9 @@ export default {
 }
 </script>
 <template>
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" 
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"
       fill="currentColor"
-      style="fill:green;stroke:green;" @click="HideNode(model)">
+      @click="HideNode(model)">
     <g
      style="display:inline"
      id="object-visible"
