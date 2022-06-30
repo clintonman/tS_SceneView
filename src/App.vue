@@ -1,9 +1,9 @@
 <script>
 import TreeView from "@grapoza/vue-tree"
 import VueSimpleContextMenu from 'vue-simple-context-menu';
-import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
-import { QuillEditor, Delta } from '@vueup/vue-quill'
-// import { Delta } from '@vueup/vue-quill'
+// import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
+// import { QuillEditor, Delta } from '@vueup/vue-quill'
+import { Delta } from '@vueup/vue-quill'
 // import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 import CameraIcon from './components/CameraIcon.vue'
@@ -24,7 +24,6 @@ export default {
   components: {
     TreeView,
     VueSimpleContextMenu,
-    QuillEditor,
     Delta,
     CameraIcon,
     GroupIcon,
@@ -487,20 +486,14 @@ export default {
 <template>
 
   <h2 @click="doReport">Time: {{time}} - {{tsnode}}</h2>
-  <Notes v-if="showNoteEditor" @onNoteClose="CloseNoteEditor" :htmlnote="htmlnote" :initialDelta="mycontent" :tsnode="tsnode"/>
-  <div v-else v-html="htmlnote"></div>
-  <!-- <div>
-  <div id="quill-container">
-    <QuillEditor theme="snow" toolbar="full" 
-      v-model:content="mycontent" 
-      ref="editor"
-    />
-    <button @click="SaveNote">save</button>
-    <button @click="CancelNote">cancel</button>
-    <button @click="DeleteNote">delete</button>
-  </div> -->
-
-  <!-- </div> -->
+  <Notes 
+    v-if="showNoteEditor" 
+    :connection="connection"
+    @onNoteClose="CloseNoteEditor" 
+    :htmlnote="htmlnote" 
+    :initialDelta="mycontent" 
+    :tsnode="tsnode"/>
+  <div style="padding: 3em;" v-else v-html="htmlnote"></div>
 
     <!-- <div class="container pt-2 pb-4">
         <div class="row">
@@ -536,7 +529,6 @@ export default {
         </div>
       </div> -->
   
-  <!-- <div id="notehtml" v-html="htmlnote"></div> -->
   <LightIcon style="fill:green;"/>
   <CameraIcon style="fill:green;"/>
   <GroupIcon style="fill:green;"/>
@@ -547,9 +539,6 @@ export default {
   <button @click="GetRoot">pure root</button>
   <button @click="GetMaxDepthAndSetChildExpanded">force depth</button>
   <button @click="ListModel">list</button>
-
-  
-
 
   <tree-view  
     ref="mytree" 
@@ -592,8 +581,6 @@ export default {
             @dblclick.exact="editname(model, $event)"
           >{{ model[model.treeNodeSpec.labelProperty] }}</span>
 
-          <!-- <span :style="{display:'block',width:1.25 + maxdepth*3.2 - customClasses.treedepth*2.2+'em'}">{{customClasses.treedepth}} - {{maxdepth}}</span> -->
-          <!-- <span :style="{display:'block',width:1.25 + maxdepth*3.2 - customClasses.treedepth*2.2+'em'}"></span> -->
           <span :style="{display:'block',width:1.25 + maxdepth*3 - customClasses.treedepth*2.2+'em'}"></span>
 
           <VisibleIcon  v-if="customClasses.visible == 'yes'" :connection="connection" :model="model"/>
@@ -604,9 +591,7 @@ export default {
           <UnlockedIcon style="fill:green;" v-if="customClasses.locked == 'no'" :connection="connection" :model="model"/>
           <NAIcon style="fill:#eee" v-if="customClasses.locked == 'na'"/>
 
-          <!-- <NoteIcon style="fill:green;" v-if="customClasses.note == 'yes'" @click="LoadEditor(customClasses.fullpath)"/>
-          <NoteIcon style="fill:lightgray;" v-if="customClasses.note == 'no'" @click="ShowEditor(customClasses.fullpath)"/> -->
-          <NoteEditIcon v-if="customClasses.note == 'yes'" :connection="connection" :customClasses="customClasses"/>
+          <NoteEditIcon v-if="customClasses.note == 'yes'" :connection="connection" :customClasses="customClasses" :model="model"/>
           <NoteNewIcon v-if="customClasses.note == 'no'"  @click="ShowEditor(customClasses.fullpath)"/>/>
           <NAIcon style="fill:#eee" v-if="customClasses.note == 'na'"/>
 
@@ -636,17 +621,7 @@ export default {
         <button style="margin-left: 5px;color:red;" @click="cancelnameedit">X</button>
       </div>
 
-
-  <div id="quill-container" v-if="showNoteEditor">
-    <QuillEditor theme="snow" toolbar="full" 
-      v-model:content="mycontent" 
-      ref="editor"
-    />
-    <button @click="SaveNote">save</button>
-    <button @click="CancelNote">cancel</button>
-    <button @click="DeleteNote">delete</button>
-  </div> -->
-  
+   -->
 
   <div :style="{backgroundColor:'white', padding:'12px', position:'absolute',top:edittop-18+'px',left:editleft-25+'px', boxShadow: '0 0 10px 5px red'}" 
           v-if="shownameedit"

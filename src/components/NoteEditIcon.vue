@@ -1,6 +1,6 @@
 <script>
 export default {
-  props:["connection", "customClasses"],
+  props:["connection", "customClasses", "model"],
   methods: {
     LoadEditor(tsnode){
       let msg = {command:"GetNotes"};
@@ -13,7 +13,8 @@ export default {
 <template>
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" 
     fill="currentColor"
-     style="fill:green;" @click="LoadEditor(customClasses.fullpath)">
+     @click="LoadEditor(customClasses.fullpath)"
+     :style="{color: model.treeNodeSpec.state.selected ? '#ca0' : 'green'}">
     <path
      id="path9485"
      d="M2.679 10.293l5.849-5.851 3 3-5.83 5.873-4.026 1.072z" />

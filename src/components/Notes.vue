@@ -8,7 +8,7 @@ export default {
       QuillEditor,
       Delta
    },
-   props: ["CloseNoteEditor", "htmlnote","initialDelta", "tsnode"],
+   props: ["connection", "CloseNoteEditor", "htmlnote","initialDelta", "tsnode"],
     data() {
       return {
          mycontent: new Delta([]),
@@ -26,36 +26,25 @@ export default {
     methods: {
        SaveNote() {
          console.log("savenote")
-         // console.log(this.mycontent.getContents())
-         console.log(this.mycontent.ops)
-         // console.log(this.editor.root.innerHTML)
-         console.log(this.$refs.editor.getHTML()) //.$el.querySelector('.ql-editor').innerHTML)
-         // this.showNoteEditor=false
          //send to tS here
          let msg = {command:"AddNotes"};
          msg.path = this.tsnode;
          msg.html = this.$refs.editor.getHTML();
          msg.delta = JSON.stringify(this.mycontent);
-         console.log(msg)
-         // this.connection.send(JSON.stringify(msg));
-         // this.tsnode = "";
-         this.$emit('onNoteClose', msg.html);//TODO add arg for html update
+         this.$emit('onNoteClose', msg.html);
+         this.connection.send(JSON.stringify(msg));
       },
       LogNote(){
          console.log(this.mycontent)
       },
        CancelNote() {
-         // this.showNoteEditor=false;
-         // this.tsnode = "";
          this.$emit('onNoteClose');
       },
       DeleteNote() {
-         // this.showNoteEditor=false;
          let msg = {command:"DeleteNotes"};
          msg.path = this.tsnode;
          this.connection.send(JSON.stringify(msg));
-         // this.tsnode = "";
-         this.$emit('onNoteClose');
+         this.$emit('onNoteClose','<p></p>');
       }
     }
 
