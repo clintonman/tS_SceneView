@@ -6,16 +6,24 @@ import 'vue-simple-context-menu/dist/vue-simple-context-menu.css';
 import { Delta } from '@vueup/vue-quill'
 // import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
+import ActorIcon from './components/ActorIcon.vue'
+import AnimationIcon from './components/AnimationIcon.vue'
+import BoneIcon from './components/BoneIcon.vue'
+import CurveIcon from './components/CurveIcon.vue'
 import CameraIcon from './components/CameraIcon.vue'
 import GeometryIcon from './components/GeometryIcon.vue'
 import GroupIcon from './components/GroupIcon.vue'
 import HiddenIcon from './components/HiddenIcon.vue'
+import JointIcon from './components/JointIcon.vue'
 import LightIcon from './components/LightIcon.vue'
 import LockedIcon from './components/LockedIcon.vue'
 import MaterialIcon from './components/MaterialIcon.vue'
 import MeshIcon from './components/MeshIcon.vue'
+import ModifierIcon from './components/ModifierIcon.vue'
 import NoteEditIcon from './components/NoteEditIcon.vue'
 import NoteNewIcon from './components/NoteNewIcon.vue'
+import PatchIcon from './components/PatchIcon.vue'
+import SkeletonIcon from './components/SkeletonIcon.vue'
 import TextIcon from './components/TextIcon.vue'
 import UnlockedIcon from './components/UnlockedIcon.vue'
 import VisibleIcon from './components/VisibleIcon.vue'
@@ -28,17 +36,25 @@ export default {
     TreeView,
     VueSimpleContextMenu,
     Delta,
+    ActorIcon,
+    AnimationIcon,
+    BoneIcon,
     CameraIcon,
+    CurveIcon,
     GeometryIcon,
     GroupIcon,
     HiddenIcon,
+    JointIcon,
     LightIcon,
     LockedIcon, 
     MaterialIcon,
     MeshIcon,
+    ModifierIcon,
     NoteEditIcon,
     NoteNewIcon,
+    PatchIcon,
     TextIcon,
+    SkeletonIcon,
     UnlockedIcon,
     VisibleIcon,
     NAIcon,
@@ -526,12 +542,19 @@ export default {
       </div>
   </div>
   
+  <ActorIcon />
+  <AnimationIcon />
+  <BoneIcon />
   <CameraIcon />
+  <CurveIcon />
   <GeometryIcon />
   <GroupIcon />
   <LightIcon />
   <MeshIcon />
   <MaterialIcon />
+  <ModifierIcon />
+  <PatchIcon/>
+  <SkeletonIcon />
   <TextIcon />
   <button @click="ShowTest">get id=280799308</button>
   <button type="button" @click="refreshSelectedList">What's selected?</button>
@@ -555,12 +578,20 @@ export default {
           class="tree-line"
           :style="{backgroundColor: model.treeNodeSpec.state.selected ? '#334' : ''}"
         >
-          <MeshIcon class="label-icon" v-if="customClasses.type == 'renderable'" />
+          <ActorIcon class="label-icon" v-if="customClasses.type == 'actor'" />
+          <AnimationIcon class="label-icon" v-else-if="customClasses.type == 'animation'" />
+          <BoneIcon class="label-icon" v-else-if="customClasses.type == 'bone'" />
           <CameraIcon class="label-icon" v-else-if="customClasses.type == 'camera'" />
+          <CurveIcon class="label-icon" v-else-if="customClasses.type == 'curve'" />
           <GeometryIcon class="label-icon" v-else-if="customClasses.type == 'geom'" />
           <GroupIcon class="label-icon" v-else-if="customClasses.type == 'group'" />
+          <JointIcon class="label-icon" v-else-if="customClasses.type == 'joint'" />
           <LightIcon class="label-icon" v-else-if="customClasses.type == 'light'" />
           <MaterialIcon class="label-icon" v-else-if="customClasses.type == 'material'" />
+          <MeshIcon class="label-icon" v-else-if="customClasses.type == 'renderable'" />
+          <ModifierIcon class="label-icon" v-else-if="customClasses.type == 'modifier'" />
+          <PatchIcon class="label-icon" v-else-if="customClasses.type == 'patch'" />
+          <SkeletonIcon class="label-icon" v-else-if="customClasses.type == 'skeleton'" />
           <TextIcon class="label-icon" v-else-if="customClasses.type == 'text'" />
           <NAIcon class="label-icon--na" v-else />
 
