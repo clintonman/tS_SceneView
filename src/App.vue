@@ -33,6 +33,14 @@ import Notes from './components/Notes.vue'
 
 import TreeMethods from './components/TreeMethods'
 import onmessage from './components/onmessage'
+
+// build assumes that page is served from root
+// add vue.config.js file to fix it
+// https://medium.com/developer-rants/why-is-strict-mime-type-checking-blocking-the-static-serving-of-vue-frontend-files-4cbea1eedbd1
+
+//setup to serve from /web/sceneview2/
+//may need to manually edit the index.html links to js and css
+
   
 export default {
   components: {
