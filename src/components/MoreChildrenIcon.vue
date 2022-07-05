@@ -1,6 +1,6 @@
 <script>
 export default {
-   props: ['connection', 'customClasses'],
+   props: ['connection', 'customClasses', 'doParentChild', 'doJointHeirarchy'],
    methods: {
        GetTreeBranch(tsnode, depth){
       // console.log("load branch", tsnode);
@@ -8,6 +8,10 @@ export default {
       data.command = "GetTreeBranch";
       data.root = tsnode;
       data.startdepth = depth;
+      // PRBLEM how get values in here
+      data.doParentChild = this.doParentChild;
+      data.doJointHeirarchy = this.doJointHeirarchy;
+      console.log("GetTreeBranch", this.doParentChild, this.doJointHeirarchy);
       this.connection.send(JSON.stringify(data));
     },
    }
@@ -16,7 +20,7 @@ export default {
 <template>
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 18 18"
    fill="currentColor"
-   @click="GetTreeBranch(customClasses.fullpath, customClasses.treedepth )">
+   @click="GetTreeBranch(customClasses.fullpath, customClasses.treedepth)">
     <g
      id="xml-attribute-delete"
      transform="matrix(0.666667,0,0,0.666667,-797.33333,-371.57479)">

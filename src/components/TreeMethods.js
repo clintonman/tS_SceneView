@@ -208,7 +208,7 @@ export default {
 
     handleClick1(event, item) {
       // console.log("handleclick1", event)
-      // console.log("handleclick1", item)
+      console.log("handleclick1", item)
       // console.log(this.$refs.vueSimpleContextMenu1)
       this.$refs.vueSimpleContextMenu1.showMenu(event, item);
     },

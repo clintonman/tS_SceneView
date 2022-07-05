@@ -9,8 +9,9 @@ import { Delta } from '@vueup/vue-quill'
 import ActorIcon from './components/ActorIcon.vue'
 import AnimationIcon from './components/AnimationIcon.vue'
 import BoneIcon from './components/BoneIcon.vue'
-import CurveIcon from './components/CurveIcon.vue'
 import CameraIcon from './components/CameraIcon.vue'
+import ConstraintIcon from './components/ConstraintIcon.vue'
+import CurveIcon from './components/CurveIcon.vue'
 import GeometryIcon from './components/GeometryIcon.vue'
 import GroupIcon from './components/GroupIcon.vue'
 import HiddenIcon from './components/HiddenIcon.vue'
@@ -51,6 +52,7 @@ export default {
     AnimationIcon,
     BoneIcon,
     CameraIcon,
+    ConstraintIcon,
     CurveIcon,
     GeometryIcon,
     GroupIcon,
@@ -110,7 +112,9 @@ export default {
       lastselectionlabel:"",
       shownameedit: false,
       edittop: 0,
-      editleft: 0
+      editleft: 0,
+      doParentChild: true,
+      doJointHeirarchy: false
     }
   },
 
@@ -127,7 +131,13 @@ export default {
 
     this.connection.onopen = (ev) => {
         // connection.send('{ "command" : "GetSceneTree2" }');
-        this.connection.send('{ "command" : "GetSceneTree3", "root": "current_scene" }');
+        //this.connection.send('{ "command" : "GetSceneTree3", "root": "current_scene" }');
+        let mydata = {};
+        mydata.command = "GetSceneTree3";
+        mydata.root = "current_scene";
+        mydata.doParentChild = this.doParentChild;
+        mydata.doJointHeirarchy = this.doJointHeirarchy;
+        this.connection.send(JSON.stringify(mydata));
     };
  
     this.connection.onmessage = (event) => {
@@ -196,6 +206,7 @@ export default {
   <AnimationIcon />
   <BoneIcon />
   <CameraIcon />
+  <ConstraintIcon />
   <CurveIcon />
   <GeometryIcon />
   <GroupIcon />
@@ -222,6 +233,7 @@ export default {
     :doReport="doReport" :doReport2="doReport2"
     @treeNodeExpandedChange="GetMaxDepthAndSetChildExpanded"
     connection="connection"
+    :doParentChild="doParentChild" :doJointHeirarchy="doJointHeirarchy"
     >
       <template v-slot:text="{ model, customClasses }">
         <div 
@@ -232,15 +244,17 @@ export default {
           <AnimationIcon class="label-icon" v-else-if="customClasses.type == 'animation'" />
           <BoneIcon class="label-icon" v-else-if="customClasses.type == 'bone'" />
           <CameraIcon class="label-icon" v-else-if="customClasses.type == 'camera'" />
+          <ConstraintIcon class="label-icon" v-else-if="customClasses.type == 'constraint'" />
           <CurveIcon class="label-icon" v-else-if="customClasses.type == 'curve'" />
           <GeometryIcon class="label-icon" v-else-if="customClasses.type == 'geom'" />
           <GroupIcon class="label-icon" v-else-if="customClasses.type == 'group'" />
-          <JointIcon class="label-icon" v-else-if="customClasses.type == 'joint'" />
+          <JointIcon class="label-icon-joint" v-else-if="customClasses.type == 'joint'" />
           <LightIcon class="label-icon" v-else-if="customClasses.type == 'light'" />
           <MaterialIcon class="label-icon" v-else-if="customClasses.type == 'material'" />
           <MeshIcon class="label-icon" v-else-if="customClasses.type == 'renderable'" />
           <ModifierIcon class="label-icon" v-else-if="customClasses.type == 'modifier'" />
           <PatchIcon class="label-icon" v-else-if="customClasses.type == 'patch'" />
+          <JointIcon class="label-icon-root-joint" v-else-if="customClasses.type == 'rootjoint'" />
           <SkeletonIcon class="label-icon" v-else-if="customClasses.type == 'skeleton'" />
           <TextIcon class="label-icon" v-else-if="customClasses.type == 'text'" />
           <NAIcon class="label-icon--na" v-else />
@@ -269,7 +283,7 @@ export default {
           <NAIcon class="action-label action-label--na" v-if="customClasses.note == 'na'"/>
 
           <MoreChildrenIcon class="action-label action-label--children" 
-             :connection="connection" :customClasses="customClasses"
+             :connection="connection" :customClasses="customClasses" :doParentChild="doParentChild" :doJointHeirarchy="doJointHeirarchy"
             v-if="!model.treeNodeSpec.state.expanded && customClasses.numchildren > 0 && model[model.treeNodeSpec.childrenProperty].length == 0" />
         </div>
       </template>
@@ -330,6 +344,16 @@ export default {
 
   .label-icon {
     fill:rgb(212, 127, 194);
+    width: 1.1em;
+    height: 1.1em;
+  }
+  .label-icon-joint {
+    fill:rgb(221, 169, 101);
+    width: 1.1em;
+    height: 1.1em;
+  }
+  .label-icon-root-joint {
+    fill:rgb(101, 203, 221);
     width: 1.1em;
     height: 1.1em;
   }
