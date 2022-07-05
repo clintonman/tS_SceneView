@@ -1,8 +1,13 @@
 export default {
    DisplaySceneTree3(mydata) {
       console.log(mydata.data.model)
-      this.model.length = 0
-      this.model.push(...mydata.data.model);
+
+      //clear data now then timout hack to get update
+      this.model.splice(0, 1);
+      setTimeout(() => { 
+         this.model.splice(0, 1, mydata.data.model[0]); 
+      }, 1);
+
 
       if(mydata.data.htmlnote != "") {
          this.htmlnote = mydata.data.htmlnote;

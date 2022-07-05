@@ -248,12 +248,22 @@ export default {
     },
    
     GetScene() {
-      // this.model.length = 0
-      this.connection.send('{ "command" : "GetSceneTree3", "root": "current_scene" }');
+      // this.connection.send('{ "command" : "GetSceneTree3", "root": "current_scene" }');
+      let mydata = {};
+      mydata.command = "GetSceneTree3";
+      mydata.root = "current_scene";
+      mydata.doParentChild = this.doParentChild;
+      mydata.doJointHeirarchy = this.doJointHeirarchy;
+      this.connection.send(JSON.stringify(mydata));
     },
     GetRoot() {
-      // this.model.length = 0
-      this.connection.send('{ "command" : "GetSceneTree3", "root": "/" }');
+      // this.connection.send('{ "command" : "GetSceneTree3", "root": "/" }');
+      let mydata = {};
+      mydata.command = "GetSceneTree3";
+      mydata.root = "/";
+      mydata.doParentChild = this.doParentChild;
+      mydata.doJointHeirarchy = this.doJointHeirarchy;
+      this.connection.send(JSON.stringify(mydata));
     },
    ShowEditor(tsnode, model) {
       this.showNoteEditor=true;
