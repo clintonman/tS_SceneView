@@ -100,7 +100,7 @@ export default {
       ],
  
       mycontent: new Delta([]),
-      htmlnote: "<h1>html will go here</h1>",
+      htmlnote: "",
       showNoteEditor: false,
       tsnode: "",
       connection: null,
@@ -117,7 +117,8 @@ export default {
       editleft: 0,
       doParentChild: true,
       doJointHeirarchy: false,
-      alphaOrder: false
+      alphaOrder: false,
+      shownotes: true
     }
   },
 
@@ -188,48 +189,59 @@ export default {
 </script>
 
 <template>
-  <h1>Scene View</h1>
-  <div class="notes-head">
-    <h2 @click="doReport">Time: {{time}} - {{tsnode}}</h2>
-    <Notes 
-      style="margin:1em;"
-      v-if="showNoteEditor" 
-      :connection="connection"
-      @onNoteClose="CloseNoteEditor" 
-      :htmlnote="htmlnote" 
-      :initialDelta="mycontent" 
-      :tsnode="tsnode"/>
-      <!-- must place inside parent with class to get quill styles -->
-      <div class="note-readonly ql-editor" v-else>
-        <div class="note-readonly-content" v-html="htmlnote"></div>
-      </div>
+  <div class="controls">
+    <h1>Scene View</h1>
+    <div class="notes-head">
+      <h2 @click="doReport">Time: {{time}} - {{tsnode}}</h2>
+      <Notes 
+        style="margin:1em;"
+        v-if="showNoteEditor" 
+        :connection="connection"
+        @onNoteClose="CloseNoteEditor" 
+        :htmlnote="htmlnote" 
+        :initialDelta="mycontent" 
+        :tsnode="tsnode"/>
+        <!-- must place inside parent with class to get quill styles -->
+        <div class="note-readonly ql-editor"  v-else-if="shownotes">
+          <div class="note-readonly-content" v-html="htmlnote"></div>
+        </div>
+    </div>
+
+    <ActorIcon />
+    <AnimationIcon />
+    <BoneIcon />
+    <CameraIcon />
+    <ConstraintIcon />
+    <CurveIcon />
+    <GeometryIcon />
+    <GroupIcon />
+    <Group3DIcon />
+    <LightIcon />
+    <MeshIcon />
+    <MaterialIcon />
+    <ModifierIcon />
+    <PatchIcon/>
+    <SkeletonIcon />
+    <TextIcon />
+    <button @click="ShowTest">get id=280799308</button>
+    <button type="button" @click="refreshSelectedList">What's selected?</button>
+    <button @click="GetScene">scene root</button>
+    <button @click="GetRoot">pure root</button>
+    <button @click="GetMaxDepthAndSetChildExpanded">force depth</button>
+    <button @click="ListModel">list</button>
+    <input type="checkbox" name="" id="shownotes" v-model="shownotes"><label for="shownotes">Show Notes</label>
+    <input type="checkbox" name="" id="parentchild" v-model="doParentChild"><label for="parentchild">Parent-Child</label>
+    <input type="checkbox" name="" id="jointheirarchy" v-model="doJointHeirarchy"><label for="jointheirarchy">Joint Heirarchy</label>
+    <input @change="OrderNodes" type="checkbox" name="" id="alphaorder" v-model="alphaOrder"><label for="alphaorder">Alphabetize</label>
   </div>
-  
-  <ActorIcon />
-  <AnimationIcon />
-  <BoneIcon />
-  <CameraIcon />
-  <ConstraintIcon />
-  <CurveIcon />
-  <GeometryIcon />
-  <GroupIcon />
-  <Group3DIcon />
-  <LightIcon />
-  <MeshIcon />
-  <MaterialIcon />
-  <ModifierIcon />
-  <PatchIcon/>
-  <SkeletonIcon />
-  <TextIcon />
-  <button @click="ShowTest">get id=280799308</button>
-  <button type="button" @click="refreshSelectedList">What's selected?</button>
-  <button @click="GetScene">scene root</button>
-  <button @click="GetRoot">pure root</button>
-  <button @click="GetMaxDepthAndSetChildExpanded">force depth</button>
-  <button @click="ListModel">list</button>
-  <input type="checkbox" name="" id="parentchild" v-model="doParentChild"><label for="parentchild">Parent-Child</label>
-  <input type="checkbox" name="" id="jointheirarchy" v-model="doJointHeirarchy"><label for="jointheirarchy">Joint Heirarchy</label>
-  <input @change="OrderNodes" type="checkbox" name="" id="alphaorder" v-model="alphaOrder"><label for="alphaorder">Alphabetize</label>
+
+  <div class="rename-box" :style="{top:edittop-25+'px',left:editleft-15+'px'}" v-if="shownameedit">
+    <input type="text" 
+      v-model="lastselectionlabel" 
+      @keyup.enter="testinput"
+      >
+    <button style="margin-left: 5px;color:red;" @click="cancelnameedit">X</button>
+  </div>
 
   <tree-view  
     ref="mytree" 
@@ -262,7 +274,7 @@ export default {
           <MeshIcon class="label-icon" v-else-if="customClasses.type == 'renderable'" />
           <ModifierIcon class="label-icon" v-else-if="customClasses.type == 'modifier'" />
           <PatchIcon class="label-icon label-icon-nurbs" v-else-if="customClasses.type == 'patch'" />
-          <JointIcon class="label-icon-root-joint" v-else-if="customClasses.type == 'rootjoint'" />
+          <JointIcon class="label-icon label-icon-root-joint" v-else-if="customClasses.type == 'rootjoint'" />
           <SkeletonIcon class="label-icon" v-else-if="customClasses.type == 'skeleton'" />
           <TextIcon class="label-icon" v-else-if="customClasses.type == 'text'" />
           <NAIcon class="label-icon--na" v-else />
@@ -297,21 +309,6 @@ export default {
       </template>
   </tree-view>
 
-  <!-- <div class="rename-box" :style="{top:edittop-18+'px',left:editleft-25+'px'}" v-if="shownameedit">
-    <input type="text" 
-      v-model="lastselectionlabel" 
-      @keyup.enter="testinput"
-      >
-    <button style="margin-left: 5px;color:red;" @click="cancelnameedit">X</button>
-  </div> -->
-  <div class="rename-box" :style="{top:edittop-18+'px',left:editleft-400+'px'}" v-if="shownameedit">
-    <input type="text" 
-      v-model="lastselectionlabel" 
-      @keyup.enter="testinput"
-      >
-    <button style="margin-left: 5px;color:red;" @click="cancelnameedit">X</button>
-  </div>
-
   <vue-simple-context-menu
     element-id="myFirstMenu"
     :options="optionsArray1"
@@ -330,20 +327,26 @@ export default {
     margin-top: 1em;
     padding: 0.5em;
     background-color: rgb(107, 107, 107);
+    max-height: 65vh;
+    overflow-y:scroll;
+  }
+  .controls {
+    /* max-height: 25vh; */
   }
   .rename-box {
     background-color:white;
     padding:12px;
     position:absolute;
+    z-index:5;
     box-shadow: 0 0 10px 5px black;
   }
   .note-readonly {
      background-color:white;
      opacity:0.7;
-     margin: 1em;
+     margin: 0.5em;
   }
   .note-readonly-content {
-    padding: 0.5em;
+    padding: 0.25em;
   }
   .notes-head {
     background-color: initial;
@@ -448,7 +451,7 @@ export default {
 #app {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem 2rem;
 
   font-weight: normal;
   position: relative;

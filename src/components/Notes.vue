@@ -70,5 +70,15 @@ export default {
 </template>
 
 <style>
-
+   #quill-container {
+      padding: 0.3em;
+      margin: 0 !important;
+      margin-bottom: 1em !important;
+   }
+   .ql-toolbar.ql-snow {
+      padding: 0;
+   }
+   .ql-editor {
+      max-height: 20vh;
+   }
 </style>
