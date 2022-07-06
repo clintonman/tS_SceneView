@@ -398,7 +398,7 @@ export default {
   .tree-line {
     /* color: rgb(236, 236, 236); */
     display: grid;
-    grid-template-columns: 1.3em 10em min-content repeat(3, 1.5em) 2em;
+    grid-template-columns: 1.3em 10em min-content repeat(3, 1.3em) 1.6em;
     line-height: 1.8em;
     align-items: center;
     font-size: 0.75em;
@@ -412,8 +412,8 @@ export default {
     background-color: rgb(33, 33, 100);
    }
   .action-label {
-    width: 1.4em;
-    height: 1.4em;
+    width: 1.1em;
+    height: 1.1em;
   }
   .action-label--inactive {
     fill:rgb(135, 177, 135);
