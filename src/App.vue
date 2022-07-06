@@ -288,7 +288,8 @@ export default {
             @dblclick.exact="editname(model, $event)"
           >{{ model[model.treeNodeSpec.labelProperty] }}</span>
 
-          <span :style="{display:'block',width:1.25 + maxdepth*3 - customClasses.treedepth*3.2+'em'}"></span>
+          <!-- <span :style="{display:'block',width:1.25 + maxdepth*3 - customClasses.treedepth*3.2+'em'}"></span> -->
+          <span :style="{display:'block',width:1.25 + maxdepth*3.4 - customClasses.treedepth*2.8+'em'}"></span>
 
           <VisibleIcon class="action-label action-label--inactive" v-if="customClasses.visible == 'yes'" :connection="connection" :model="model"/>
           <HiddenIcon class="action-label action-label--active" v-if="customClasses.visible == 'no'" :connection="connection" :model="model"/>
@@ -329,10 +330,10 @@ export default {
     background-color: rgb(107, 107, 107);
     max-height: 65vh;
     overflow-y:scroll;
+    font-size: 1.1em;
+    font-family: Tahoma, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   }
-  .controls {
-    /* max-height: 25vh; */
-  }
+
   .rename-box {
     background-color:white;
     padding:12px;
@@ -395,10 +396,10 @@ export default {
     height: 1.1em;
   }
   .tree-line {
-    color: rgb(236, 236, 236);
+    /* color: rgb(236, 236, 236); */
     display: grid;
     grid-template-columns: 1.3em 10em min-content repeat(3, 1.5em) 2em;
-    line-height: 1.6em;
+    line-height: 1.8em;
     align-items: center;
     font-size: 0.75em;
   }
