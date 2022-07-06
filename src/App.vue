@@ -14,6 +14,7 @@ import ConstraintIcon from './components/ConstraintIcon.vue'
 import CurveIcon from './components/CurveIcon.vue'
 import GeometryIcon from './components/GeometryIcon.vue'
 import GroupIcon from './components/GroupIcon.vue'
+import Group3DIcon from './components/Group3DIcon.vue'
 import HiddenIcon from './components/HiddenIcon.vue'
 import JointIcon from './components/JointIcon.vue'
 import LightIcon from './components/LightIcon.vue'
@@ -56,6 +57,7 @@ export default {
     CurveIcon,
     GeometryIcon,
     GroupIcon,
+    Group3DIcon,
     HiddenIcon,
     JointIcon,
     LightIcon,
@@ -210,6 +212,7 @@ export default {
   <CurveIcon />
   <GeometryIcon />
   <GroupIcon />
+  <Group3DIcon />
   <LightIcon />
   <MeshIcon />
   <MaterialIcon />
@@ -244,18 +247,19 @@ export default {
         >
           <ActorIcon class="label-icon" v-if="customClasses.type == 'actor'" />
           <AnimationIcon class="label-icon" v-else-if="customClasses.type == 'animation'" />
-          <BoneIcon class="label-icon" v-else-if="customClasses.type == 'bone'" />
-          <CameraIcon class="label-icon" v-else-if="customClasses.type == 'camera'" />
+          <BoneIcon class="label-icon label-icon-bone" v-else-if="customClasses.type == 'bone'" />
+          <CameraIcon class="label-icon label-icon-camera" v-else-if="customClasses.type == 'camera'" />
           <ConstraintIcon class="label-icon" v-else-if="customClasses.type == 'constraint'" />
-          <CurveIcon class="label-icon" v-else-if="customClasses.type == 'curve'" />
+          <CurveIcon class="label-icon label-icon-nurbs" v-else-if="customClasses.type == 'curve'" />
           <GeometryIcon class="label-icon" v-else-if="customClasses.type == 'geom'" />
-          <GroupIcon class="label-icon" v-else-if="customClasses.type == 'group'" />
-          <JointIcon class="label-icon-joint" v-else-if="customClasses.type == 'joint'" />
-          <LightIcon class="label-icon" v-else-if="customClasses.type == 'light'" />
-          <MaterialIcon class="label-icon" v-else-if="customClasses.type == 'material'" />
+          <GroupIcon class="label-icon label-icon-group" v-else-if="customClasses.type == 'group'" />
+          <Group3DIcon class="label-icon" v-else-if="customClasses.type == 'group3d'" />
+          <JointIcon class="label-icon label-icon-joint" v-else-if="customClasses.type == 'joint'" />
+          <LightIcon class="label-icon label-icon-light" v-else-if="customClasses.type == 'light'" />
+          <MaterialIcon class="label-icon label-icon-material" v-else-if="customClasses.type == 'material'" />
           <MeshIcon class="label-icon" v-else-if="customClasses.type == 'renderable'" />
           <ModifierIcon class="label-icon" v-else-if="customClasses.type == 'modifier'" />
-          <PatchIcon class="label-icon" v-else-if="customClasses.type == 'patch'" />
+          <PatchIcon class="label-icon label-icon-nurbs" v-else-if="customClasses.type == 'patch'" />
           <JointIcon class="label-icon-root-joint" v-else-if="customClasses.type == 'rootjoint'" />
           <SkeletonIcon class="label-icon" v-else-if="customClasses.type == 'skeleton'" />
           <TextIcon class="label-icon" v-else-if="customClasses.type == 'text'" />
@@ -349,15 +353,29 @@ export default {
     width: 1.1em;
     height: 1.1em;
   }
+  .label-icon-bone {
+    fill:rgb(231, 216, 196);
+  }
+  .label-icon-camera {
+    fill:rgb(156, 177, 247);
+  }
+  .label-icon-group {
+    fill:rgb(135, 175, 88);
+  }
   .label-icon-joint {
-    fill:rgb(221, 169, 101);
-    width: 1.1em;
-    height: 1.1em;
+    fill:rgb(238, 177, 97);
+  }
+  .label-icon-light {
+    fill:rgb(203, 221, 101);
+  }
+  .label-icon-material {
+    fill:rgb(221, 101, 117);
+  }
+  .label-icon-nurbs {
+    fill:rgb(101, 203, 221);
   }
   .label-icon-root-joint {
     fill:rgb(101, 203, 221);
-    width: 1.1em;
-    height: 1.1em;
   }
   .label-icon--na {
     fill:#333344;
@@ -385,10 +403,10 @@ export default {
     height: 1.4em;
   }
   .action-label--inactive {
-    fill:rgb(91, 141, 91);
+    fill:rgb(135, 177, 135);
   }
   .action-label--active {
-    fill:rgb(168, 79, 79);
+    fill:rgb(197, 108, 108);
   }
   .action-label:not(.action-label--na):hover
   {
@@ -441,7 +459,7 @@ header {
 /* css of quill is not available easily outside of quill and not available outside the page*/
 
   .vue-simple-context-menu {
-    position: fixed !important;
+    position: absolute !important;
   }
 
 </style>
