@@ -2,6 +2,19 @@ export default {
    DisplaySceneTree3(mydata) {
       console.log(mydata.data.model)
 
+      if(this.alphaOrder) {
+         mydata.data.model[0].children.sort((a,b) =>{
+            if (a.label < b.label) {
+               return -1;
+             }
+             if (a.label >  b.label) {
+               return 1;
+             }
+             // a must be equal to b
+             return 0;
+         });
+      }
+
       //clear data now then timout hack to get update
       this.model.splice(0, 1);
       setTimeout(() => { 
@@ -20,6 +33,19 @@ export default {
 
       let id = mydata.data.model[0].id;
       // console.log(id);
+
+      if(this.alphaOrder) {
+         mydata.data.model[0].children.sort((a,b) =>{
+            if (a.label < b.label) {
+               return -1;
+             }
+             if (a.label >  b.label) {
+               return 1;
+             }
+             // a must be equal to b
+             return 0;
+         });
+      }
 
       let matchArr = this.$refs.mytree.getMatching((themodel)=>{
          return themodel.id == id;

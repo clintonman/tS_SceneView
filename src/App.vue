@@ -116,7 +116,8 @@ export default {
       edittop: 0,
       editleft: 0,
       doParentChild: true,
-      doJointHeirarchy: false
+      doJointHeirarchy: false,
+      alphaOrder: false
     }
   },
 
@@ -228,6 +229,7 @@ export default {
   <button @click="ListModel">list</button>
   <input type="checkbox" name="" id="parentchild" v-model="doParentChild"><label for="parentchild">Parent-Child</label>
   <input type="checkbox" name="" id="jointheirarchy" v-model="doJointHeirarchy"><label for="jointheirarchy">Joint Heirarchy</label>
+  <input @change="OrderNodes" type="checkbox" name="" id="alphaorder" v-model="alphaOrder"><label for="alphaorder">Alphabetize</label>
 
   <tree-view  
     ref="mytree" 
@@ -295,7 +297,14 @@ export default {
       </template>
   </tree-view>
 
-  <div class="rename-box" :style="{top:edittop-18+'px',left:editleft-25+'px'}" v-if="shownameedit">
+  <!-- <div class="rename-box" :style="{top:edittop-18+'px',left:editleft-25+'px'}" v-if="shownameedit">
+    <input type="text" 
+      v-model="lastselectionlabel" 
+      @keyup.enter="testinput"
+      >
+    <button style="margin-left: 5px;color:red;" @click="cancelnameedit">X</button>
+  </div> -->
+  <div class="rename-box" :style="{top:edittop-18+'px',left:editleft-400+'px'}" v-if="shownameedit">
     <input type="text" 
       v-model="lastselectionlabel" 
       @keyup.enter="testinput"
@@ -326,7 +335,7 @@ export default {
     background-color:white;
     padding:12px;
     position:absolute;
-    box-shadow: 0 0 10px 5px red;
+    box-shadow: 0 0 10px 5px black;
   }
   .note-readonly {
      background-color:white;
