@@ -265,35 +265,7 @@ export default {
       mydata.doJointHeirarchy = this.doJointHeirarchy;
       this.connection.send(JSON.stringify(mydata));
     },
-    OrderNodesOLD() {
-      console.log("order nodes - TODO at depth, now only 1 level");
-      console.log(this.alphaOrder);
-      //do breadth first alpha on children
-      //test do just top level
-      if(this.alphaOrder) {
-        this.model[0].children.sort((a,b) =>{
-           if (a.label < b.label) {
-              return -1;
-            }
-            if (a.label >  b.label) {
-              return 1;
-            }
-            // a must be equal to b
-            return 0;
-        });
-     } else {
-      this.model[0].children.sort((a,b) =>{
-        if (a.id < b.id) {
-           return -1;
-         }
-         if (a.id >  b.id) {
-           return 1;
-         }
-         // a must be equal to b
-         return 0;
-     });
-     }
-    },
+
     OrderNodes() {
       console.log("order nodes");
       console.log(this.alphaOrder);
@@ -310,7 +282,7 @@ export default {
       }
     },
     ReOrderChildren(children) {
-      if(this.alphaOrder) {
+      if(this.alphaOrder == "ALPHA") {
         children.sort((a,b) =>{
            if (a.label < b.label) {
               return -1;
@@ -321,12 +293,23 @@ export default {
             // a must be equal to b
             return 0;
         });
-      } else {
+      } else if(this.alphaOrder == "ID") {
         children.sort((a,b) =>{
           if (a.id < b.id) {
             return -1;
           }
           if (a.id >  b.id) {
+            return 1;
+          }
+          // a must be equal to b
+          return 0;
+        });
+      } else if(this.alphaOrder == "TYPE") {
+        children.sort((a,b) =>{
+          if (a.treeNodeSpec.customizations.classes.type < b.treeNodeSpec.customizations.classes.type) {
+            return -1;
+          }
+          if (a.treeNodeSpec.customizations.classes.type >  b.treeNodeSpec.customizations.classes.type) {
             return 1;
           }
           // a must be equal to b

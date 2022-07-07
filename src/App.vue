@@ -117,7 +117,7 @@ export default {
       editleft: 0,
       doParentChild: true,
       doJointHeirarchy: false,
-      alphaOrder: false,
+      alphaOrder: 'NONE',
       shownotes: true
     }
   },
@@ -232,7 +232,12 @@ export default {
     <input type="checkbox" name="" id="shownotes" v-model="shownotes"><label for="shownotes">Show Notes</label>
     <input type="checkbox" name="" id="parentchild" v-model="doParentChild"><label for="parentchild">Parent-Child</label>
     <input type="checkbox" name="" id="jointheirarchy" v-model="doJointHeirarchy"><label for="jointheirarchy">Joint Heirarchy</label>
-    <input @change="OrderNodes" type="checkbox" name="" id="alphaorder" v-model="alphaOrder"><label for="alphaorder">Alphabetize</label>
+    <!-- <input @change="OrderNodes" type="checkbox" name="" id="alphaorder" v-model="alphaOrder"><label for="alphaorder">Alphabetize</label> -->
+    <p>order</p>
+    <input @change="OrderNodes" type="radio" name="" id="none" v-model="alphaOrder" value="NONE"><label for="none">None</label>
+    <input @change="OrderNodes" type="radio" name="" id="alpha" v-model="alphaOrder" value="ALPHA"><label for="alpha">Alpha</label>
+    <input @change="OrderNodes" type="radio" name="" id="id" v-model="alphaOrder" value="ID"><label for="id">ID</label>
+    <input @change="OrderNodes" type="radio" name="" id="type" v-model="alphaOrder" value="TYPE"><label for="id">Type</label>
   </div>
 
   <div class="rename-box" :style="{top:edittop-25+'px',left:editleft-15+'px'}" v-if="shownameedit">
