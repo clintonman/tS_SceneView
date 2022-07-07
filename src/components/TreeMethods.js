@@ -265,7 +265,7 @@ export default {
       mydata.doJointHeirarchy = this.doJointHeirarchy;
       this.connection.send(JSON.stringify(mydata));
     },
-    OrderNodes() {
+    OrderNodesOLD() {
       console.log("order nodes - TODO at depth, now only 1 level");
       console.log(this.alphaOrder);
       //do breadth first alpha on children
@@ -293,6 +293,46 @@ export default {
          return 0;
      });
      }
+    },
+    OrderNodes() {
+      console.log("order nodes");
+      console.log(this.alphaOrder);
+      this.ReOrder(this.model[0]);
+    },
+    ReOrder(parentnode) {
+      if(parentnode.children && parentnode.children.length > 0) {
+        this.ReOrderChildren(parentnode.children);
+      } else {
+        return;
+      }
+      for(let i=0;i<parentnode.children.length;i++) {
+        this.ReOrder(parentnode.children[i]);
+      }
+    },
+    ReOrderChildren(children) {
+      if(this.alphaOrder) {
+        children.sort((a,b) =>{
+           if (a.label < b.label) {
+              return -1;
+            }
+            if (a.label >  b.label) {
+              return 1;
+            }
+            // a must be equal to b
+            return 0;
+        });
+      } else {
+        children.sort((a,b) =>{
+          if (a.id < b.id) {
+            return -1;
+          }
+          if (a.id >  b.id) {
+            return 1;
+          }
+          // a must be equal to b
+          return 0;
+        });
+      }
     },
    ShowEditor(tsnode, model) {
       this.showNoteEditor=true;
