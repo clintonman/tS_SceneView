@@ -5,7 +5,7 @@
      style="display:inline"
      transform="translate(-289.28772,-231.15707)">
     <g
-       style="display:inline;fill:#ffff00;enable-background:new"
+       style="display:inline;fill:#ffff77;enable-background:new"
        id="g22891"
        transform="translate(443.99999,-274)">
       <path
@@ -18,7 +18,7 @@
          id="path12458" />
     </g>
     <g
-       style="display:inline;fill:#00ff00;enable-background:new"
+       style="display:inline;fill:#77ff77;enable-background:new"
        id="g20112"
        transform="translate(433.28771,-284.84293)">
       <path

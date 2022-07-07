@@ -184,6 +184,10 @@ export default {
 
   methods: {
     ...TreeMethods,
+    dropped(event) {
+      console.log(event)
+      console.log(event.dataTransfer.getData("text/plain"))
+    }
   }
 }
 </script>
@@ -258,6 +262,7 @@ export default {
     @treeNodeExpandedChange="GetMaxDepthAndSetChildExpanded"
     connection="connection"
     :doParentChild="doParentChild" :doJointHeirarchy="doJointHeirarchy"
+    @drop="dropped"
     >
       <template v-slot:text="{ model, customClasses }">
         <div 
