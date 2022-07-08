@@ -193,7 +193,7 @@ export default {
   <div class="controls">
     <h1>Scene View</h1>
     <div class="notes-head">
-      <h2 @click="doReport">Time: {{time}} - {{tsnode}}</h2>
+      <h2>Command: {{time}} - {{tsnode}}</h2>
       <Notes 
         style="margin:1em;"
         v-if="showNoteEditor" 
@@ -224,16 +224,13 @@ export default {
     <PatchIcon/>
     <SkeletonIcon />
     <TextIcon />
-    <button @click="ShowTest">get id=280799308</button>
-    <button type="button" @click="refreshSelectedList">What's selected?</button>
+
     <button @click="GetScene">scene root</button>
     <button @click="GetRoot">pure root</button>
     <button @click="GetMaxDepthAndSetChildExpanded">force depth</button>
-    <button @click="ListModel">list</button>
     <input type="checkbox" name="" id="shownotes" v-model="shownotes"><label for="shownotes">Show Notes</label>
     <input type="checkbox" name="" id="parentchild" v-model="doParentChild"><label for="parentchild">Parent-Child</label>
     <input type="checkbox" name="" id="jointheirarchy" v-model="doJointHeirarchy"><label for="jointheirarchy">Joint Heirarchy</label>
-    <!-- <input @change="OrderNodes" type="checkbox" name="" id="alphaorder" v-model="alphaOrder"><label for="alphaorder">Alphabetize</label> -->
     <p>order</p>
     <input @change="OrderNodes" type="radio" name="" id="none" v-model="alphaOrder" value="NONE"><label for="none">None</label>
     <input @change="OrderNodes" type="radio" name="" id="alpha" v-model="alphaOrder" value="ALPHA"><label for="alpha">Alpha</label>
@@ -255,7 +252,6 @@ export default {
     :initial-model="model" 
     :model-defaults="modelDefaults" 
     :selection-mode="selectionMode"
-    :doReport="doReport" :doReport2="doReport2"
     @treeNodeExpandedChange="GetMaxDepthAndSetChildExpanded"
     connection="connection"
     :doParentChild="doParentChild" :doJointHeirarchy="doJointHeirarchy"

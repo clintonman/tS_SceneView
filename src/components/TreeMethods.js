@@ -245,10 +245,6 @@ export default {
       this.edittop = e.pageY;
       this.editleft = e.pageX;
     },
-    refreshSelectedList() {
-      let sel = this.$refs.mytree.getSelected();
-      console.log(sel);
-    },
    
     GetScene() {
       // this.connection.send('{ "command" : "GetSceneTree3", "root": "current_scene" }');
@@ -333,20 +329,7 @@ export default {
       this.htmlnote = html;
     }
    },
-   
-    ShowTest() {
-      let id=280799308;
-      // console.log(this.$refs.mytree.getSelected());
-      // let rbNodes = this.$refs.mytree.getSelected();
-      let matchArr = this.$refs.mytree.getMatching((themodel)=>{
-        // console.log(themodel)
-        return themodel.id == id;
-      });
-      console.log(matchArr);
-    },
-    ListModel(){
-      console.log(this.model)
-    },
+
     Dropped(event) {
       // console.log(event)
       console.log("ctrl",event.ctrlKey)
