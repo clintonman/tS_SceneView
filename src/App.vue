@@ -184,20 +184,6 @@ export default {
 
   methods: {
     ...TreeMethods,
-    dropped(event) {
-      // console.log(event)
-      console.log("ctrl",event.ctrlKey)
-      console.log("path", event.path)
-      // console.log(event.dataTransfer.getData("text/plain"))
-      let dropData = event.dataTransfer.getData("text/plain");
-      let dropDataArr = JSON.parse(dropData)
-      console.log(dropDataArr.id)
-      console.log(event.path[6].id.split("-")[2])
-      //TODO code move into tree methods file
-      //TODO popup to choose parent, 2D, 3D or parent, 2D, 3D with copy when ctrl pressed
-      //TODO send message to tS to perform actual action
-      //TODO send update info back from tS so no need relaod everything
-    }
   }
 }
 </script>
@@ -272,7 +258,7 @@ export default {
     @treeNodeExpandedChange="GetMaxDepthAndSetChildExpanded"
     connection="connection"
     :doParentChild="doParentChild" :doJointHeirarchy="doJointHeirarchy"
-    @drop="dropped"
+    @drop="Dropped"
     >
       <template v-slot:text="{ model, customClasses }">
         <div 

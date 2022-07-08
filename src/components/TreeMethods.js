@@ -1,3 +1,5 @@
+import { Delta } from '@vueup/vue-quill'
+
 export default {
    DeleteNode(item, connection, mytree) {
       console.log("deletenode")
@@ -343,5 +345,28 @@ export default {
     },
     ListModel(){
       console.log(this.model)
+    },
+    Dropped(event) {
+      // console.log(event)
+      console.log("ctrl",event.ctrlKey)
+      console.log("path", event.path)
+      // console.log(event.dataTransfer.getData("text/plain"))
+      let dropData = event.dataTransfer.getData("text/plain");
+      let dropDataArr = JSON.parse(dropData)
+      console.log("source",dropDataArr.id)
+      console.log("source",dropDataArr.treeNodeSpec.customizations.classes.fullpath)
+      console.log("destination", event.path[3].id.split("-")[2])
+      //TODO code move into tree methods file
+      //TODO popup to choose parent, 2D, 3D or parent, 2D, 3D with copy when ctrl pressed
+      //TODO send message to tS to perform actual action
+      //TODO send update info back from tS so no need relaod everything
+      let mydata = {};
+      mydata.command = "DoDropped";
+      mydata.sourcepath = dropDataArr.treeNodeSpec.customizations.classes.fullpath;
+      mydata.destinationid = event.path[3].id.split("-")[2];
+      mydata.treeroot = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+      mydata.droptype = "parent";//parent, 2d, 3d
+      mydata.copy = event.ctrlKey;
+      this.connection.send(JSON.stringify(mydata));
     }
 }
