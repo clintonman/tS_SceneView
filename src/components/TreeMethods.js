@@ -103,7 +103,8 @@ export default {
       data.selection = [];
 
       for(let i=child1Index;i<=child2Index;i++) {
-        data.selection.push({fullpath: matchArr[0].children[i].treeNodeSpec.customizations.classes.fullpath});
+        // data.selection.push({fullpath: matchArr[0].children[i].treeNodeSpec.customizations.classes.fullpath});
+        data.selection.push(matchArr[0].children[i].treeNodeSpec.customizations.classes.fullpath);
         matchArr[0].children[i].treeNodeSpec.state.selected = true;
       }
       console.log(data)
@@ -127,8 +128,9 @@ export default {
         // else
         
         let data = {};
-        data.command = "SelectItem";
-        data.selecttext = matchArr[0].treeNodeSpec.customizations.classes.fullpath;
+        data.command = "SelectItems";
+        data.selection = [];
+        data.selection.push(matchArr[0].treeNodeSpec.customizations.classes.fullpath);
         this.connection.send(JSON.stringify(data));
       }
     },
@@ -151,7 +153,8 @@ export default {
       data.selection = [];
       if(matchArr.length > 0) {
         for(let i=0;i<matchArr.length;i++) {
-          data.selection.push({fullpath: matchArr[i].treeNodeSpec.customizations.classes.fullpath});
+          // data.selection.push({fullpath: matchArr[i].treeNodeSpec.customizations.classes.fullpath});
+          data.selection.push(matchArr[i].treeNodeSpec.customizations.classes.fullpath);
         }
       }
         
@@ -191,15 +194,13 @@ export default {
         this.maxdepth = maxval + 1;
       }
     },
-    testinput() {
-      // console.log("testinput")
-      // console.log(this.lastselectionlabel)
-      // console.log(this.lastselection.label)
+    Rename() {
       this.lastselection.label = this.lastselectionlabel;
 
       this.shownameedit = false;
       let data = {};
-      data.command = "RenameItem";   
+      data.command = "RenameItem";
+      data.id = this.lastselection.id;
       data.oldpath = this.lastselection.treeNodeSpec.customizations.classes.fullpath;
       data.newname = this.lastselection.label;
       this.connection.send(JSON.stringify(data));

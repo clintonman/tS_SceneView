@@ -64,5 +64,14 @@ export default {
         console.log(matchArr)
       }
       this.newselection = false;
+   },
+   RenameFailed(mydata) {
+      // var id = mydata.id;
+      let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+         return themodel.id == mydata.id;
+      });
+      if(matchArr[0]) {
+         matchArr[0].label = mydata.oldname;
+      }
    }
  }

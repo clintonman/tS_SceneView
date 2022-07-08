@@ -179,6 +179,7 @@ export default {
         this.htmlnote = mydata.html;
       }
       if(mydata.command == "NewSelection") { onmessage.NewSelection.call(this, mydata); }
+      if(mydata.command == "RenameFailed") { onmessage.RenameFailed.call(this, mydata); }
     }
   },
 
@@ -243,7 +244,7 @@ export default {
   <div class="rename-box" :style="{top:edittop-25+'px',left:editleft-15+'px'}" v-if="shownameedit">
     <input type="text" 
       v-model="lastselectionlabel" 
-      @keyup.enter="testinput"
+      @keyup.enter="Rename"
       >
     <button style="margin-left: 5px;color:red;" @click="cancelnameedit">X</button>
   </div>
