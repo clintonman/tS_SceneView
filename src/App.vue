@@ -82,6 +82,17 @@ export default {
     time: null,
       optionsArray1: [
         {
+          name: 'Parent',
+          slug: 'parent',
+        },
+        {
+          name: 'UnParent',
+          slug: 'unparent',
+        },
+        {
+          type: 'divider',
+        },
+        {
           name: 'Show Node in LE',
           slug: 'leopento',
         },

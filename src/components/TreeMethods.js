@@ -45,6 +45,49 @@ export default {
       data.path = item.treeNodeSpec.customizations.classes.fullpath;
       connection.send(JSON.stringify(data));
     },
+    Parent(item, connection) {
+      // let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+      let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+        return themodel.treeNodeSpec.state.selected;
+      });
+      let data = {};
+      let children = [];
+      if(matchArr.length > 1) {
+        for(let i=0;i<matchArr.length;i++) {
+          children.push(matchArr[i].treeNodeSpec.customizations.classes.fullpath);
+        }
+      }
+      //remove context item(the parent) if it is in the selected items list
+      data.children = children.filter(chk=>{
+        return chk != item.treeNodeSpec.customizations.classes.fullpath;
+      });
+      data.parent = item.treeNodeSpec.customizations.classes.fullpath;
+      data.command = "Parent";
+      data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+      data.doParentChild = this.doParentChild;
+      data.doJointHeirarchy = this.doJointHeirarchy;
+      connection.send(JSON.stringify(data));
+    },
+    UnParent(item, connection) {
+      let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+        return themodel.treeNodeSpec.state.selected;
+      });
+      let data = {};
+      data.children = [];
+      if(matchArr.length > 0) {
+        for(let i=0;i<matchArr.length;i++) {
+          data.children.push(matchArr[i].treeNodeSpec.customizations.classes.fullpath);
+        }
+      }
+      data.children.push(item.treeNodeSpec.customizations.classes.fullpath);
+
+      data.command = "UnParent";
+      console.log(this.model)
+      data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+      data.doParentChild = this.doParentChild;
+      data.doJointHeirarchy = this.doJointHeirarchy;
+      connection.send(JSON.stringify(data));
+    },
    rangeselection(model) {
       //must be same level
       if(this.lastselection && 
@@ -230,12 +273,12 @@ export default {
       if(event.option.slug == "openinle") {
         this.LEOpenLocation(event.item, this.connection);
       }
-    },
-    doReport() {
-      console.log("hi")
-    },
-    doReport2(label, nodetype) {
-      console.log(label, nodetype)
+      if(event.option.slug == "parent") {
+        this.Parent(event.item, this.connection, this.$refs.mytree);
+      }
+      if(event.option.slug == "unparent") {
+        this.UnParent(event.item, this.connection, this.$refs.mytree);
+      }
     },
     editname(model,e) {
       console.log("editname")
