@@ -129,7 +129,9 @@ export default {
       doParentChild: true,
       doJointHeirarchy: false,
       alphaOrder: 'NONE',
-      shownotes: true
+      shownotes: true,
+      showBoneNames: false,
+      nameWidth: 10
     }
   },
 
@@ -242,11 +244,13 @@ export default {
     <input type="checkbox" name="" id="shownotes" v-model="shownotes"><label for="shownotes">Show Notes</label>
     <input type="checkbox" name="" id="parentchild" v-model="doParentChild"><label for="parentchild">Parent-Child</label>
     <input type="checkbox" name="" id="jointheirarchy" v-model="doJointHeirarchy"><label for="jointheirarchy">Joint Heirarchy</label>
+    <input type="checkbox" id="showbonenames" v-model="showBoneNames"><label for="showbonenames">Show Bone Names</label>
     <p>order</p>
     <input @change="OrderNodes" type="radio" name="" id="none" v-model="alphaOrder" value="NONE"><label for="none">None</label>
     <input @change="OrderNodes" type="radio" name="" id="alpha" v-model="alphaOrder" value="ALPHA"><label for="alpha">Alpha</label>
     <input @change="OrderNodes" type="radio" name="" id="id" v-model="alphaOrder" value="ID"><label for="id">ID</label>
     <input @change="OrderNodes" type="radio" name="" id="type" v-model="alphaOrder" value="TYPE"><label for="id">Type</label>
+    <input @change="SetLabelWidth" type="number" name="" id="namewidth" v-model="nameWidth"><label for="namewidth">Label Width</label>
   </div>
 
   <div class="rename-box" :style="{top:edittop-25+'px',left:editleft-15+'px'}" v-if="shownameedit">
@@ -266,6 +270,7 @@ export default {
     @treeNodeExpandedChange="GetMaxDepthAndSetChildExpanded"
     connection="connection"
     :doParentChild="doParentChild" :doJointHeirarchy="doJointHeirarchy"
+    :showBoneNames="showBoneNames"
     @drop="Dropped"
     >
       <template v-slot:text="{ model, customClasses }">
@@ -320,6 +325,8 @@ export default {
           <MoreChildrenIcon class="action-label action-label--children" 
              :connection="connection" :customClasses="customClasses" :doParentChild="doParentChild" :doJointHeirarchy="doJointHeirarchy"
             v-if="!model.treeNodeSpec.state.expanded && customClasses.numchildren > 0 && model[model.treeNodeSpec.childrenProperty].length == 0" />
+          <div v-else></div>
+          <div v-if="customClasses.bone && showBoneNames">{{customClasses.bone}}</div>
         </div>
       </template>
   </tree-view>
@@ -409,10 +416,14 @@ export default {
     width: 1.1em;
     height: 1.1em;
   }
+
+  :root {
+    --namewidth: 10em;
+  }
+
   .tree-line {
-    /* color: rgb(236, 236, 236); */
     display: grid;
-    grid-template-columns: 1.3em 10em min-content repeat(3, 1.3em) 1.6em;
+    grid-template-columns: 1.3em var(--namewidth) min-content repeat(3, 1.3em) 1.6em 10em;
     line-height: 1.8em;
     align-items: center;
     font-size: 0.75em;

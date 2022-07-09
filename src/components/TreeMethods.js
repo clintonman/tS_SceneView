@@ -156,6 +156,7 @@ export default {
       return;
     },
    selectonenode(model) {
+    
       let matchArr = this.$refs.mytree.getMatching((themodel)=>{
         let idmatch = themodel.id == model.id;
         themodel.treeNodeSpec.state.selected = false;
@@ -358,6 +359,9 @@ export default {
           return 0;
         });
       }
+    },
+    SetLabelWidth(){
+      document.documentElement.style.setProperty("--namewidth", `${this.nameWidth}em`);
     },
    ShowEditor(tsnode, model) {
       this.showNoteEditor=true;
