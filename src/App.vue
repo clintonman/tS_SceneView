@@ -82,6 +82,21 @@ export default {
     time: null,
       optionsArray1: [
         {
+          name: 'Group3D',
+          slug: 'group3d',
+        },
+        {
+          name: 'Group',
+          slug: 'group',
+        },
+        {
+          name: 'UnGroup',
+          slug: 'ungroup',
+        },
+        {
+          type: 'divider',
+        },
+        {
           name: 'Parent',
           slug: 'parent',
         },
@@ -193,6 +208,7 @@ export default {
       }
       if(mydata.command == "NewSelection") { onmessage.NewSelection.call(this, mydata); }
       if(mydata.command == "RenameFailed") { onmessage.RenameFailed.call(this, mydata); }
+      if(mydata.command == "TSRefresh") { onmessage.TSRefresh.call(this); }
     }
   },
 

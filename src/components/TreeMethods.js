@@ -45,6 +45,66 @@ export default {
       data.path = item.treeNodeSpec.customizations.classes.fullpath;
       connection.send(JSON.stringify(data));
     },
+    GetPathSelection(){
+      let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+        return themodel.treeNodeSpec.state.selected;
+      });
+      let sel = [];
+      if(matchArr.length > 0) {
+        for(let i=0;i<matchArr.length;i++) {
+          sel.push(matchArr[i].treeNodeSpec.customizations.classes.fullpath);
+        }
+      }
+      return sel;
+    },
+    Group3D(item, connection) {
+      let data = {};
+      data.command = "Group3D";
+      let sel = this.GetPathSelection();
+      //remove context item(the parent) if it is in the selected items list
+      data.subobj = sel.filter(chk=>{
+        return chk != item.treeNodeSpec.customizations.classes.fullpath;
+      });
+      // add item to selection
+      data.subobj.push(item.treeNodeSpec.customizations.classes.fullpath);
+      
+      data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+      data.doParentChild = this.doParentChild;
+      data.doJointHeirarchy = this.doJointHeirarchy;
+      connection.send(JSON.stringify(data));
+    },
+    Group(item, connection) {
+      let data = {};
+      data.command = "Group";
+      let sel = this.GetPathSelection();
+      //remove context item(the parent) if it is in the selected items list
+      data.subobj = sel.filter(chk=>{
+        return chk != item.treeNodeSpec.customizations.classes.fullpath;
+      });
+      // add item to selection
+      data.subobj.push(item.treeNodeSpec.customizations.classes.fullpath);
+
+      data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+      data.doParentChild = this.doParentChild;
+      data.doJointHeirarchy = this.doJointHeirarchy;
+      connection.send(JSON.stringify(data));
+    },
+    UnGroup(item, connection) {
+      let data = {};
+      data.command = "UnGroup";
+      let sel = this.GetPathSelection();
+      //remove context item(the parent) if it is in the selected items list
+      data.subobj = sel.filter(chk=>{
+        return chk != item.treeNodeSpec.customizations.classes.fullpath;
+      });
+      // add item to selection
+      data.subobj.push(item.treeNodeSpec.customizations.classes.fullpath);
+
+      data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+      data.doParentChild = this.doParentChild;
+      data.doJointHeirarchy = this.doJointHeirarchy;
+      connection.send(JSON.stringify(data));
+    },
     Parent(item, connection) {
       // let matchArr = this.$refs.mytree.getMatching((themodel)=>{
       let matchArr = this.$refs.mytree.getMatching((themodel)=>{
@@ -52,7 +112,7 @@ export default {
       });
       let data = {};
       let children = [];
-      if(matchArr.length > 1) {
+      if(matchArr.length >= 1) {
         for(let i=0;i<matchArr.length;i++) {
           children.push(matchArr[i].treeNodeSpec.customizations.classes.fullpath);
         }
@@ -61,7 +121,14 @@ export default {
       data.children = children.filter(chk=>{
         return chk != item.treeNodeSpec.customizations.classes.fullpath;
       });
+
+      if(data.children.length == 0) return;
+
       data.parent = item.treeNodeSpec.customizations.classes.fullpath;
+
+      //parent to self - no
+      if(children[0] == data.parent) return;
+
       data.command = "Parent";
       data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
       data.doParentChild = this.doParentChild;
@@ -279,6 +346,15 @@ export default {
       }
       if(event.option.slug == "unparent") {
         this.UnParent(event.item, this.connection, this.$refs.mytree);
+      }
+      if(event.option.slug == "group3d") {
+        this.Group3D(event.item, this.connection, this.$refs.mytree);
+      }
+      if(event.option.slug == "group") {
+        this.Group(event.item, this.connection, this.$refs.mytree);
+      }
+      if(event.option.slug == "ungroup") {
+        this.UnGroup(event.item, this.connection, this.$refs.mytree);
       }
     },
     editname(model,e) {

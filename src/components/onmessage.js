@@ -73,5 +73,14 @@ export default {
       if(matchArr[0]) {
          matchArr[0].label = mydata.oldname;
       }
+   },
+   TSRefresh() {
+      console.log("TSRefresh")
+      let mydata = {};
+        mydata.command = "GetSceneTree3";
+        mydata.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+        mydata.doParentChild = this.doParentChild;
+        mydata.doJointHeirarchy = this.doJointHeirarchy;
+        this.connection.send(JSON.stringify(mydata));
    }
  }
