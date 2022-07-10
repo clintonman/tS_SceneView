@@ -209,6 +209,8 @@ export default {
       if(mydata.command == "NewSelection") { onmessage.NewSelection.call(this, mydata); }
       if(mydata.command == "RenameFailed") { onmessage.RenameFailed.call(this, mydata); }
       if(mydata.command == "TSRefresh") { onmessage.TSRefresh.call(this); }
+      if(mydata.command == "DoGroup3D") { onmessage.DoGroup3D.call(this); }
+      if(mydata.command == "DoGroup") { onmessage.DoGroup.call(this); }
     }
   },
 

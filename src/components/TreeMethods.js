@@ -57,9 +57,9 @@ export default {
       }
       return sel;
     },
-    Group3D(item, connection) {
+    Group3DSelect(item, connection) {
       let data = {};
-      data.command = "Group3D";
+      data.command = "Group3DSelect";
       let sel = this.GetPathSelection();
       //remove context item(the parent) if it is in the selected items list
       data.subobj = sel.filter(chk=>{
@@ -67,15 +67,16 @@ export default {
       });
       // add item to selection
       data.subobj.push(item.treeNodeSpec.customizations.classes.fullpath);
+      //tS can't change selection so will only operate on currently selected items, subobj not used
       
-      data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
-      data.doParentChild = this.doParentChild;
-      data.doJointHeirarchy = this.doJointHeirarchy;
+      // data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+      // data.doParentChild = this.doParentChild;
+      // data.doJointHeirarchy = this.doJointHeirarchy;
       connection.send(JSON.stringify(data));
     },
-    Group(item, connection) {
+    GroupSelect(item, connection) {
       let data = {};
-      data.command = "Group";
+      data.command = "GroupSelect";
       let sel = this.GetPathSelection();
       //remove context item(the parent) if it is in the selected items list
       data.subobj = sel.filter(chk=>{
@@ -83,10 +84,11 @@ export default {
       });
       // add item to selection
       data.subobj.push(item.treeNodeSpec.customizations.classes.fullpath);
+      //tS can't change selection so will only operate on currently selected items, subobj not used
 
-      data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
-      data.doParentChild = this.doParentChild;
-      data.doJointHeirarchy = this.doJointHeirarchy;
+      // data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+      // data.doParentChild = this.doParentChild;
+      // data.doJointHeirarchy = this.doJointHeirarchy;
       connection.send(JSON.stringify(data));
     },
     UnGroup(item, connection) {
@@ -348,10 +350,10 @@ export default {
         this.UnParent(event.item, this.connection, this.$refs.mytree);
       }
       if(event.option.slug == "group3d") {
-        this.Group3D(event.item, this.connection, this.$refs.mytree);
+        this.Group3DSelect(event.item, this.connection, this.$refs.mytree);
       }
       if(event.option.slug == "group") {
-        this.Group(event.item, this.connection, this.$refs.mytree);
+        this.GroupSelect(event.item, this.connection, this.$refs.mytree);
       }
       if(event.option.slug == "ungroup") {
         this.UnGroup(event.item, this.connection, this.$refs.mytree);
