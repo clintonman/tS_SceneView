@@ -138,25 +138,25 @@ export default {
           slug: 'parent',
         },
         {
-          name: 'Move2D',
+          name: 'Move into Group',
           slug: 'move2d',
         },
         {
-          name: 'Move3D',
+          name: 'Move into Group 3D',
           slug: 'move3d',
         }
       ],
       dragOptionsCopy: [
         {
-          name: 'Parent Copy',
+          name: 'Parent a Copy',
           slug: 'parentcopy',
         },
         {
-          name: 'Copy2D',
+          name: 'Copy into Group',
           slug: 'copy2d',
         },
         {
-          name: 'Copy3D',
+          name: 'Copy into Group 3D',
           slug: 'copy3d',
         }
       ],
@@ -182,7 +182,8 @@ export default {
       alphaOrder: 'NONE',
       shownotes: true,
       showBoneNames: false,
-      nameWidth: 10
+      nameWidth: 10,
+      dataForTS: {}
     }
   },
 

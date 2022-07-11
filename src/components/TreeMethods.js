@@ -380,9 +380,15 @@ export default {
     },
     moveOptionClicked(event) {
       console.log("move", event);
+      if(event.option.slug == 'parent') {
+        this.DroppedParent();
+      }
     },
     copyOptionClicked(event) {
       console.log("copy", event);
+      if(event.option.slug == 'parentcopy') {
+        this.DroppedParent();
+      }
     },
     editname(model,e) {
       console.log("editname")
@@ -496,11 +502,18 @@ export default {
       //TODO popup to choose parent, 2D, 3D or parent, 2D, 3D with copy when ctrl pressed
       //TODO send message to tS to perform actual action
       //TODO send update info back from tS so no need relaod everything
-      let mydata = {};
-      mydata.command = "DoDropped";
-      mydata.sourcepath = dropDataArr.treeNodeSpec.customizations.classes.fullpath;
-      mydata.destinationid = event.path[3].id.split("-")[2];
-      mydata.treeroot = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+      // let mydata = {};
+      // mydata.command = "DoDropped";
+      // mydata.sourcepath = dropDataArr.treeNodeSpec.customizations.classes.fullpath;
+      // mydata.destinationid = event.path[3].id.split("-")[2];
+      // mydata.treeroot = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+
+      this.dataForTS = {};
+      this.dataForTS.command = "DoDropped";
+      this.dataForTS.sourcepath = dropDataArr.treeNodeSpec.customizations.classes.fullpath;
+      this.dataForTS.destinationid = event.path[3].id.split("-")[2];
+      this.dataForTS.treeroot = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+      this.dataForTS.ctrlKey = event.ctrlKey;
 
       if(event.ctrlKey) {
         this.$refs.vueSimpleContextCopyMenu.showMenu(event, model);
@@ -508,8 +521,18 @@ export default {
         this.$refs.vueSimpleContextMoveMenu.showMenu(event, model);
       }
 
-      mydata.droptype = "parent";//parent, 2d, 3d
-      mydata.copy = event.ctrlKey;
+      // mydata.droptype = "parent";//parent, 2d, 3d
+      // mydata.copy = event.ctrlKey;
       //this.connection.send(JSON.stringify(mydata));
+    },
+    DroppedParent() {
+      this.dataForTS.droptype = "parent";//parent, 2d, 3d
+      // copy parent
+      if(this.dataForTS.ctrlKey) {
+        this.dataForTS.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+        this.dataForTS.doParentChild = this.doParentChild;
+        this.dataForTS.doJointHeirarchy = this.doJointHeirarchy;
+      }
+      this.connection.send(JSON.stringify(this.dataForTS));
     }
 }
