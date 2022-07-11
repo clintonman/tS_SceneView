@@ -16,6 +16,8 @@ import GeometryIcon from './components/GeometryIcon.vue'
 import GroupIcon from './components/GroupIcon.vue'
 import Group3DIcon from './components/Group3DIcon.vue'
 import HiddenIcon from './components/HiddenIcon.vue'
+import IKHandleIcon from './components/IKHandleIcon.vue'
+import IKLockIcon from './components/IKLockIcon.vue'
 import JointIcon from './components/JointIcon.vue'
 import LightIcon from './components/LightIcon.vue'
 import LockedIcon from './components/LockedIcon.vue'
@@ -59,6 +61,8 @@ export default {
     GroupIcon,
     Group3DIcon,
     HiddenIcon,
+    IKHandleIcon,
+    IKLockIcon,
     JointIcon,
     LightIcon,
     LockedIcon, 
@@ -92,6 +96,10 @@ export default {
         {
           name: 'UnGroup',
           slug: 'ungroup',
+        },
+        {
+          name: 'UnGroup3D',
+          slug: 'ungroup3d',
         },
         {
           type: 'divider',
@@ -248,6 +256,8 @@ export default {
     <GeometryIcon />
     <GroupIcon />
     <Group3DIcon />
+    <IKHandleIcon />
+    <IKLockIcon />
     <LightIcon />
     <MeshIcon />
     <MaterialIcon />
@@ -305,6 +315,8 @@ export default {
           <GeometryIcon class="label-icon" v-else-if="customClasses.type == 'geom'" />
           <GroupIcon class="label-icon label-icon-group" v-else-if="customClasses.type == 'group'" />
           <Group3DIcon class="label-icon" v-else-if="customClasses.type == 'group3d'" />
+          <IKHandleIcon class="label-icon label-icon-bone" v-else-if="customClasses.type == 'ikhandle'" />
+          <IKLockIcon class="label-icon label-icon-bone" v-else-if="customClasses.type == 'iklock'" />
           <JointIcon class="label-icon label-icon-joint" v-else-if="customClasses.type == 'joint'" />
           <LightIcon class="label-icon label-icon-light" v-else-if="customClasses.type == 'light'" />
           <MaterialIcon class="label-icon label-icon-material" v-else-if="customClasses.type == 'material'" />

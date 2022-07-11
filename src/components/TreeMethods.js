@@ -95,7 +95,23 @@ export default {
       let data = {};
       data.command = "UnGroup";
       let sel = this.GetPathSelection();
-      //remove context item(the parent) if it is in the selected items list
+      //remove context item if it is in the selected items list
+      data.subobj = sel.filter(chk=>{
+        return chk != item.treeNodeSpec.customizations.classes.fullpath;
+      });
+      // add item to selection
+      data.subobj.push(item.treeNodeSpec.customizations.classes.fullpath);
+
+      data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+      data.doParentChild = this.doParentChild;
+      data.doJointHeirarchy = this.doJointHeirarchy;
+      connection.send(JSON.stringify(data));
+    },
+    UnGroup3D(item, connection) {
+      let data = {};
+      data.command = "UnGroup3D";
+      let sel = this.GetPathSelection();
+      //remove context item if it is in the selected items list
       data.subobj = sel.filter(chk=>{
         return chk != item.treeNodeSpec.customizations.classes.fullpath;
       });
@@ -357,6 +373,9 @@ export default {
       }
       if(event.option.slug == "ungroup") {
         this.UnGroup(event.item, this.connection, this.$refs.mytree);
+      }
+      if(event.option.slug == "ungroup3d") {
+        this.UnGroup3D(event.item, this.connection, this.$refs.mytree);
       }
     },
     editname(model,e) {
