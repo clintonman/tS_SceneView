@@ -132,6 +132,34 @@ export default {
           slug: 'delete',
         },
       ],
+      dragOptions: [
+        {
+          name: 'Parent',
+          slug: 'parent',
+        },
+        {
+          name: 'Move2D',
+          slug: 'move2d',
+        },
+        {
+          name: 'Move3D',
+          slug: 'move3d',
+        }
+      ],
+      dragOptionsCopy: [
+        {
+          name: 'Parent Copy',
+          slug: 'parentcopy',
+        },
+        {
+          name: 'Copy2D',
+          slug: 'copy2d',
+        },
+        {
+          name: 'Copy3D',
+          slug: 'copy3d',
+        }
+      ],
  
       mycontent: new Delta([]),
       htmlnote: "",
@@ -162,6 +190,10 @@ export default {
     // https://github.com/johndatserakis/vue-simple-context-menu/issues/8
     var menu = document.getElementById("myFirstMenu");
     document.firstElementChild.appendChild(menu);
+    var menu1 = document.getElementById("moveMenu");
+    document.firstElementChild.appendChild(menu1);
+    var menu2 = document.getElementById("copyMenu");
+    document.firstElementChild.appendChild(menu2);
 
     this.time = 'bobobo';
     // let connection = new WebSocket('ws://localhost:3000/');
@@ -289,7 +321,7 @@ export default {
     <button style="margin-left: 5px;color:red;" @click="cancelnameedit">X</button>
   </div>
 
-  <tree-view  
+  <!-- <tree-view  
     ref="mytree" 
     id="my-tree" 
     :initial-model="model" 
@@ -300,6 +332,17 @@ export default {
     :doParentChild="doParentChild" :doJointHeirarchy="doJointHeirarchy"
     :showBoneNames="showBoneNames"
     @drop="Dropped"
+    > -->
+  <tree-view  
+    ref="mytree" 
+    id="my-tree" 
+    :initial-model="model" 
+    :model-defaults="modelDefaults" 
+    :selection-mode="selectionMode"
+    @treeNodeExpandedChange="GetMaxDepthAndSetChildExpanded"
+    connection="connection"
+    :doParentChild="doParentChild" :doJointHeirarchy="doJointHeirarchy"
+    :showBoneNames="showBoneNames"
     >
       <template v-slot:text="{ model, customClasses }">
         <div 
@@ -335,6 +378,7 @@ export default {
             @click.ctrl.exact="toggleselection(model)"
             @click.shift.exact="rangeselection(model)"
             @dblclick.exact="editname(model, $event)"
+            @drop="Dropped($event, model)"
           >{{ model[model.treeNodeSpec.labelProperty] }}</span>
 
           <!-- <span :style="{display:'block',width:1.25 + maxdepth*3 - customClasses.treedepth*3.2+'em'}"></span> -->
@@ -366,6 +410,20 @@ export default {
     :options="optionsArray1"
     ref="vueSimpleContextMenu1"
     @option-clicked="optionClicked1"
+  >
+  </vue-simple-context-menu>
+  <vue-simple-context-menu
+    element-id="moveMenu"
+    :options="dragOptions"
+    ref="vueSimpleContextMoveMenu"
+    @option-clicked="moveOptionClicked"
+  >
+  </vue-simple-context-menu>
+  <vue-simple-context-menu
+    element-id="copyMenu"
+    :options="dragOptionsCopy"
+    ref="vueSimpleContextCopyMenu"
+    @option-clicked="copyOptionClicked"
   >
   </vue-simple-context-menu>
 

@@ -339,7 +339,7 @@ export default {
     },
 
     handleClick1(event, item) {
-      // console.log("handleclick1", event)
+      console.log("handleclick1", event)
       console.log("handleclick1", item)
       // console.log(this.$refs.vueSimpleContextMenu1)
       this.$refs.vueSimpleContextMenu1.showMenu(event, item);
@@ -377,6 +377,12 @@ export default {
       if(event.option.slug == "ungroup3d") {
         this.UnGroup3D(event.item, this.connection, this.$refs.mytree);
       }
+    },
+    moveOptionClicked(event) {
+      console.log("move", event);
+    },
+    copyOptionClicked(event) {
+      console.log("copy", event);
     },
     editname(model,e) {
       console.log("editname")
@@ -474,8 +480,10 @@ export default {
     }
    },
 
-    Dropped(event) {
-      // console.log(event)
+    Dropped(event, model) {
+      console.log(event)
+      console.log(model)
+
       console.log("ctrl",event.ctrlKey)
       console.log("path", event.path)
       // console.log(event.dataTransfer.getData("text/plain"))
@@ -484,7 +492,7 @@ export default {
       console.log("source",dropDataArr.id)
       console.log("source",dropDataArr.treeNodeSpec.customizations.classes.fullpath)
       console.log("destination", event.path[3].id.split("-")[2])
-      //TODO code move into tree methods file
+
       //TODO popup to choose parent, 2D, 3D or parent, 2D, 3D with copy when ctrl pressed
       //TODO send message to tS to perform actual action
       //TODO send update info back from tS so no need relaod everything
@@ -493,8 +501,15 @@ export default {
       mydata.sourcepath = dropDataArr.treeNodeSpec.customizations.classes.fullpath;
       mydata.destinationid = event.path[3].id.split("-")[2];
       mydata.treeroot = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+
+      if(event.ctrlKey) {
+        this.$refs.vueSimpleContextCopyMenu.showMenu(event, model);
+      } else {
+        this.$refs.vueSimpleContextMoveMenu.showMenu(event, model);
+      }
+
       mydata.droptype = "parent";//parent, 2d, 3d
       mydata.copy = event.ctrlKey;
-      this.connection.send(JSON.stringify(mydata));
+      //this.connection.send(JSON.stringify(mydata));
     }
 }
