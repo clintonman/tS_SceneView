@@ -383,11 +383,23 @@ export default {
       if(event.option.slug == 'parent') {
         this.DroppedParent();
       }
+      if(event.option.slug == 'move2d') {
+        this.Dropped2D();
+      }
+      if(event.option.slug == 'move3d') {
+        this.Dropped3D();
+      }
     },
     copyOptionClicked(event) {
       console.log("copy", event);
       if(event.option.slug == 'parentcopy') {
         this.DroppedParent();
+      }
+      if(event.option.slug == 'copy2d') {
+        this.Dropped2D();
+      }
+      if(event.option.slug == 'copy3d') {
+        this.Dropped3D();
       }
     },
     editname(model,e) {
@@ -528,11 +540,34 @@ export default {
     DroppedParent() {
       this.dataForTS.droptype = "parent";//parent, 2d, 3d
       // copy parent
-      if(this.dataForTS.ctrlKey) {
+      //temp always pass because of parent with child issue
+      //if(this.dataForTS.ctrlKey) {
         this.dataForTS.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
         this.dataForTS.doParentChild = this.doParentChild;
         this.dataForTS.doJointHeirarchy = this.doJointHeirarchy;
-      }
+      //}
+      this.connection.send(JSON.stringify(this.dataForTS));
+    },
+    Dropped2D() {
+      this.dataForTS.droptype = "2d";//parent, 2d, 3d
+      // copy parent
+      //temp always pass because of parent with child issue
+      //if(this.dataForTS.ctrlKey) {
+        this.dataForTS.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+        this.dataForTS.doParentChild = this.doParentChild;
+        this.dataForTS.doJointHeirarchy = this.doJointHeirarchy;
+      //}
+      this.connection.send(JSON.stringify(this.dataForTS));
+    },
+    Dropped3D() {
+      this.dataForTS.droptype = "3d";//parent, 2d, 3d
+      // copy parent
+      //temp always pass because of parent with child issue
+      //if(this.dataForTS.ctrlKey) {
+        this.dataForTS.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+        this.dataForTS.doParentChild = this.doParentChild;
+        this.dataForTS.doJointHeirarchy = this.doJointHeirarchy;
+      //}
       this.connection.send(JSON.stringify(this.dataForTS));
     }
 }
