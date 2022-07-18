@@ -160,6 +160,7 @@ export default {
           slug: 'copy3d',
         }
       ],
+      dropIsActive: false,
  
       mycontent: new Delta([]),
       htmlnote: "",
@@ -418,6 +419,7 @@ export default {
     :options="dragOptions"
     ref="vueSimpleContextMoveMenu"
     @option-clicked="moveOptionClicked"
+    @menu-closed="refreshTree"
   >
   </vue-simple-context-menu>
   <vue-simple-context-menu
@@ -425,6 +427,7 @@ export default {
     :options="dragOptionsCopy"
     ref="vueSimpleContextCopyMenu"
     @option-clicked="copyOptionClicked"
+    @menu-closed="refreshTree"
   >
   </vue-simple-context-menu>
 

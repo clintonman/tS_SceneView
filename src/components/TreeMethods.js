@@ -402,6 +402,18 @@ export default {
         this.Dropped3D();
       }
     },
+    refreshTree() {
+      console.log("refreshtree dropisactive", this.dropIsActive)
+      if(this.dropIsActive) {
+        let mydata = {};
+        mydata.command = "GetSceneTree3";
+        mydata.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+        mydata.doParentChild = this.doParentChild;
+        mydata.doJointHeirarchy = this.doJointHeirarchy;
+        this.connection.send(JSON.stringify(mydata));
+      }
+      this.dropIsActive = false;
+    },
     editname(model,e) {
       console.log("editname")
       console.log(e)
@@ -499,6 +511,7 @@ export default {
    },
 
     Dropped(event, model) {
+      this.dropIsActive = true;
       console.log(event)
       console.log(model)
 
@@ -538,6 +551,7 @@ export default {
       //this.connection.send(JSON.stringify(mydata));
     },
     DroppedParent() {
+      this.dropIsActive = false;
       this.dataForTS.droptype = "parent";//parent, 2d, 3d
       // copy parent
       //temp always pass because of parent with child issue
@@ -549,6 +563,7 @@ export default {
       this.connection.send(JSON.stringify(this.dataForTS));
     },
     Dropped2D() {
+      this.dropIsActive = false;
       this.dataForTS.droptype = "2d";//parent, 2d, 3d
       // copy parent
       //temp always pass because of parent with child issue
@@ -560,6 +575,7 @@ export default {
       this.connection.send(JSON.stringify(this.dataForTS));
     },
     Dropped3D() {
+      this.dropIsActive = false;
       this.dataForTS.droptype = "3d";//parent, 2d, 3d
       // copy parent
       //temp always pass because of parent with child issue
