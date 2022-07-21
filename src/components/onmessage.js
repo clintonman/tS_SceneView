@@ -1,5 +1,9 @@
 export default {
+   ErrorResult(mydata) {
+      console.log("errors", mydata.error)
+   },
    DisplaySceneTree3(mydata) {
+      console.log("errors", mydata.error)
       console.log(mydata.data.model)
 
       this.ReOrder(mydata.data.model[0]);

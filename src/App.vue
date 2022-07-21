@@ -225,6 +225,7 @@ export default {
       // this.time = mydata.data.model;
       //this.model = mydata.data.model;
       //console.log(this.model);
+      if(mydata.command == "ErrorResult") { onmessage.ErrorResult.call(this, mydata); }
       if(mydata.command == "DisplaySceneTree3") { onmessage.DisplaySceneTree3.call(this, mydata); }
       if(mydata.command == "AddToTree") { onmessage.AddToTree.call(this, mydata); }
       if(mydata.command == "SetNoteStatus") {
