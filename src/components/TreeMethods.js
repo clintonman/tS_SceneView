@@ -165,6 +165,8 @@ export default {
         }
       }
       data.children.push(item.treeNodeSpec.customizations.classes.fullpath);
+      //remove duplicate entries
+      data.children = [...new Set(data.children)];
 
       data.command = "UnParent";
       console.log(this.model)
