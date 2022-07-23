@@ -183,7 +183,7 @@ export default {
       alphaOrder: 'NONE',
       shownotes: true,
       showBoneNames: false,
-      nameWidth: 10,
+      nameWidth: 12,
       dataForTS: {}
     }
   },

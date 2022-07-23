@@ -445,16 +445,11 @@ export default {
         return themodel.treeNodeSpec.state.expanded;
       });
       console.log("expanded", matchArr)
-      // let expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
-      mydata.expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
-      // mydata.expandedNodes = expandedNodes
-      // mydata.expandedNodes = JSON.stringify(expandedNodes)
-      // mydata.expandedNodes = JSON.stringify([1,2,3])
 
-      // mydata.expandedNodes = [];
-      // mydata.expandedNodes.push("x")
-      // mydata.expandedNodes.push("y")
-      // mydata.expandedNodes.push("z")
+      mydata.expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
+      if(mydata.expandedNodes && mydata.expandedNodes[0] === undefined) {
+        mydata.expandedNodes.shift();
+      }
 
       console.log("expanded", mydata.expandedNodes)
       this.connection.send(JSON.stringify(mydata));
@@ -466,6 +461,27 @@ export default {
       mydata.root = "/";
       mydata.doParentChild = this.doParentChild;
       mydata.doJointHeirarchy = this.doJointHeirarchy;
+      //send expanded nodes list so can keep open on load fresh
+      let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+        return themodel.treeNodeSpec.state.expanded;
+      });
+      mydata.expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
+      if(mydata.expandedNodes && mydata.expandedNodes[0] === undefined) {
+        mydata.expandedNodes.shift();
+      }
+      console.log(mydata.expandedNodes)
+      //special case switch from scene root to actual root
+      if(mydata.expandedNodes.length !== 0) {
+        for(let anode of mydata.expandedNodes) {
+          if(anode.match("/Project")) {
+            mydata.expandedNodes.push("/Project");
+            break;
+  
+          }
+        }
+      }
+      
+      console.log(mydata.expandedNodes)
       this.connection.send(JSON.stringify(mydata));
     },
 
