@@ -424,7 +424,15 @@ export default {
       this.edittop = e.pageY;
       this.editleft = e.pageX;
     },
-   
+    //TEST for scene level only first
+    GetTreeToSelected() {
+      let mydata = {};
+      mydata.command = "GetSceneTreeToSelection";
+      mydata.root = "current_scene";
+      mydata.doParentChild = this.doParentChild;
+      mydata.doJointHeirarchy = this.doJointHeirarchy;
+      this.connection.send(JSON.stringify(mydata));
+    },
     GetScene() {
       // this.connection.send('{ "command" : "GetSceneTree3", "root": "current_scene" }');
       let mydata = {};
@@ -432,6 +440,23 @@ export default {
       mydata.root = "current_scene";
       mydata.doParentChild = this.doParentChild;
       mydata.doJointHeirarchy = this.doJointHeirarchy;
+      //send expanded nodes list so can keep open on load fresh
+      let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+        return themodel.treeNodeSpec.state.expanded;
+      });
+      console.log("expanded", matchArr)
+      // let expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
+      mydata.expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
+      // mydata.expandedNodes = expandedNodes
+      // mydata.expandedNodes = JSON.stringify(expandedNodes)
+      // mydata.expandedNodes = JSON.stringify([1,2,3])
+
+      // mydata.expandedNodes = [];
+      // mydata.expandedNodes.push("x")
+      // mydata.expandedNodes.push("y")
+      // mydata.expandedNodes.push("z")
+
+      console.log("expanded", mydata.expandedNodes)
       this.connection.send(JSON.stringify(mydata));
     },
     GetRoot() {

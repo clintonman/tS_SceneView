@@ -304,6 +304,7 @@ export default {
     <button @click="GetScene">scene root</button>
     <button @click="GetRoot">pure root</button>
     <button @click="GetMaxDepthAndSetChildExpanded">force depth</button>
+    <button @click="GetTreeToSelected">expand to selected</button>
     <input type="checkbox" name="" id="shownotes" v-model="shownotes"><label for="shownotes">Show Notes</label>
     <input type="checkbox" name="" id="parentchild" v-model="doParentChild"><label for="parentchild">Parent-Child</label>
     <input type="checkbox" name="" id="jointheirarchy" v-model="doJointHeirarchy"><label for="jointheirarchy">Joint Heirarchy</label>
