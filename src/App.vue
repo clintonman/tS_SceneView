@@ -184,7 +184,8 @@ export default {
       shownotes: true,
       showBoneNames: false,
       nameWidth: 12,
-      dataForTS: {}
+      dataForTS: {},
+      lastContextItem: null
     }
   },
 

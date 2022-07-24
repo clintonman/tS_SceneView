@@ -348,9 +348,10 @@ export default {
     },
     optionClicked1(event) {
       // console.log(event)
-      console.log(event.item.label)
-      console.log(event.item.treeNodeSpec.customizations.classes.fullpath)
-      console.log(event.option.slug)
+      //console.log(event.item.label)
+      //console.log(event.item.treeNodeSpec.customizations.classes.fullpath)
+      //console.log(event.option.slug)
+
       // window.alert(JSON.stringify(event));
       if(event.option.slug == "delete") {
         this.DeleteNode(event.item, this.connection, this.$refs.mytree);
@@ -382,6 +383,9 @@ export default {
     },
     moveOptionClicked(event) {
       console.log("move", event);
+      this.lastContextItem = event.item;
+      console.log("item", this.lastContextItem)
+
       if(event.option.slug == 'parent') {
         this.DroppedParent();
       }
@@ -394,6 +398,9 @@ export default {
     },
     copyOptionClicked(event) {
       console.log("copy", event);
+      this.lastContextItem = event.item;
+      console.log("item", this.lastContextItem)
+
       if(event.option.slug == 'parentcopy') {
         this.DroppedParent();
       }
@@ -412,6 +419,17 @@ export default {
         mydata.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
         mydata.doParentChild = this.doParentChild;
         mydata.doJointHeirarchy = this.doJointHeirarchy;
+
+        //send expanded nodes list so can keep open on load fresh
+        let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+          return themodel.treeNodeSpec.state.expanded;
+        });
+
+        mydata.expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
+        if(mydata.expandedNodes && mydata.expandedNodes[0] === undefined) {
+          mydata.expandedNodes.shift();
+        }
+
         this.connection.send(JSON.stringify(mydata));
       }
       this.dropIsActive = false;
@@ -444,14 +462,14 @@ export default {
       let matchArr = this.$refs.mytree.getMatching((themodel)=>{
         return themodel.treeNodeSpec.state.expanded;
       });
-      console.log("expanded", matchArr)
+      // console.log("expanded", matchArr)
 
       mydata.expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
       if(mydata.expandedNodes && mydata.expandedNodes[0] === undefined) {
         mydata.expandedNodes.shift();
       }
 
-      console.log("expanded", mydata.expandedNodes)
+      // console.log("expanded", mydata.expandedNodes)
       this.connection.send(JSON.stringify(mydata));
     },
     GetRoot() {
@@ -469,7 +487,7 @@ export default {
       if(mydata.expandedNodes && mydata.expandedNodes[0] === undefined) {
         mydata.expandedNodes.shift();
       }
-      console.log(mydata.expandedNodes)
+      // console.log(mydata.expandedNodes)
       //special case switch from scene root to actual root
       if(mydata.expandedNodes.length !== 0) {
         for(let anode of mydata.expandedNodes) {
@@ -608,25 +626,41 @@ export default {
     Dropped2D() {
       this.dropIsActive = false;
       this.dataForTS.droptype = "2d";//parent, 2d, 3d
-      // copy parent
-      //temp always pass because of parent with child issue
-      //if(this.dataForTS.ctrlKey) {
-        this.dataForTS.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
-        this.dataForTS.doParentChild = this.doParentChild;
-        this.dataForTS.doJointHeirarchy = this.doJointHeirarchy;
-      //}
+
+      this.dataForTS.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+      this.dataForTS.doParentChild = this.doParentChild;
+      this.dataForTS.doJointHeirarchy = this.doJointHeirarchy;
+
+      let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+        return themodel.treeNodeSpec.state.expanded;
+      });
+      this.dataForTS.expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
+      if(this.dataForTS.expandedNodes && this.dataForTS.expandedNodes[0] === undefined) {
+        this.dataForTS.expandedNodes.shift();
+      }
+      //add target to expanded nodes list - note may be in the list already
+      this.dataForTS.expandedNodes.push(this.lastContextItem.treeNodeSpec.customizations.classes.fullpath);
+
       this.connection.send(JSON.stringify(this.dataForTS));
     },
     Dropped3D() {
       this.dropIsActive = false;
       this.dataForTS.droptype = "3d";//parent, 2d, 3d
-      // copy parent
-      //temp always pass because of parent with child issue
-      //if(this.dataForTS.ctrlKey) {
-        this.dataForTS.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
-        this.dataForTS.doParentChild = this.doParentChild;
-        this.dataForTS.doJointHeirarchy = this.doJointHeirarchy;
-      //}
+
+      this.dataForTS.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+      this.dataForTS.doParentChild = this.doParentChild;
+      this.dataForTS.doJointHeirarchy = this.doJointHeirarchy;
+
+      let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+        return themodel.treeNodeSpec.state.expanded;
+      });
+      this.dataForTS.expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
+      if(this.dataForTS.expandedNodes && this.dataForTS.expandedNodes[0] === undefined) {
+        this.dataForTS.expandedNodes.shift();
+      }
+      //add target to expanded nodes list - note may be in the list already
+      this.dataForTS.expandedNodes.push(this.lastContextItem.treeNodeSpec.customizations.classes.fullpath);
+
       this.connection.send(JSON.stringify(this.dataForTS));
     }
 }
