@@ -89,20 +89,22 @@ export default {
    },
    DoGroup3D() {
       console.log("DoGroup3D")
-      let data = {};
-      data.command = "Group3D";
-      data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
-      data.doParentChild = this.doParentChild;
-      data.doJointHeirarchy = this.doJointHeirarchy;
-      this.connection.send(JSON.stringify(data));
+      this.dataForTS = {};
+      this.dataForTS.command = "Group3D";
+      this.dataForTS.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+      this.dataForTS.doParentChild = this.doParentChild;
+      this.dataForTS.doJointHeirarchy = this.doJointHeirarchy;
+      //TODO name dialog
+      //this.connection.send(JSON.stringify(data));
    },
    DoGroup() {
       console.log("DoGroup")
-      let data = {};
-      data.command = "Group";
-      data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
-      data.doParentChild = this.doParentChild;
-      data.doJointHeirarchy = this.doJointHeirarchy;
-      this.connection.send(JSON.stringify(data));
+      this.dataForTS = {};
+      this.dataForTS.command = "Group";
+      this.dataForTS.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+      this.dataForTS.doParentChild = this.doParentChild;
+      this.dataForTS.doJointHeirarchy = this.doJointHeirarchy;
+      //TODO name dialog
+      //this.connection.send(JSON.stringify(data));
    }
  }

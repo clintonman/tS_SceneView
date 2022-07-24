@@ -34,6 +34,7 @@ import VisibleIcon from './components/VisibleIcon.vue'
 import NAIcon from './components/NAIcon.vue'
 import MoreChildrenIcon from './components/MoreChildrenIcon.vue'
 import Notes from './components/Notes.vue'
+import NameDialog from './components/NameDialog.vue'
 
 import TreeMethods from './components/TreeMethods'
 import onmessage from './components/onmessage'
@@ -78,7 +79,8 @@ export default {
     VisibleIcon,
     NAIcon,
     MoreChildrenIcon,
-    Notes
+    Notes,
+    NameDialog
   },
   data() {
     return {
@@ -190,6 +192,12 @@ export default {
   },
 
   mounted: function(){
+    console.log(this.$refs.vueSimpleContextMoveMenu)
+    // console.log(this.$refs.vueSimpleContextMoveMenu.onClickOutside)
+    // this.$refs.vueSimpleContextMoveMenu.onClickOutside = "null";
+    // this.$refs.vueSimpleContextCopyMenu.onClickOutside = "null";
+    // this.$refs.vueSimpleContextMoveMenu.onClickOutside = "refreshTree";
+    // this.$refs.vueSimpleContextCopyMenu.onClickOutside = "refreshTree";
     // https://github.com/johndatserakis/vue-simple-context-menu/issues/8
     var menu = document.getElementById("myFirstMenu");
     document.firstElementChild.appendChild(menu);
@@ -260,6 +268,12 @@ export default {
 
   methods: {
     ...TreeMethods,
+    onNodeRenamed(newName) {
+      console.log("onNodeRenamed", newName)
+    },
+    onRenameCancelled() {
+      console.log("onRenameCancelled")
+    }
   }
 }
 </script>
@@ -408,6 +422,7 @@ export default {
           <div v-if="customClasses.bone && showBoneNames">{{customClasses.bone}}</div>
         </div>
       </template>
+      
   </tree-view>
 
   <vue-simple-context-menu
@@ -417,7 +432,7 @@ export default {
     @option-clicked="optionClicked1"
   >
   </vue-simple-context-menu>
-  <vue-simple-context-menu
+  <!-- <vue-simple-context-menu
     element-id="moveMenu"
     :options="dragOptions"
     ref="vueSimpleContextMoveMenu"
@@ -432,7 +447,26 @@ export default {
     @option-clicked="copyOptionClicked"
     @menu-closed="refreshTree"
   >
+  </vue-simple-context-menu> -->
+  <vue-simple-context-menu
+    element-id="moveMenu"
+    :options="dragOptions"
+    ref="vueSimpleContextMoveMenu"
+    @option-clicked="moveOptionClicked"
+    @menu-closed="refreshTree"
+  >
   </vue-simple-context-menu>
+  <vue-simple-context-menu
+    element-id="copyMenu"
+    :options="dragOptionsCopy"
+    ref="vueSimpleContextCopyMenu"
+    @option-clicked="copyOptionClicked"
+    @menu-closed="refreshTree"
+    :vcoConfig:isActive="false"
+  >
+  </vue-simple-context-menu>
+
+  <NameDialog @onNodeRenamed="onNodeRenamed" @onRenameCancelled="onRenameCancelled"></NameDialog>
 
 </template>
 

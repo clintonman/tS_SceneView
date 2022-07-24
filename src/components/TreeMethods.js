@@ -67,11 +67,7 @@ export default {
       });
       // add item to selection
       data.subobj.push(item.treeNodeSpec.customizations.classes.fullpath);
-      //tS can't change selection so will only operate on currently selected items, subobj not used
-      
-      // data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
-      // data.doParentChild = this.doParentChild;
-      // data.doJointHeirarchy = this.doJointHeirarchy;
+
       connection.send(JSON.stringify(data));
     },
     GroupSelect(item, connection) {
@@ -84,11 +80,7 @@ export default {
       });
       // add item to selection
       data.subobj.push(item.treeNodeSpec.customizations.classes.fullpath);
-      //tS can't change selection so will only operate on currently selected items, subobj not used
 
-      // data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
-      // data.doParentChild = this.doParentChild;
-      // data.doJointHeirarchy = this.doJointHeirarchy;
       connection.send(JSON.stringify(data));
     },
     UnGroup(item, connection) {
@@ -344,6 +336,7 @@ export default {
       console.log("handleclick1", event)
       console.log("handleclick1", item)
       // console.log(this.$refs.vueSimpleContextMenu1)
+      
       this.$refs.vueSimpleContextMenu1.showMenu(event, item);
     },
     optionClicked1(event) {
@@ -411,6 +404,9 @@ export default {
         this.Dropped3D();
       }
     },
+    // always firing, cannot find way to enable-disable the @menu-closed
+    // based on https://github.com/andymark-by/click-outside-vue3#readme
+    // still can't figure it
     refreshTree() {
       console.log("refreshtree dropisactive", this.dropIsActive)
       if(this.dropIsActive) {
@@ -662,5 +658,12 @@ export default {
       this.dataForTS.expandedNodes.push(this.lastContextItem.treeNodeSpec.customizations.classes.fullpath);
 
       this.connection.send(JSON.stringify(this.dataForTS));
-    }
+    },
+
+   SendGroup(data) {
+      console.log("sendgroup")
+      //add name here
+      //this.dataForTS...
+      //this.connection.send(JSON.stringify(data));
+   }
 }
