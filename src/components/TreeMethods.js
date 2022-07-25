@@ -7,30 +7,53 @@ export default {
 
       let data = {};
       data.command = "DeleteNode";
-      data.path = item.treeNodeSpec.customizations.classes.fullpath;
+      // data.path = item.treeNodeSpec.customizations.classes.fullpath;
+
+      let sel = this.GetPathSelection();
+      //remove context item if it is in the selected items list
+      data.nodelist = sel.filter(chk=>{
+        return chk != item.treeNodeSpec.customizations.classes.fullpath;
+      });
+      // add item to selection
+      data.nodelist.push(item.treeNodeSpec.customizations.classes.fullpath);
+
+      data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+      data.doParentChild = this.doParentChild;
+      data.doJointHeirarchy = this.doJointHeirarchy;
+
+      //send expanded nodes list so can keep open on load fresh
+      let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+        return themodel.treeNodeSpec.state.expanded;
+      });
+
+      data.expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
+      if(data.expandedNodes && data.expandedNodes[0] === undefined) {
+        data.expandedNodes.shift();
+      }
+
       connection.send(JSON.stringify(data));
 
-      //find parent
-      let matchArr = mytree.getMatching((themodel)=>{
-        if(themodel.children && themodel.children.length > 0) {
-          let childlength = themodel.children.length;
+      // //find parent
+      // let matchArr = mytree.getMatching((themodel)=>{
+      //   if(themodel.children && themodel.children.length > 0) {
+      //     let childlength = themodel.children.length;
 
-          for(let i=0;i<childlength;i++) {
-            let child = themodel.children[i];
-            if(child.id == item.id) {
-              return true;
-            }
-          }
-        }
-        return false;
-      });
-      console.log(matchArr)
-      //find index and splice remove
-      let childIndex = matchArr[0].children.findIndex(child => {
-        return child.id == item.id;
-      });
-      console.log(childIndex);
-      matchArr[0].children.splice(childIndex, 1);
+      //     for(let i=0;i<childlength;i++) {
+      //       let child = themodel.children[i];
+      //       if(child.id == item.id) {
+      //         return true;
+      //       }
+      //     }
+      //   }
+      //   return false;
+      // });
+      // console.log(matchArr)
+      // //find index and splice remove
+      // let childIndex = matchArr[0].children.findIndex(child => {
+      //   return child.id == item.id;
+      // });
+      // console.log(childIndex);
+      // matchArr[0].children.splice(childIndex, 1);
 
     },
    LEOpenLocation(item, connection) {
@@ -336,7 +359,7 @@ export default {
       console.log("handleclick1", event)
       console.log("handleclick1", item)
       // console.log(this.$refs.vueSimpleContextMenu1)
-      
+      this.lastContextEvent = event;
       this.$refs.vueSimpleContextMenu1.showMenu(event, item);
     },
     optionClicked1(event) {
@@ -344,6 +367,8 @@ export default {
       //console.log(event.item.label)
       //console.log(event.item.treeNodeSpec.customizations.classes.fullpath)
       //console.log(event.option.slug)
+      
+      this.lastContextItem = event.item;
 
       // window.alert(JSON.stringify(event));
       if(event.option.slug == "delete") {
@@ -659,11 +684,20 @@ export default {
 
       this.connection.send(JSON.stringify(this.dataForTS));
     },
+    onNodeRenamed(newName) {
+      this.showrename = false;
+      if(!newName) {
+        console.log("cancelled");
+        return;
+      }
+      console.log("onNodeRenamed", newName);
+      this.SendGroup(newName);
+    },
 
    SendGroup(data) {
-      console.log("sendgroup")
+      console.log("sendgroup", data)
       //add name here
-      //this.dataForTS...
-      //this.connection.send(JSON.stringify(data));
+      this.dataForTS.groupName = data;
+      this.connection.send(JSON.stringify(this.dataForTS));
    }
 }

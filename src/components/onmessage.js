@@ -94,8 +94,8 @@ export default {
       this.dataForTS.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
       this.dataForTS.doParentChild = this.doParentChild;
       this.dataForTS.doJointHeirarchy = this.doJointHeirarchy;
-      //TODO name dialog
-      //this.connection.send(JSON.stringify(data));
+
+      this.showrename = true;
    },
    DoGroup() {
       console.log("DoGroup")
@@ -104,7 +104,7 @@ export default {
       this.dataForTS.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
       this.dataForTS.doParentChild = this.doParentChild;
       this.dataForTS.doJointHeirarchy = this.doJointHeirarchy;
-      //TODO name dialog
-      //this.connection.send(JSON.stringify(data));
+
+      this.showrename = true;
    }
  }
