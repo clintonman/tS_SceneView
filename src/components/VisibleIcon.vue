@@ -3,12 +3,30 @@ export default {
    props: ['connection', 'model'],
    methods: {
     HideNode(model){
+      // model.treeNodeSpec.customizations.classes.visible = "no";
+      this.$emit('onHide', model);
+
       // console.log("hide")
-      model.treeNodeSpec.customizations.classes.visible = "no";
-      let data = {};
-      data.command = "HideNode";   
-      data.path = model.treeNodeSpec.customizations.classes.fullpath;
-      this.connection.send(JSON.stringify(data));
+      // let data = {};
+      // data.command = "HideNode";   
+      // data.path = model.treeNodeSpec.customizations.classes.fullpath;
+
+      // //if ora created need to update tree
+      // data.root = this.initialmodel[0].treeNodeSpec.customizations.classes.fullpath;
+      // data.doParentChild = this.doParentChild;
+      // data.doJointHeirarchy = this.doJointHeirarchy;
+
+      // //send expanded nodes list so can keep open on load fresh
+      // let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+      //   return themodel.treeNodeSpec.state.expanded;
+      // });
+
+      // data.expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
+      // if(data.expandedNodes && data.expandedNodes[0] === undefined) {
+      //   data.expandedNodes.shift();
+      // }
+
+      // this.connection.send(JSON.stringify(data));
     }
    }
 }
