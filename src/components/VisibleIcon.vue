@@ -2,11 +2,16 @@
 export default {
    props: ['connection', 'model'],
    methods: {
+      HideNodeSoft(model){
+      // model.treeNodeSpec.customizations.classes.visible = "no";
+      this.$emit('onHideSoft', model);
+      console.log("soft hide")
+      },
     HideNode(model){
       // model.treeNodeSpec.customizations.classes.visible = "no";
       this.$emit('onHide', model);
 
-      // console.log("hide")
+      console.log("hide")
       // let data = {};
       // data.command = "HideNode";   
       // data.path = model.treeNodeSpec.customizations.classes.fullpath;
@@ -34,7 +39,7 @@ export default {
 <template>
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"
       fill="currentColor"
-      @click="HideNode(model)">
+      @click.exact="HideNodeSoft(model)" @click.ctrl="HideNode(model)">
     <g
      style="display:inline"
      id="object-visible"
