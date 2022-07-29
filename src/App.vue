@@ -189,7 +189,9 @@ export default {
       dataForTS: {},
       lastContextItem: null,
       lastContextEvent: null,
-      showrename: false
+      showrename: false,
+      scrolltop: 0,
+      pagescrolltop: 0
     }
   },
 
@@ -220,6 +222,12 @@ export default {
     };
  
     this.connection.onmessage = (event) => {
+      let mytree = document.getElementById("my-tree");
+      this.model.scrolltop = mytree.scrollTop;
+      // this.model.pagescrolltop = document.body.scrollTop;
+      this.model.pagescrolltop = document.documentElement.scrollTop;
+      console.log("treescroll",this.model.scrolltop)
+      console.log("pagescroll",this.model.pagescrolltop)
       // Vue data binding means you don't need any extra work to
       // update your UI. Just set the `time` and Vue will automatically
       // update the `<h2>`.
@@ -259,11 +267,48 @@ export default {
       if(mydata.command == "TSRefresh") { onmessage.TSRefresh.call(this); }
       if(mydata.command == "DoGroup3D") { onmessage.DoGroup3D.call(this); }
       if(mydata.command == "DoGroup") { onmessage.DoGroup.call(this); }
+
+      // mytree.scrollTop = scrolltop;
+      mytree = document.getElementById("my-tree");
+      // mytree.scroll(0, scrolltop);
+      console.log(this.model.scrolltop);
+      // mytree.scrollTop = scrolltop;
+
+      // if(mydata.command == "DisplaySceneTree3" || mydata.command == "AddToTree" || mydata.command == "TSRefresh" || mydata.command == "ErrorResult") {
+      if(mydata.command == "DisplaySceneTree3") {
+        this.$nextTick(function(){
+          setTimeout(() => {
+            console.log("next timeout",this.model.scrolltop);
+            // this.$refs.scrollList.scrollTop = 99999
+            let mytree = document.getElementById("my-tree");
+            mytree.scrollTop = this.model.scrolltop;
+            document.documentElement.scrollTop = this.model.pagescrolltop;
+        }, 100)
+        });
+      }
+      // this.$nextTick((scrolltop) => {
+      //   let mytree = document.getElementById("my-tree");
+      //   console.log("nexttick",scrolltop)
+      //   mytree.scrollTop = scrolltop;
+      // });
     }
   },
 
   methods: {
-    ...TreeMethods
+    ...TreeMethods,
+    handleScroll(e) {
+      //console.log(e)
+      //console.log(e.target.scrollTop, e.target.scrollLeft)
+      //console.log(this.$refs.mytree)
+      // let mytree = document.getElementById("my-tree")
+      // console.log(mytree.scrollTop)
+
+
+    },
+    doscroll(e) {
+      let mytree = document.getElementById("my-tree");
+      mytree.scrollTop = this.model.scrolltop;
+    }
   }
 }
 </script>
@@ -305,7 +350,7 @@ export default {
     <PatchIcon/>
     <SkeletonIcon />
     <TextIcon />
-
+<button @click="doscroll">scroll</button>
     <button @click="GetScene">scene root</button>
     <button @click="GetRoot">pure root</button>
     <button @click="GetMaxDepthAndSetChildExpanded">force depth</button>
@@ -340,6 +385,7 @@ export default {
     connection="connection"
     :doParentChild="doParentChild" :doJointHeirarchy="doJointHeirarchy"
     :showBoneNames="showBoneNames"
+    v-on:scroll.native="handleScroll"
     >
       <template v-slot:text="{ model, customClasses }">
         <div 
