@@ -17,6 +17,28 @@ export default {
       // add item to selection
       data.nodelist.push(item.treeNodeSpec.customizations.classes.fullpath);
 
+      // if not in scene or is the scene get confirmation
+
+      let scenepathArr = this.scenepath.split("/")
+      let outsideFound = false;
+
+      data.nodelist.forEach(node => {
+        let nodeArr = node.split("/");
+        if(nodeArr.length < 3 || node == this.scenepath) {
+          outsideFound = true;
+        } else {
+          if(nodeArr[1] != scenepathArr[1] || nodeArr[2] != scenepathArr[2]) {
+            outsideFound = true;
+          }
+        }
+      });
+
+      if(outsideFound) {
+        if(!window.confirm("Are you sure?")) {
+          return;
+        }
+      }
+
       data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
       data.doParentChild = this.doParentChild;
       data.doJointHeirarchy = this.doJointHeirarchy;
@@ -264,6 +286,7 @@ export default {
         themodel.treeNodeSpec.state.selected = false;
         return idmatch;
       });
+      console.log(matchArr)
       if(matchArr.length == 1) {
         matchArr[0].treeNodeSpec.state.selected = true;
         this.lastselection = matchArr[0];

@@ -191,7 +191,8 @@ export default {
       lastContextEvent: null,
       showrename: false,
       scrolltop: 0,
-      pagescrolltop: 0
+      pagescrolltop: 0,
+      scenepath: "/Project/Space 3D"
     }
   },
 
@@ -233,7 +234,8 @@ export default {
       // update the `<h2>`.
       let mydata = {};
       mydata = JSON.parse(event.data);
-      console.log(event.data)
+      // console.log(event.data)
+      //console.log(mydata.data.scenepath)
       this.time = mydata.command;
       // this.time = mydata.data.model;
       //this.model = mydata.data.model;
