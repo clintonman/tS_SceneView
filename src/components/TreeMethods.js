@@ -182,7 +182,14 @@ export default {
       data.parent = item.treeNodeSpec.customizations.classes.fullpath;
 
       //parent to self - no
-      if(children[0] == data.parent) return;
+      // if(children[0] == data.parent) {
+      if(data.children[0] == data.parent) {
+        console.log(children)
+        console.log(data.parent)
+        console.log(data.children)
+        console.log("parent to self - NO")
+        return;
+      }
 
       data.command = "Parent";
       data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;

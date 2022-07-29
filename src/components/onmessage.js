@@ -87,6 +87,16 @@ export default {
         mydata.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
         mydata.doParentChild = this.doParentChild;
         mydata.doJointHeirarchy = this.doJointHeirarchy;
+
+        //send expanded nodes list so can keep open on load fresh
+      let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+         return themodel.treeNodeSpec.state.expanded;
+       });
+       mydata.expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
+       if(mydata.expandedNodes && mydata.expandedNodes[0] === undefined) {
+         mydata.expandedNodes.shift();
+       }
+
         this.connection.send(JSON.stringify(mydata));
    },
    DoGroup3D() {
