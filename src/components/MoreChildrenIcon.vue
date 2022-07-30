@@ -8,7 +8,7 @@ export default {
       data.command = "GetTreeBranch";
       data.root = tsnode;
       data.startdepth = depth;
-      // PRBLEM how get values in here
+      
       data.doParentChild = this.doParentChild;
       data.doJointHeirarchy = this.doJointHeirarchy;
       data.nurbscpselectauto = this.nurbscpselectauto;

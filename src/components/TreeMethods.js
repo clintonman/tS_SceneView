@@ -113,6 +113,8 @@ export default {
       // add item to selection
       data.subobj.push(item.treeNodeSpec.customizations.classes.fullpath);
 
+      data.nurbscpselectauto = this.nurbscpselectauto;
+
       connection.send(JSON.stringify(data));
     },
     GroupSelect(item, connection) {
@@ -125,6 +127,8 @@ export default {
       });
       // add item to selection
       data.subobj.push(item.treeNodeSpec.customizations.classes.fullpath);
+
+      data.nurbscpselectauto = this.nurbscpselectauto;
 
       connection.send(JSON.stringify(data));
     },
@@ -195,6 +199,7 @@ export default {
       data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
       data.doParentChild = this.doParentChild;
       data.doJointHeirarchy = this.doJointHeirarchy;
+      data.nurbscpselectauto = this.nurbscpselectauto;
       connection.send(JSON.stringify(data));
     },
     UnParent(item, connection) {
@@ -497,13 +502,28 @@ export default {
       this.edittop = e.pageY;
       this.editleft = e.pageX;
     },
-    //TEST for scene level only first
     GetTreeToSelected() {
       let mydata = {};
-      mydata.command = "GetSceneTreeToSelection";
-      mydata.root = "current_scene";
+      // mydata.command = "GetSceneTreeToSelection";
+      mydata.command = "GetSceneTree3";
+      mydata.toselection = true;
+      //mydata.root = "current_scene";
+      mydata.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
       mydata.doParentChild = this.doParentChild;
       mydata.doJointHeirarchy = this.doJointHeirarchy;
+      mydata.nurbscpselectauto = this.nurbscpselectauto;
+
+      //send expanded nodes list so can keep open on load fresh
+      let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+        return themodel.treeNodeSpec.state.expanded;
+      });
+      // console.log("expanded", matchArr)
+
+      mydata.expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
+      if(mydata.expandedNodes && mydata.expandedNodes[0] === undefined) {
+        mydata.expandedNodes.shift();
+      }
+
       this.connection.send(JSON.stringify(mydata));
     },
     GetScene() {
@@ -642,15 +662,6 @@ export default {
       console.log("source",dropDataArr.treeNodeSpec.customizations.classes.fullpath)
       console.log("destination", event.path[3].id.split("-")[2])
 
-      //TODO popup to choose parent, 2D, 3D or parent, 2D, 3D with copy when ctrl pressed
-      //TODO send message to tS to perform actual action
-      //TODO send update info back from tS so no need relaod everything
-      // let mydata = {};
-      // mydata.command = "DoDropped";
-      // mydata.sourcepath = dropDataArr.treeNodeSpec.customizations.classes.fullpath;
-      // mydata.destinationid = event.path[3].id.split("-")[2];
-      // mydata.treeroot = this.model[0].treeNodeSpec.customizations.classes.fullpath;
-
       this.dataForTS = {};
       this.dataForTS.command = "DoDropped";
       this.dataForTS.sourcepath = dropDataArr.treeNodeSpec.customizations.classes.fullpath;
@@ -663,10 +674,6 @@ export default {
       } else {
         this.$refs.vueSimpleContextMoveMenu.showMenu(event, model);
       }
-
-      // mydata.droptype = "parent";//parent, 2d, 3d
-      // mydata.copy = event.ctrlKey;
-      //this.connection.send(JSON.stringify(mydata));
     },
     DroppedParent() {
       this.dropIsActive = false;
