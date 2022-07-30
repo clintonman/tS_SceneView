@@ -274,6 +274,7 @@ export default {
 
       let data = {};
       data.command = "SelectItems";
+      data.nurbscpselectauto = this.nurbscpselectauto;
       data.selection = [];
 
       for(let i=child1Index;i<=child2Index;i++) {
@@ -305,6 +306,7 @@ export default {
         
         let data = {};
         data.command = "SelectItems";
+        data.nurbscpselectauto = this.nurbscpselectauto;
         data.selection = [];
         data.selection.push(matchArr[0].treeNodeSpec.customizations.classes.fullpath);
         this.connection.send(JSON.stringify(data));
@@ -326,6 +328,7 @@ export default {
 
       let data = {};
       data.command = "SelectItems";
+      data.nurbscpselectauto = this.nurbscpselectauto;
       data.selection = [];
       if(matchArr.length > 0) {
         for(let i=0;i<matchArr.length;i++) {
@@ -470,6 +473,7 @@ export default {
         mydata.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
         mydata.doParentChild = this.doParentChild;
         mydata.doJointHeirarchy = this.doJointHeirarchy;
+        mydata.nurbscpselectauto = this.nurbscpselectauto;
 
         //send expanded nodes list so can keep open on load fresh
         let matchArr = this.$refs.mytree.getMatching((themodel)=>{
@@ -509,6 +513,7 @@ export default {
       mydata.root = "current_scene";
       mydata.doParentChild = this.doParentChild;
       mydata.doJointHeirarchy = this.doJointHeirarchy;
+      mydata.nurbscpselectauto = this.nurbscpselectauto;
       //send expanded nodes list so can keep open on load fresh
       let matchArr = this.$refs.mytree.getMatching((themodel)=>{
         return themodel.treeNodeSpec.state.expanded;
@@ -530,6 +535,7 @@ export default {
       mydata.root = "/";
       mydata.doParentChild = this.doParentChild;
       mydata.doJointHeirarchy = this.doJointHeirarchy;
+      mydata.nurbscpselectauto = this.nurbscpselectauto;
       //send expanded nodes list so can keep open on load fresh
       let matchArr = this.$refs.mytree.getMatching((themodel)=>{
         return themodel.treeNodeSpec.state.expanded;

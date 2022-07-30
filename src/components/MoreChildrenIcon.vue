@@ -11,6 +11,7 @@ export default {
       // PRBLEM how get values in here
       data.doParentChild = this.doParentChild;
       data.doJointHeirarchy = this.doJointHeirarchy;
+      data.nurbscpselectauto = this.nurbscpselectauto;
       console.log("GetTreeBranch", this.doParentChild, this.doJointHeirarchy);
       this.connection.send(JSON.stringify(data));
     },

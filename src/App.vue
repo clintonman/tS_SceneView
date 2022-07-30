@@ -192,7 +192,8 @@ export default {
       showrename: false,
       scrolltop: 0,
       pagescrolltop: 0,
-      scenepath: "/Project/Space 3D"
+      scenepath: "/Project/Space 3D",
+      nurbscpselectauto: true
     }
   },
 
@@ -219,6 +220,7 @@ export default {
         mydata.root = "current_scene";
         mydata.doParentChild = this.doParentChild;
         mydata.doJointHeirarchy = this.doJointHeirarchy;
+        mydata.nurbscpselectauto = this.nurbscpselectauto;
         this.connection.send(JSON.stringify(mydata));
     };
  
@@ -361,6 +363,7 @@ export default {
     <input type="checkbox" name="" id="parentchild" v-model="doParentChild"><label for="parentchild">Parent-Child</label>
     <input type="checkbox" name="" id="jointheirarchy" v-model="doJointHeirarchy"><label for="jointheirarchy">Joint Heirarchy</label>
     <input type="checkbox" id="showbonenames" v-model="showBoneNames"><label for="showbonenames">Show Bone Names</label>
+    <input type="checkbox" id="nurbscpselectauto" v-model="nurbscpselectauto"><label for="nurbscpselectauto">NURBS Auto CP Mesh Select</label>
     <p>order</p>
     <input @change="OrderNodes" type="radio" name="" id="none" v-model="alphaOrder" value="NONE"><label for="none">None</label>
     <input @change="OrderNodes" type="radio" name="" id="alpha" v-model="alphaOrder" value="ALPHA"><label for="alpha">Alpha</label>
