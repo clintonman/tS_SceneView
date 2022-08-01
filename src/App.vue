@@ -193,7 +193,8 @@ export default {
       scrolltop: 0,
       pagescrolltop: 0,
       scenepath: "/Project/Space 3D",
-      nurbscpselectauto: true
+      nurbscpselectauto: true,
+      socketport: 8080
     }
   },
 
@@ -209,93 +210,8 @@ export default {
     this.time = 'bobobo';
     // let connection = new WebSocket('ws://localhost:3000/');
     console.log("mounted")
-    let myurl = 'ws://127.0.0.1:8080/ws';
-    this.connection = new WebSocket(myurl);
 
-    this.connection.onopen = (ev) => {
-        // connection.send('{ "command" : "GetSceneTree2" }');
-        //this.connection.send('{ "command" : "GetSceneTree3", "root": "current_scene" }');
-        let mydata = {};
-        mydata.command = "GetSceneTree3";
-        mydata.root = "current_scene";
-        mydata.doParentChild = this.doParentChild;
-        mydata.doJointHeirarchy = this.doJointHeirarchy;
-        mydata.nurbscpselectauto = this.nurbscpselectauto;
-        this.connection.send(JSON.stringify(mydata));
-    };
- 
-    this.connection.onmessage = (event) => {
-      let mytree = document.getElementById("my-tree");
-      this.model.scrolltop = mytree.scrollTop;
-      // this.model.pagescrolltop = document.body.scrollTop;
-      this.model.pagescrolltop = document.documentElement.scrollTop;
-      console.log("treescroll",this.model.scrolltop)
-      console.log("pagescroll",this.model.pagescrolltop)
-      // Vue data binding means you don't need any extra work to
-      // update your UI. Just set the `time` and Vue will automatically
-      // update the `<h2>`.
-      let mydata = {};
-      mydata = JSON.parse(event.data);
-      // console.log(event.data)
-      //console.log(mydata.data.scenepath)
-      this.time = mydata.command;
-      // this.time = mydata.data.model;
-      //this.model = mydata.data.model;
-      //console.log(this.model);
-      if(mydata.command == "ErrorResult") { onmessage.ErrorResult.call(this, mydata); }
-      if(mydata.command == "DisplaySceneTree3") { onmessage.DisplaySceneTree3.call(this, mydata); }
-      if(mydata.command == "AddToTree") { onmessage.AddToTree.call(this, mydata); }
-      if(mydata.command == "SetNoteStatus") {
-        console.log(mydata)
-        let matchArr = this.$refs.mytree.getMatching((themodel)=>{
-          return themodel.id == mydata.id;
-        });
-        if(matchArr.length > 0) {
-          console.log()
-          matchArr[0].treeNodeSpec.customizations.classes.note = mydata.status;
-        }
-      }
-      if(mydata.command == "OpenEditor") {
-        console.log(mydata)
-        this.showNoteEditor=true;
-        this.tsnode = mydata.path;
-        this.mycontent = JSON.parse(mydata.delta);
-      }
-      if(mydata.command == "UpdateHTMLNote") {
-        console.log(mydata)
-        this.showNoteEditor=false;
-        this.htmlnote = mydata.html;
-      }
-      if(mydata.command == "NewSelection") { onmessage.NewSelection.call(this, mydata); }
-      if(mydata.command == "RenameFailed") { onmessage.RenameFailed.call(this, mydata); }
-      if(mydata.command == "TSRefresh") { onmessage.TSRefresh.call(this); }
-      if(mydata.command == "DoGroup3D") { onmessage.DoGroup3D.call(this); }
-      if(mydata.command == "DoGroup") { onmessage.DoGroup.call(this); }
-
-      // mytree.scrollTop = scrolltop;
-      mytree = document.getElementById("my-tree");
-      // mytree.scroll(0, scrolltop);
-      console.log(this.model.scrolltop);
-      // mytree.scrollTop = scrolltop;
-
-      // if(mydata.command == "DisplaySceneTree3" || mydata.command == "AddToTree" || mydata.command == "TSRefresh" || mydata.command == "ErrorResult") {
-      if(mydata.command == "DisplaySceneTree3") {
-        this.$nextTick(function(){
-          setTimeout(() => {
-            console.log("next timeout",this.model.scrolltop);
-            // this.$refs.scrollList.scrollTop = 99999
-            let mytree = document.getElementById("my-tree");
-            mytree.scrollTop = this.model.scrolltop;
-            document.documentElement.scrollTop = this.model.pagescrolltop;
-        }, 100)
-        });
-      }
-      // this.$nextTick((scrolltop) => {
-      //   let mytree = document.getElementById("my-tree");
-      //   console.log("nexttick",scrolltop)
-      //   mytree.scrollTop = scrolltop;
-      // });
-    }
+    this.SetSocketPort();
   },
 
   methods: {
@@ -306,12 +222,101 @@ export default {
       //console.log(this.$refs.mytree)
       // let mytree = document.getElementById("my-tree")
       // console.log(mytree.scrollTop)
-
-
     },
-    doscroll(e) {
-      let mytree = document.getElementById("my-tree");
-      mytree.scrollTop = this.model.scrolltop;
+    SetSocketPort() {
+      if(this.connection) {
+        this.connection.close();
+        this.connection = null;
+      }
+
+      // let myurl = 'ws://127.0.0.1:8080/ws';//socketport
+      let myurl = `ws://127.0.0.1:${this.socketport}/ws`;
+      this.connection = new WebSocket(myurl);
+
+      this.connection.onopen = (ev) => {
+          // connection.send('{ "command" : "GetSceneTree2" }');
+          //this.connection.send('{ "command" : "GetSceneTree3", "root": "current_scene" }');
+          let mydata = {};
+          mydata.command = "GetSceneTree3";
+          mydata.root = "current_scene";
+          mydata.doParentChild = this.doParentChild;
+          mydata.doJointHeirarchy = this.doJointHeirarchy;
+          mydata.nurbscpselectauto = this.nurbscpselectauto;
+          this.connection.send(JSON.stringify(mydata));
+      };
+  
+      this.connection.onmessage = (event) => {
+        let mytree = document.getElementById("my-tree");
+        this.model.scrolltop = mytree.scrollTop;
+        // this.model.pagescrolltop = document.body.scrollTop;
+        this.model.pagescrolltop = document.documentElement.scrollTop;
+        console.log("treescroll",this.model.scrolltop)
+        console.log("pagescroll",this.model.pagescrolltop)
+        // Vue data binding means you don't need any extra work to
+        // update your UI. Just set the `time` and Vue will automatically
+        // update the `<h2>`.
+        let mydata = {};
+        mydata = JSON.parse(event.data);
+        // console.log(event.data)
+        //console.log(mydata.data.scenepath)
+        this.time = mydata.command;
+        // this.time = mydata.data.model;
+        //this.model = mydata.data.model;
+        //console.log(this.model);
+        if(mydata.command == "ErrorResult") { onmessage.ErrorResult.call(this, mydata); }
+        if(mydata.command == "DisplaySceneTree3") { onmessage.DisplaySceneTree3.call(this, mydata); }
+        if(mydata.command == "AddToTree") { onmessage.AddToTree.call(this, mydata); }
+        if(mydata.command == "SetNoteStatus") {
+          console.log(mydata)
+          let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+            return themodel.id == mydata.id;
+          });
+          if(matchArr.length > 0) {
+            console.log()
+            matchArr[0].treeNodeSpec.customizations.classes.note = mydata.status;
+          }
+        }
+        if(mydata.command == "OpenEditor") {
+          console.log(mydata)
+          this.showNoteEditor=true;
+          this.tsnode = mydata.path;
+          this.mycontent = JSON.parse(mydata.delta);
+        }
+        if(mydata.command == "UpdateHTMLNote") {
+          console.log(mydata)
+          this.showNoteEditor=false;
+          this.htmlnote = mydata.html;
+        }
+        if(mydata.command == "NewSelection") { onmessage.NewSelection.call(this, mydata); }
+        if(mydata.command == "RenameFailed") { onmessage.RenameFailed.call(this, mydata); }
+        if(mydata.command == "TSRefresh") { onmessage.TSRefresh.call(this); }
+        if(mydata.command == "DoGroup3D") { onmessage.DoGroup3D.call(this); }
+        if(mydata.command == "DoGroup") { onmessage.DoGroup.call(this); }
+
+        // mytree.scrollTop = scrolltop;
+        mytree = document.getElementById("my-tree");
+        // mytree.scroll(0, scrolltop);
+        console.log(this.model.scrolltop);
+        // mytree.scrollTop = scrolltop;
+
+        // if(mydata.command == "DisplaySceneTree3" || mydata.command == "AddToTree" || mydata.command == "TSRefresh" || mydata.command == "ErrorResult") {
+        if(mydata.command == "DisplaySceneTree3") {
+          this.$nextTick(function(){
+            setTimeout(() => {
+              console.log("next timeout",this.model.scrolltop);
+              // this.$refs.scrollList.scrollTop = 99999
+              let mytree = document.getElementById("my-tree");
+              mytree.scrollTop = this.model.scrolltop;
+              document.documentElement.scrollTop = this.model.pagescrolltop;
+          }, 100)
+          });
+        }
+        // this.$nextTick((scrolltop) => {
+        //   let mytree = document.getElementById("my-tree");
+        //   console.log("nexttick",scrolltop)
+        //   mytree.scrollTop = scrolltop;
+        // });
+      }
     }
   }
 }
@@ -319,23 +324,7 @@ export default {
 
 <template>
   <div class="controls">
-    <h1>Scene View</h1>
-    <div class="notes-head">
-      <h2>Command: {{time}} - {{tsnode}}</h2>
-      <Notes 
-        style="margin:1em;"
-        v-if="showNoteEditor" 
-        :connection="connection"
-        @onNoteClose="CloseNoteEditor" 
-        :htmlnote="htmlnote" 
-        :initialDelta="mycontent" 
-        :tsnode="tsnode"/>
-        <!-- must place inside parent with class to get quill styles -->
-        <div class="note-readonly ql-editor"  v-else-if="shownotes">
-          <div class="note-readonly-content" v-html="htmlnote"></div>
-        </div>
-    </div>
-
+    <h1>Scene View<sup>v2</sup>&nbsp;
     <ActorIcon />
     <AnimationIcon />
     <BoneIcon />
@@ -354,22 +343,67 @@ export default {
     <PatchIcon/>
     <SkeletonIcon />
     <TextIcon />
-<button @click="doscroll">scroll</button>
-    <button @click="GetScene">scene root</button>
-    <button @click="GetRoot">pure root</button>
-    <button @click="GetMaxDepthAndSetChildExpanded">force depth</button>
-    <button @click="GetTreeToSelected">expand to selected</button>
-    <input type="checkbox" name="" id="shownotes" v-model="shownotes"><label for="shownotes">Show Notes</label>
-    <input type="checkbox" name="" id="parentchild" v-model="doParentChild"><label for="parentchild">Parent-Child</label>
-    <input type="checkbox" name="" id="jointheirarchy" v-model="doJointHeirarchy"><label for="jointheirarchy">Joint Heirarchy</label>
-    <input type="checkbox" id="showbonenames" v-model="showBoneNames"><label for="showbonenames">Show Bone Names</label>
-    <input type="checkbox" id="nurbscpselectauto" v-model="nurbscpselectauto"><label for="nurbscpselectauto">NURBS Auto CP Mesh Select</label>
-    <p>order</p>
-    <input @change="OrderNodes" type="radio" name="" id="none" v-model="alphaOrder" value="NONE"><label for="none">None</label>
-    <input @change="OrderNodes" type="radio" name="" id="alpha" v-model="alphaOrder" value="ALPHA"><label for="alpha">Alpha</label>
-    <input @change="OrderNodes" type="radio" name="" id="id" v-model="alphaOrder" value="ID"><label for="id">ID</label>
-    <input @change="OrderNodes" type="radio" name="" id="type" v-model="alphaOrder" value="TYPE"><label for="id">Type</label>
-    <input @change="SetLabelWidth" type="number" name="" id="namewidth" v-model="nameWidth"><label for="namewidth">Label Width</label>
+    </h1>
+    <div class="notes-head">
+      <!-- <h2>Command: {{time}} - {{tsnode}}</h2> -->
+      <Notes 
+        style="margin:1em;"
+        v-if="showNoteEditor" 
+        :connection="connection"
+        @onNoteClose="CloseNoteEditor" 
+        :htmlnote="htmlnote" 
+        :initialDelta="mycontent" 
+        :tsnode="tsnode"/>
+        <!-- must place inside parent with class to get quill styles -->
+        <div class="note-readonly ql-editor"  v-else-if="shownotes">
+          <div class="note-readonly-content" v-html="htmlnote"></div>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+      <button @click="GetScene" title="load or refresh to the current scene level">Open to the Scene</button>
+      <button @click="GetRoot" title="load or refresh to the root app level">Open the Root Level</button>
+      <button @click="GetTreeToSelected" title="show the selected node in the tree">Expand to Selected</button>
+      <button @click="GetMaxDepthAndSetChildExpanded">Straighten Columns</button>
+    </div>
+
+    <div class="order-by">
+      <h3 title="arrange alphabetically, by ID number or by object type">Order by:</h3>
+      <label for="none">
+        <input @change="OrderNodes" type="radio" name="" id="none" v-model="alphaOrder" value="NONE"/>
+        None
+      </label>
+      <label for="alpha" title="order alphabetically">
+        <input @change="OrderNodes" type="radio" name="" id="alpha" v-model="alphaOrder" value="ALPHA">
+        Alpha
+      </label>
+      <label for="id" title="order by node id">
+        <input @change="OrderNodes" type="radio" name="" id="id" v-model="alphaOrder" value="ID">
+        ID
+      </label>
+      <label for="type" title="order by type of object">
+        <input @change="OrderNodes" type="radio" name="" id="type" v-model="alphaOrder" value="TYPE">
+        Type
+      </label>
+    </div>
+    <div class="check-options">
+      <input type="checkbox" name="" id="shownotes" v-model="shownotes" title="show the notes section">
+      <label for="shownotes" title="show the notes section">Show Notes</label>
+      <input type="checkbox" name="" id="parentchild" v-model="doParentChild" title="show parent child relationships">
+      <label for="parentchild" title="show parent child relationships">Parent-Child</label>
+      <input type="checkbox" name="" id="jointheirarchy" v-model="doJointHeirarchy" title="show skeleton joint heirarchy">
+      <label for="jointheirarchy" title="show skeleton joint heirarchy">Joint Heirarchy</label>
+      <input type="checkbox" id="showbonenames" v-model="showBoneNames" title="show bones names when joint heirarchy is displayed">
+      <label for="showbonenames" title="show bones names when joint heirarchy is displayed">Show Bone Names</label>
+      <input type="checkbox" id="nurbscpselectauto" v-model="nurbscpselectauto" title="automatically convert nurbs selections for 3d manipulation">
+      <label for="nurbscpselectauto" title="automatically convert nurbs selections for 3d manipulation">NURBS Auto CP Mesh Select</label>
+    </div>
+    <div class="num-options">
+      <label for="namewidth">Label Width</label>
+      <input @change="SetLabelWidth" type="number" name="" id="namewidth" v-model="nameWidth">
+      <label for="socketport">Websocket Port</label>
+      <input @change="SetSocketPort" type="number" name="" id="socketport" v-model="socketport">
+    </div>
   </div>
 
   <div class="rename-box" :style="{top:edittop-25+'px',left:editleft-15+'px'}" v-if="shownameedit">
@@ -436,8 +470,8 @@ export default {
           <HiddenIcon class="action-label action-label--active" v-if="customClasses.visible == 'no'" :connection="connection" :model="model" @onShow="ShowNode" @onShowSoft="ShowNodeSoft"/>
           <NAIcon class="action-label action-label--na" v-if="customClasses.visible == 'na'"/>
 
-          <LockedIcon class="action-label action-label--active" v-if="customClasses.locked == 'yes'" :connection="connection" :model="model"/>
-          <UnlockedIcon class="action-label action-label--inactive" v-if="customClasses.locked == 'no'" :connection="connection" :model="model"/>
+          <LockedIcon class="action-label action-label--active" v-if="customClasses.locked == 'yes'" :connection="connection" :model="model" title="unlock"/>
+          <UnlockedIcon class="action-label action-label--inactive" v-if="customClasses.locked == 'no'" :connection="connection" :model="model" title="lock"/>
           <NAIcon class="action-label action-label--na" v-if="customClasses.locked == 'na'"/>
 
           <NoteEditIcon class="action-label action-label--note" v-if="customClasses.note == 'yes'" :connection="connection" :customClasses="customClasses" :model="model"/>
@@ -485,6 +519,40 @@ export default {
 
 <style>
 @import './assets/base.css';
+
+  .action-buttons {
+    display: flex;
+    gap: 1em;
+    margin-left: 0.5em;
+    margin-top: 1.5em;
+  }
+  .action-buttons button {
+    height: 2em;
+  }
+  .order-by {
+    display: flex;
+    margin-left: 0.5em;
+    margin-top: 1.5em;
+    gap: 1em;
+    align-items: center;
+  }
+  .check-options {
+    display: grid;
+    margin-left: 0.5em;
+    margin-top: 1.5em;
+    grid-template-columns: 2em 1fr;
+    row-gap: 0.5em;
+  }
+  .check-options input {
+    margin-right: 0.8em;
+  }
+  .num-options {
+    display: grid;
+    margin-left: 0.5em;
+    margin-top: 1.5em;
+    grid-template-columns: 7.5em 4em;
+    row-gap: 0.5em;
+  }
 
   #my-tree {
     border:2px solid rgb(48, 16, 40);

@@ -16,6 +16,7 @@ export default {
     fill="currentColor"
      @click="LoadEditor(customClasses.fullpath)"
      :style="{fill: model.treeNodeSpec.state.selected ? '#ca0' : ''}">
+     <title>edit note</title>
     <path
      id="path9485"
      d="M2.679 10.293l5.849-5.851 3 3-5.83 5.873-4.026 1.072z" />

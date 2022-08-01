@@ -22,6 +22,7 @@ export default {
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 18 18"
    fill="currentColor"
    @click="GetTreeBranch(customClasses.fullpath, customClasses.treedepth)">
+   <title>load subobjects</title>
     <g
      id="xml-attribute-delete"
      transform="matrix(0.666667,0,0,0.666667,-797.33333,-371.57479)">

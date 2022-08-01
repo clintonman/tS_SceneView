@@ -17,6 +17,7 @@ export default {
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"
       fill="currentColor"
       @click="Lock(model)">
+      <title>lock object</title>
     <g
      transform="translate(-195,-961.3622)"
      id="object-unlocked">

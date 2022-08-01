@@ -2,6 +2,7 @@
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"
     fill="currentColor"
   >
+  <title>create new note</title>
     <path
      id="path9485"
      d="M2.679 10.293l5.849-5.851 3 3-5.83 5.873-4.026 1.072z" />

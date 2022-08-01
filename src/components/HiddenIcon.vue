@@ -39,6 +39,7 @@ export default {
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"
       fill="currentColor"
       @click.ctrl="ShowNode(model)" @click.exact="ShowNodeSoft(model)">
+      <title>show object</title>
     <g
      transform="translate(-165,-981.36218)"
      id="object-hidden">
