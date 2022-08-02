@@ -344,6 +344,7 @@ export default {
     <MeshIcon />
     <MaterialIcon />
     <ModifierIcon />
+    <MoreChildrenIcon />
     <PatchIcon/>
     <SkeletonIcon />
     <TextIcon />
@@ -373,7 +374,10 @@ export default {
 
     
       <input type="checkbox" name="showoptions" id="showoptions" class="showoptions" v-model="showoptions" hidden>
-      <label for="showoptions" class="showoptions-label">{{showoptions ? 'Hide' : 'Show'}} Options</label>
+      <label for="showoptions" class="showoptions-label">{{showoptions ? 'Hide' : 'Show'}} Options
+      <HiddenIcon v-if="!showoptions" />
+      <VisibleIcon v-else />
+      </label>
 
       <div class="options-groups" v-if="showoptions">
         <div class="order-by">
@@ -546,6 +550,7 @@ export default {
     color:white;
     background-color: rgb(48, 15, 43);
     border-radius: 6px;
+    border-color: rgb(94,58,89);
   }
 
   .showoptions {
@@ -554,17 +559,21 @@ export default {
   }
 
   .showoptions-label {
-    display: block;
+    display: flex;
+    gap: 0.75em;
     margin-left: 0.5em;
     margin-top: 1.5em;
     padding: 0.25em 0.25em;
     background-color: rgb(48, 15, 43);
+    border: 2px outset rgb(94,58,89);
     border-radius: 6px;
-    text-align: center;
-    height: 2.5em;
     width: 12em;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
   }
-  .showoptions-label:hover {
+  .showoptions-label:hover,
+  .action-buttons button:hover {
     background-color: rgb(75, 12, 65);
   }
   .options-groups {
