@@ -194,7 +194,8 @@ export default {
       pagescrolltop: 0,
       scenepath: "/Project/Space 3D",
       nurbscpselectauto: true,
-      socketport: 8080
+      socketport: 8080,
+      showoptions: false
     }
   },
 
@@ -361,50 +362,58 @@ export default {
     </div>
 
     <div class="action-buttons">
-      <button @click="GetScene" title="load or refresh to the current scene level">Open to the Scene</button>
-      <button @click="GetRoot" title="load or refresh to the root app level">Open the Root Level</button>
+      <button @click="GetScene" title="load or refresh at the current scene level">Scene</button>
+      <button @click="GetRoot" title="load or refresh at the root app level">Root Level</button>
       <button @click="GetTreeToSelected" title="show the selected node in the tree">Expand to Selected</button>
       <button @click="GetMaxDepthAndSetChildExpanded">Straighten Columns</button>
     </div>
 
-    <div class="order-by">
-      <h3 title="arrange alphabetically, by ID number or by object type">Order by:</h3>
-      <label for="none">
-        <input @change="OrderNodes" type="radio" name="" id="none" v-model="alphaOrder" value="NONE"/>
-        None
-      </label>
-      <label for="alpha" title="order alphabetically">
-        <input @change="OrderNodes" type="radio" name="" id="alpha" v-model="alphaOrder" value="ALPHA">
-        Alpha
-      </label>
-      <label for="id" title="order by node id">
-        <input @change="OrderNodes" type="radio" name="" id="id" v-model="alphaOrder" value="ID">
-        ID
-      </label>
-      <label for="type" title="order by type of object">
-        <input @change="OrderNodes" type="radio" name="" id="type" v-model="alphaOrder" value="TYPE">
-        Type
-      </label>
+    
+      <input type="checkbox" name="showoptions" id="showoptions" class="showoptions" v-model="showoptions" hidden>
+      <label for="showoptions" class="showoptions-label">{{showoptions ? 'Hide' : 'Show'}} Options</label>
+
+      <div class="options-groups" v-if="showoptions">
+        <div class="order-by">
+          <h3 title="arrange alphabetically, by ID number or by object type">Order by:</h3>
+          <label for="none">
+            <input @change="OrderNodes" type="radio" name="" id="none" v-model="alphaOrder" value="NONE"/>
+            None
+          </label>
+          <label for="alpha" title="order alphabetically">
+            <input @change="OrderNodes" type="radio" name="" id="alpha" v-model="alphaOrder" value="ALPHA">
+            Alpha
+          </label>
+          <label for="id" title="order by node id">
+            <input @change="OrderNodes" type="radio" name="" id="id" v-model="alphaOrder" value="ID">
+            ID
+          </label>
+          <label for="type" title="order by type of object">
+            <input @change="OrderNodes" type="radio" name="" id="type" v-model="alphaOrder" value="TYPE">
+            Type
+          </label>
+        </div>
+        <div class="check-options">
+          <input type="checkbox" name="" id="shownotes" v-model="shownotes" title="show the notes section">
+          <label for="shownotes" title="show the notes section">Show Notes</label>
+          <input type="checkbox" name="" id="parentchild" v-model="doParentChild" title="show parent child relationships">
+          <label for="parentchild" title="show parent child relationships">Parent-Child</label>
+          <input type="checkbox" name="" id="jointheirarchy" v-model="doJointHeirarchy" title="show skeleton joint heirarchy">
+          <label for="jointheirarchy" title="show skeleton joint heirarchy">Joint Heirarchy</label>
+          <input type="checkbox" id="showbonenames" v-model="showBoneNames" title="show bones names when joint heirarchy is displayed">
+          <label for="showbonenames" title="show bones names when joint heirarchy is displayed">Show Bone Names</label>
+          <input type="checkbox" id="nurbscpselectauto" v-model="nurbscpselectauto" title="automatically convert nurbs selections for 3d manipulation">
+          <label for="nurbscpselectauto" title="automatically convert nurbs selections for 3d manipulation">NURBS Auto CP Mesh Select</label>
+        </div>
+        <div class="num-options">
+          <label for="namewidth">Label Width</label>
+          <input @change="SetLabelWidth" type="number" name="" id="namewidth" v-model="nameWidth">
+          <label for="socketport">Websocket Port</label>
+          <input @change="SetSocketPort" type="number" name="" id="socketport" v-model="socketport">
+        </div>
+      </div>
+    
+
     </div>
-    <div class="check-options">
-      <input type="checkbox" name="" id="shownotes" v-model="shownotes" title="show the notes section">
-      <label for="shownotes" title="show the notes section">Show Notes</label>
-      <input type="checkbox" name="" id="parentchild" v-model="doParentChild" title="show parent child relationships">
-      <label for="parentchild" title="show parent child relationships">Parent-Child</label>
-      <input type="checkbox" name="" id="jointheirarchy" v-model="doJointHeirarchy" title="show skeleton joint heirarchy">
-      <label for="jointheirarchy" title="show skeleton joint heirarchy">Joint Heirarchy</label>
-      <input type="checkbox" id="showbonenames" v-model="showBoneNames" title="show bones names when joint heirarchy is displayed">
-      <label for="showbonenames" title="show bones names when joint heirarchy is displayed">Show Bone Names</label>
-      <input type="checkbox" id="nurbscpselectauto" v-model="nurbscpselectauto" title="automatically convert nurbs selections for 3d manipulation">
-      <label for="nurbscpselectauto" title="automatically convert nurbs selections for 3d manipulation">NURBS Auto CP Mesh Select</label>
-    </div>
-    <div class="num-options">
-      <label for="namewidth">Label Width</label>
-      <input @change="SetLabelWidth" type="number" name="" id="namewidth" v-model="nameWidth">
-      <label for="socketport">Websocket Port</label>
-      <input @change="SetSocketPort" type="number" name="" id="socketport" v-model="socketport">
-    </div>
-  </div>
 
   <div class="rename-box" :style="{top:edittop-25+'px',left:editleft-15+'px'}" v-if="shownameedit">
     <input type="text" 
@@ -522,33 +531,66 @@ export default {
 
   .action-buttons {
     display: flex;
+    flex-wrap: wrap;
     gap: 1em;
     margin-left: 0.5em;
     margin-top: 1.5em;
   }
   .action-buttons button {
-    height: 2em;
+    height: 2.5em;
+    width: 12em;
+    color:white;
+    background-color: rgb(48, 15, 43);
+    border-radius: 6px;
+  }
+
+  .showoptions {
+    margin-left: 0.5em;
+    margin-top: 1.5em;
+  }
+
+  .showoptions-label {
+    display: block;
+    margin-left: 0.5em;
+    margin-top: 1.5em;
+    padding: 0.25em 0.25em;
+    background-color: rgb(48, 15, 43);
+    border-radius: 6px;
+    text-align: center;
+    height: 2.5em;
+    width: 12em;
+  }
+  .showoptions-label:hover {
+    background-color: rgb(75, 12, 65);
+  }
+  .options-groups {
+    border:2px solid rgb(167, 56, 139);
+    margin: 1em;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1.5em;
+    width: 26em;
   }
   .order-by {
     display: flex;
-    margin-left: 0.5em;
-    margin-top: 1.5em;
     gap: 1em;
     align-items: center;
   }
+  .order-by h3 {
+    font-size: 1em;
+  }
   .check-options {
     display: grid;
-    margin-left: 0.5em;
     margin-top: 1.5em;
     grid-template-columns: 2em 1fr;
     row-gap: 0.5em;
   }
+
   .check-options input {
     margin-right: 0.8em;
   }
   .num-options {
     display: grid;
-    margin-left: 0.5em;
     margin-top: 1.5em;
     grid-template-columns: 7.5em 4em;
     row-gap: 0.5em;
