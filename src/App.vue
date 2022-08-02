@@ -15,6 +15,7 @@ import CurveIcon from './components/CurveIcon.vue'
 import GeometryIcon from './components/GeometryIcon.vue'
 import GroupIcon from './components/GroupIcon.vue'
 import Group3DIcon from './components/Group3DIcon.vue'
+import HairIcon from './components/HairIcon.vue'
 import HiddenIcon from './components/HiddenIcon.vue'
 import IKHandleIcon from './components/IKHandleIcon.vue'
 import IKLockIcon from './components/IKLockIcon.vue'
@@ -61,6 +62,7 @@ export default {
     GeometryIcon,
     GroupIcon,
     Group3DIcon,
+    HairIcon,
     HiddenIcon,
     IKHandleIcon,
     IKLockIcon,
@@ -335,6 +337,7 @@ export default {
     <GeometryIcon />
     <GroupIcon />
     <Group3DIcon />
+    <HairIcon />
     <IKHandleIcon />
     <IKLockIcon />
     <LightIcon />
@@ -449,6 +452,7 @@ export default {
           <GeometryIcon class="label-icon" v-else-if="customClasses.type == 'geom'" />
           <GroupIcon class="label-icon label-icon-group" v-else-if="customClasses.type == 'group'" />
           <Group3DIcon class="label-icon" v-else-if="customClasses.type == 'group3d'" />
+          <HairIcon class="label-icon" v-else-if="customClasses.type == 'hair'" />
           <IKHandleIcon class="label-icon label-icon-bone" v-else-if="customClasses.type == 'ikhandle'" />
           <IKLockIcon class="label-icon label-icon-bone" v-else-if="customClasses.type == 'iklock'" />
           <JointIcon class="label-icon label-icon-joint" v-else-if="customClasses.type == 'joint'" />
