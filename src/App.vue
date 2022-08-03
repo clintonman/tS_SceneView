@@ -373,17 +373,18 @@ export default {
 
     <div class="action-buttons">
       <button @click="GetScene" title="load or refresh at the current scene level">Scene</button>
-      <button @click="GetRoot" title="load or refresh at the root app level">Root Level</button>
-      <button @click="GetTreeToSelected" title="show the selected node in the tree">Expand to Selected</button>
-      <button @click="GetMaxDepthAndSetChildExpanded">Straighten Columns</button>
+      <button @click="GetRoot" title="load or refresh at the root app level">Root</button>
+      <button @click="GetTreeToSelected" title="show the selected node in the tree">Expand to</button>
+      <button @click="GetMaxDepthAndSetChildExpanded" title="straighten action icon columns">Straighten</button>
+      <label for="showoptions" class="showoptions-label">Options
+      <HiddenIcon v-if="!showoptions" />
+      <VisibleIcon v-else />
+      </label>
     </div>
 
     
       <input type="checkbox" name="showoptions" id="showoptions" class="showoptions" v-model="showoptions" hidden>
-      <label for="showoptions" class="showoptions-label">{{showoptions ? 'Hide' : 'Show'}} Options
-      <HiddenIcon v-if="!showoptions" />
-      <VisibleIcon v-else />
-      </label>
+      
 
       <div class="options-groups" v-if="showoptions">
         <div class="order-by">
@@ -548,13 +549,13 @@ export default {
   .action-buttons {
     display: flex;
     flex-wrap: wrap;
-    gap: 1em;
+    gap: 0.5em;
     margin-left: 0.5em;
     margin-top: 1.5em;
   }
   .action-buttons button {
-    height: 2.5em;
-    width: 12em;
+    height: 2em;
+    width: 7em;
     color:white;
     background-color: rgb(48, 15, 43);
     border-radius: 6px;
@@ -569,13 +570,13 @@ export default {
   .showoptions-label {
     display: flex;
     gap: 0.75em;
-    margin-left: 0.5em;
-    margin-top: 1.5em;
-    padding: 0.25em 0.25em;
+    /* margin-left: 0.5em; */
+    /* margin-top: 1.5em; */
+    padding: 0.05em 0.25em;
     background-color: rgb(48, 15, 43);
     border: 2px outset rgb(94,58,89);
     border-radius: 6px;
-    width: 12em;
+    width: 7em;
     align-items: center;
     justify-content: center;
     font-size: 0.9em;
