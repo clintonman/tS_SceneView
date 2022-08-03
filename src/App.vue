@@ -27,7 +27,9 @@ import MeshIcon from './components/MeshIcon.vue'
 import ModifierIcon from './components/ModifierIcon.vue'
 import NoteEditIcon from './components/NoteEditIcon.vue'
 import NoteNewIcon from './components/NoteNewIcon.vue'
+import ParticlesIcon from './components/ParticlesIcon.vue'
 import PatchIcon from './components/PatchIcon.vue'
+import PhysicsIcon from './components/PhysicsIcon.vue'
 import SkeletonIcon from './components/SkeletonIcon.vue'
 import TextIcon from './components/TextIcon.vue'
 import UnlockedIcon from './components/UnlockedIcon.vue'
@@ -74,7 +76,9 @@ export default {
     ModifierIcon,
     NoteEditIcon,
     NoteNewIcon,
+    ParticlesIcon,
     PatchIcon,
+    PhysicsIcon,
     TextIcon,
     SkeletonIcon,
     UnlockedIcon,
@@ -345,7 +349,9 @@ export default {
     <MaterialIcon />
     <ModifierIcon />
     <MoreChildrenIcon />
+    <ParticlesIcon/>
     <PatchIcon/>
+    <PhysicsIcon/>
     <SkeletonIcon />
     <TextIcon />
     </h1>
@@ -464,7 +470,9 @@ export default {
           <MaterialIcon class="label-icon label-icon-material" v-else-if="customClasses.type == 'material'" />
           <MeshIcon class="label-icon" v-else-if="customClasses.type == 'renderable'" />
           <ModifierIcon class="label-icon" v-else-if="customClasses.type == 'modifier'" />
+          <ParticlesIcon class="label-icon" v-else-if="customClasses.type == 'particles'" />
           <PatchIcon class="label-icon label-icon-nurbs" v-else-if="customClasses.type == 'patch'" />
+          <PhysicsIcon class="label-icon" v-else-if="customClasses.type == 'physics'" />
           <JointIcon class="label-icon label-icon-root-joint" v-else-if="customClasses.type == 'rootjoint'" />
           <SkeletonIcon class="label-icon" v-else-if="customClasses.type == 'skeleton'" />
           <TextIcon class="label-icon" v-else-if="customClasses.type == 'text'" />
@@ -656,7 +664,7 @@ export default {
     fill:rgb(231, 216, 196);
   }
   .label-icon-camera {
-    fill:rgb(156, 177, 247);
+    fill:rgb(134, 161, 250);
   }
   .label-icon-group {
     fill:rgb(135, 175, 88);
@@ -665,7 +673,7 @@ export default {
     fill:rgb(238, 177, 97);
   }
   .label-icon-light {
-    fill:rgb(203, 221, 101);
+    fill:rgb(219, 221, 101);
   }
   .label-icon-material {
     fill:rgb(221, 101, 117);
