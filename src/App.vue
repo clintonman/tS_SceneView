@@ -91,7 +91,6 @@ export default {
   data() {
     return {
       model: [],
-    time: null,
       optionsArray1: [
         {
           name: 'Group3D',
@@ -201,7 +200,9 @@ export default {
       scenepath: "/Project/Space 3D",
       nurbscpselectauto: true,
       socketport: 8080,
-      showoptions: false
+      showoptions: false,
+      socketerror: false,
+      isDev: process.env.NODE_ENV == "development" // only show port number input if in dev mode
     }
   },
 
@@ -214,8 +215,6 @@ export default {
     var menu2 = document.getElementById("copyMenu");
     document.firstElementChild.appendChild(menu2);
 
-    this.time = 'bobobo';
-    // let connection = new WebSocket('ws://localhost:3000/');
     console.log("mounted")
 
     this.SetSocketPort();
@@ -223,24 +222,30 @@ export default {
 
   methods: {
     ...TreeMethods,
-    handleScroll(e) {
-      //console.log(e)
-      //console.log(e.target.scrollTop, e.target.scrollLeft)
-      //console.log(this.$refs.mytree)
-      // let mytree = document.getElementById("my-tree")
-      // console.log(mytree.scrollTop)
-    },
     SetSocketPort() {
+      this.socketerror = false;
+
       if(this.connection) {
         this.connection.close();
         this.connection = null;
       }
 
-      // let myurl = 'ws://127.0.0.1:8080/ws';//socketport
-      let myurl = `ws://127.0.0.1:${this.socketport}/ws`;
+      if(process.env.NODE_ENV == "development") {
+        var myurl = `ws://${location.hostname}:${this.socketport}/ws`;//development dev port and server port
+      } else {
+        var myurl = `ws:${location.host}/ws`;//production live and server ports the same and don't need socketport
+      }
       this.connection = new WebSocket(myurl);
 
+      this.connection.onerror = (e) => {
+        console.log(location)
+        console.log(e)
+        this.socketerror = true;
+      }
+
       this.connection.onopen = (ev) => {
+        console.log(location)
+        console.log(process.env.NODE_ENV)
           // connection.send('{ "command" : "GetSceneTree2" }');
           //this.connection.send('{ "command" : "GetSceneTree3", "root": "current_scene" }');
           let mydata = {};
@@ -257,19 +262,10 @@ export default {
         this.model.scrolltop = mytree.scrollTop;
         // this.model.pagescrolltop = document.body.scrollTop;
         this.model.pagescrolltop = document.documentElement.scrollTop;
-        console.log("treescroll",this.model.scrolltop)
-        console.log("pagescroll",this.model.pagescrolltop)
-        // Vue data binding means you don't need any extra work to
-        // update your UI. Just set the `time` and Vue will automatically
-        // update the `<h2>`.
+
         let mydata = {};
         mydata = JSON.parse(event.data);
-        // console.log(event.data)
-        //console.log(mydata.data.scenepath)
-        this.time = mydata.command;
-        // this.time = mydata.data.model;
-        //this.model = mydata.data.model;
-        //console.log(this.model);
+
         if(mydata.command == "ErrorResult") { onmessage.ErrorResult.call(this, mydata); }
         if(mydata.command == "DisplaySceneTree3") { onmessage.DisplaySceneTree3.call(this, mydata); }
         if(mydata.command == "AddToTree") { onmessage.AddToTree.call(this, mydata); }
@@ -355,8 +351,8 @@ export default {
     <SkeletonIcon />
     <TextIcon /> -->
     </h1>
+    <div v-if="socketerror" class="errordisplay">Connection Error - check address and port number</div>
     <div class="notes-head">
-      <!-- <h2>Command: {{time}} - {{tsnode}}</h2> -->
       <Notes 
         style="margin:1em;"
         v-if="showNoteEditor" 
@@ -421,8 +417,8 @@ export default {
         <div class="num-options">
           <label for="namewidth">Label Width</label>
           <input @change="SetLabelWidth" type="number" name="" id="namewidth" v-model="nameWidth">
-          <label for="socketport">Websocket Port</label>
-          <input @change="SetSocketPort" type="number" name="" id="socketport" v-model="socketport">
+          <label v-if="isDev" for="socketport">Websocket Port</label>
+          <input v-if="isDev" @change="SetSocketPort" type="number" name="" id="socketport" v-model="socketport">
         </div>
       </div>
     
@@ -447,7 +443,6 @@ export default {
     connection="connection"
     :doParentChild="doParentChild" :doJointHeirarchy="doJointHeirarchy"
     :showBoneNames="showBoneNames"
-    v-on:scroll.native="handleScroll"
     >
       <template v-slot:text="{ model, customClasses }">
         <div 
@@ -545,7 +540,11 @@ export default {
 
 <style>
 @import './assets/base.css';
-
+  .errordisplay {
+    background-color: rgb(134, 0, 0);
+    font-size: 1.3em;
+    padding-left: 0.4em;
+  }
   .action-buttons {
     display: flex;
     /* flex-wrap: wrap; */
