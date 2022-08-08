@@ -47,7 +47,7 @@ import onmessage from './components/onmessage'
 // https://medium.com/developer-rants/why-is-strict-mime-type-checking-blocking-the-static-serving-of-vue-frontend-files-4cbea1eedbd1
 
 //setup to serve from /web/sceneview2/
-//may need to manually edit the index.html links to js and css
+//may need to manually edit the index.html links to the js and css files
 
   
 export default {
@@ -331,7 +331,7 @@ export default {
 
 <template>
   <div class="controls">
-    <h1>Scene View<sup>v2</sup>&nbsp;
+    <h1>Scene View<!-- &nbsp;
     <ActorIcon />
     <AnimationIcon />
     <BoneIcon />
@@ -353,7 +353,7 @@ export default {
     <PatchIcon/>
     <PhysicsIcon/>
     <SkeletonIcon />
-    <TextIcon />
+    <TextIcon /> -->
     </h1>
     <div class="notes-head">
       <!-- <h2>Command: {{time}} - {{tsnode}}</h2> -->
@@ -377,8 +377,8 @@ export default {
       <button @click="GetTreeToSelected" title="show the selected node in the tree">Expand to</button>
       <button @click="GetMaxDepthAndSetChildExpanded" title="straighten action icon columns">Straighten</button>
       <label for="showoptions" class="showoptions-label">Options
-      <HiddenIcon v-if="!showoptions" />
-      <VisibleIcon v-else />
+      <HiddenIcon v-if="!showoptions" style="height: 80%;"/>
+      <VisibleIcon v-else style="height: 80%;"/>
       </label>
     </div>
 
@@ -548,18 +548,19 @@ export default {
 
   .action-buttons {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5em;
-    margin-left: 0.5em;
-    margin-top: 1.5em;
+    /* flex-wrap: wrap; */
+    gap: 0.3em;
+    /* margin-left: 0.25em; */
+    margin-top: 1em;
   }
   .action-buttons button {
     height: 2em;
-    width: 7em;
+    width: 7.2em;
     color:white;
     background-color: rgb(48, 15, 43);
     border-radius: 6px;
     border-color: rgb(94,58,89);
+    font-size: 0.8em;
   }
 
   .showoptions {
@@ -569,17 +570,18 @@ export default {
 
   .showoptions-label {
     display: flex;
-    gap: 0.75em;
+    gap: 0.5em;
+    height: 2em;
     /* margin-left: 0.5em; */
     /* margin-top: 1.5em; */
-    padding: 0.05em 0.25em;
+    /* padding: 0.05em 0.125em; */
     background-color: rgb(48, 15, 43);
     border: 2px outset rgb(94,58,89);
     border-radius: 6px;
-    width: 7em;
+    width: 7.2em;
     align-items: center;
     justify-content: center;
-    font-size: 0.9em;
+    font-size: 0.8em;
   }
   .showoptions-label:hover,
   .action-buttons button:hover {
@@ -637,13 +639,13 @@ export default {
     box-shadow: 0 0 10px 5px black;
   }
   .note-readonly {
-     background-color:white;
-     opacity:0.7;
-     margin: 0.5em;
+     background-color:rgb(233, 233, 233);
+    border:2px solid rgb(48, 16, 40);
+     margin: 0.125em;
   }
-  .note-readonly-content {
-    padding: 0.25em;
-  }
+  /* .note-readonly-content {
+    padding: 0.125em;
+  } */
   .notes-head {
     background-color: initial;
     color: initial;
@@ -653,7 +655,7 @@ export default {
     font-size: 1em;
   }
   h1 {
-    font-size: 1.6em;
+    font-size: 1.3em;
   }
 
   .label-icon {

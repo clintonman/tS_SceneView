@@ -34,9 +34,6 @@ export default {
          this.$emit('onNoteClose', msg.html);
          this.connection.send(JSON.stringify(msg));
       },
-      LogNote(){
-         console.log(this.mycontent)
-      },
        CancelNote() {
          this.$emit('onNoteClose');
       },
@@ -62,7 +59,6 @@ export default {
     <button @click="SaveNote">save</button>
     <button @click="CancelNote">cancel</button>
     <button @click="DeleteNote">delete</button>
-    <button @click="LogNote">log it</button>
     
   </div>
 
