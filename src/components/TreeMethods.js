@@ -509,6 +509,9 @@ export default {
       mydata.toselection = true;
       //mydata.root = "current_scene";
       mydata.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+      if(!mydata.root) {
+        mydata.root = "/";
+      }
       mydata.doParentChild = this.doParentChild;
       mydata.doJointHeirarchy = this.doJointHeirarchy;
       mydata.nurbscpselectauto = this.nurbscpselectauto;
