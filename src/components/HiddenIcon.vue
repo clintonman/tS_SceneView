@@ -1,6 +1,6 @@
 <script>
 export default {
-   props: ['connection', 'model'],
+   props: ['connection', 'model', 'showtitle'],
    methods: {
       ShowNodeSoft(model){
       this.$emit('onShowSoft', model);
@@ -8,7 +8,7 @@ export default {
       },
     ShowNode(model){
       this.$emit('onShow', model);
-      console.log("show")
+      // console.log("show")
       // model.treeNodeSpec.customizations.classes.visible = "yes";
       // let data = {};
       // data.command = "ShowNode";   
@@ -39,7 +39,7 @@ export default {
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"
       fill="currentColor"
       @click.ctrl="ShowNode(model)" @click.exact="ShowNodeSoft(model)">
-      <title>show object, +ctrl show object hard</title>
+      <title v-if="showtitle">show object, +ctrl intensive show object</title>
     <g
      transform="translate(-165,-981.36218)"
      id="object-hidden">

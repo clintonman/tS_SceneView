@@ -487,8 +487,8 @@ export default {
           <!-- <span :style="{display:'block',width:1.25 + maxdepth*3 - customClasses.treedepth*3.2+'em'}"></span> -->
           <span :style="{display:'block',width:1.25 + maxdepth*3.4 - customClasses.treedepth*2.8+'em'}"></span>
 
-          <VisibleIcon class="action-label action-label--inactive" v-if="customClasses.visible == 'yes'" :connection="connection" :model="model" @onHide="HideNode" @onHideSoft="HideNodeSoft"/>
-          <HiddenIcon class="action-label action-label--active" v-if="customClasses.visible == 'no'" :connection="connection" :model="model" @onShow="ShowNode" @onShowSoft="ShowNodeSoft"/>
+          <VisibleIcon class="action-label action-label--inactive" v-if="customClasses.visible == 'yes'" :connection="connection" :model="model" @onHide="HideNode" @onHideSoft="HideNodeSoft" :showtitle="true"/>
+          <HiddenIcon class="action-label action-label--active" v-if="customClasses.visible == 'no'" :connection="connection" :model="model" @onShow="ShowNode" @onShowSoft="ShowNodeSoft" :showtitle="true"/>
           <NAIcon class="action-label action-label--na" v-if="customClasses.visible == 'na'"/>
 
           <LockedIcon class="action-label action-label--active" v-if="customClasses.locked == 'yes'" :connection="connection" :model="model" title="unlock"/>
