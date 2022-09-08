@@ -348,7 +348,7 @@ export default {
     GetMaxDepthAndSetChildExpanded() {
       // note when de-expand the children will remain expanded so visual depth not one to one with expanded state
       if(this.newselection) return;
-      console.log("GetMaxDepthAndSetChildExpanded")
+      // console.log("GetMaxDepthAndSetChildExpanded")
       var maxval = -1;
       //getMatching does not include the root node of the tree
       let matchArr = this.$refs.mytree.getMatching((themodel)=>{

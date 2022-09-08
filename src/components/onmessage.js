@@ -5,7 +5,7 @@ export default {
    DisplaySceneTree3(mydata) {
       console.log("errors", mydata.error)
       // console.log(mydata.data.model)
-      console.log(mydata.data.scenepath)
+      // console.log(mydata.data.scenepath)
       this.scenepath = mydata.data.scenepath;
 
       this.ReOrder(mydata.data.model[0]);
@@ -73,7 +73,7 @@ export default {
           }
           return themodel.id == id;
         });
-        console.log(matchArr)
+      //   console.log(matchArr)
       }
       this.newselection = false;
    },

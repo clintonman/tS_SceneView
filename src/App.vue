@@ -203,7 +203,7 @@ export default {
       showoptions: false,
       socketerror: false,
       isDev: process.env.NODE_ENV == "development", // only show port number input if in dev mode
-      prevMessage: ""
+      prevData: ""
     }
   },
 
@@ -259,9 +259,14 @@ export default {
       };
   
       this.connection.onmessage = (event) => {
-        // console.log(event)
+
         // new que based server will allow multiple duplicate messages - prevent it
-        if(this.prevMessage == event) return;
+        if(this.prevData == event.data) {
+          // console.log("repeat message")
+          return;
+        }
+        this.prevData = event.data;
+        
         let mytree = document.getElementById("my-tree");
         this.model.scrolltop = mytree.scrollTop;
         // this.model.pagescrolltop = document.body.scrollTop;
@@ -269,6 +274,7 @@ export default {
 
         let mydata = {};
         mydata = JSON.parse(event.data);
+
 
         if(mydata.command == "ErrorResult") { onmessage.ErrorResult.call(this, mydata); }
         if(mydata.command == "DisplaySceneTree3") { onmessage.DisplaySceneTree3.call(this, mydata); }
@@ -310,7 +316,7 @@ export default {
         if(mydata.command == "DisplaySceneTree3") {
           this.$nextTick(function(){
             setTimeout(() => {
-              console.log("next timeout",this.model.scrolltop);
+              // console.log("next timeout",this.model.scrolltop);
               // this.$refs.scrollList.scrollTop = 99999
               let mytree = document.getElementById("my-tree");
               mytree.scrollTop = this.model.scrolltop;
@@ -318,7 +324,7 @@ export default {
           }, 100)
           });
         }
-        this.prevMessage = event;
+        
         // this.$nextTick((scrolltop) => {
         //   let mytree = document.getElementById("my-tree");
         //   console.log("nexttick",scrolltop)
