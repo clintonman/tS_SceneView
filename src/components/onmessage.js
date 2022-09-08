@@ -27,20 +27,26 @@ export default {
       // console.log(mydata.data.model)
 
       let id = mydata.data.model[0].id;
-      // console.log(id);
-
-      this.ReOrder(mydata.data.model[0]);
 
       let matchArr = this.$refs.mytree.getMatching((themodel)=>{
          return themodel.id == id;
       });
 
       if(matchArr.length > 0) {
+         //prevent duplicate run
+         // if(matchArr[0].treeNodeSpec.state.expanded) {
+         //    return;
+         // }
          console.log(mydata.data.model[0].children)
          matchArr[0].children = mydata.data.model[0].children;
          matchArr[0].treeNodeSpec.state.expanded = true;
          // console.log(matchArr[0]);
       }
+      
+      // console.log(id);
+
+      this.ReOrder(mydata.data.model[0]);
+
 
       if(mydata.data.htmlnote != "") {
          this.htmlnote = mydata.data.htmlnote;

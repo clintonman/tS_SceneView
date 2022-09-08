@@ -202,7 +202,8 @@ export default {
       socketport: 8080,
       showoptions: false,
       socketerror: false,
-      isDev: process.env.NODE_ENV == "development" // only show port number input if in dev mode
+      isDev: process.env.NODE_ENV == "development", // only show port number input if in dev mode
+      prevMessage: ""
     }
   },
 
@@ -258,6 +259,9 @@ export default {
       };
   
       this.connection.onmessage = (event) => {
+        // console.log(event)
+        // new que based server will allow multiple duplicate messages - prevent it
+        if(this.prevMessage == event) return;
         let mytree = document.getElementById("my-tree");
         this.model.scrolltop = mytree.scrollTop;
         // this.model.pagescrolltop = document.body.scrollTop;
@@ -314,6 +318,7 @@ export default {
           }, 100)
           });
         }
+        this.prevMessage = event;
         // this.$nextTick((scrolltop) => {
         //   let mytree = document.getElementById("my-tree");
         //   console.log("nexttick",scrolltop)
