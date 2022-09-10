@@ -203,7 +203,8 @@ export default {
       showoptions: false,
       socketerror: false,
       isDev: process.env.NODE_ENV == "development", // only show port number input if in dev mode
-      prevData: ""
+      prevData: "",
+      prevNow: 0
     }
   },
 
@@ -261,11 +262,20 @@ export default {
       this.connection.onmessage = (event) => {
 
         // new que based server will allow multiple duplicate messages - prevent it
-        if(this.prevData == event.data) {
-          // console.log("repeat message")
+        // allow 1.0 second for actual repeat commands
+        let now = Date.now();
+        let diff = now - this.prevNow;//diff between 400 and 800 seems normal
+        // console.log("now",now)
+        // console.log("prevNow",this.prevNow)
+        // console.log("diff", now - this.prevNow)
+        // console.log(event.data)
+        if(this.prevData == event.data && diff < 1000) {
+        // if(this.prevData == event.data) {
+          console.log("repeat message")
           return;
         }
         this.prevData = event.data;
+        this.prevNow = now;
         
         let mytree = document.getElementById("my-tree");
         this.model.scrolltop = mytree.scrollTop;
