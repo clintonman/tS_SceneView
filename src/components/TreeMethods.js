@@ -515,6 +515,13 @@ export default {
       
       this.connection.send(JSON.stringify(mydata));
     },
+    RefreshTree() {
+      if(this.model[0].treeNodeSpec.customizations.classes.fullpath) {
+        this.GetScene();
+      } else {
+        this.GetRoot();
+      }
+    },
 
     OrderNodes() {
       this.ReOrder(this.model[0]);

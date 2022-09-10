@@ -3,7 +3,7 @@ export default {
       console.log("errors", mydata.error)
    },
    DisplaySceneTree3(mydata) {
-      console.log("errors", mydata.error)
+      if(mydata.error) { console.log("errors", mydata.error); }
       this.scenepath = mydata.data.scenepath;
 
       this.ReOrder(mydata.data.model[0]);

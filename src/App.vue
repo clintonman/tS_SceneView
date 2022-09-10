@@ -153,20 +153,20 @@ export default {
           slug: 'move3d',
         }
       ],
-      dragOptionsCopy: [
-        {
-          name: 'Parent a Copy',
-          slug: 'parentcopy',
-        },
-        {
-          name: 'Copy into Group',
-          slug: 'copy2d',
-        },
-        {
-          name: 'Copy into Group 3D',
-          slug: 'copy3d',
-        }
-      ],
+      // dragOptionsCopy: [
+      //   {
+      //     name: 'Parent a Copy',
+      //     slug: 'parentcopy',
+      //   },
+      //   {
+      //     name: 'Copy into Group',
+      //     slug: 'copy2d',
+      //   },
+      //   {
+      //     name: 'Copy into Group 3D',
+      //     slug: 'copy3d',
+      //   }
+      // ],
       dropIsActive: false,
  
       mycontent: new Delta([]),
@@ -214,8 +214,8 @@ export default {
     document.firstElementChild.appendChild(menu);
     var menu1 = document.getElementById("moveMenu");
     document.firstElementChild.appendChild(menu1);
-    var menu2 = document.getElementById("copyMenu");
-    document.firstElementChild.appendChild(menu2);
+    // var menu2 = document.getElementById("copyMenu");
+    // document.firstElementChild.appendChild(menu2);
 
     this.SetSocketPort();
   },
@@ -371,10 +371,10 @@ export default {
         <div class="check-options">
           <input type="checkbox" name="" id="shownotes" v-model="shownotes" title="show the notes section">
           <label for="shownotes" title="show the notes section">Show Notes</label>
-          <input type="checkbox" name="" id="parentchild" v-model="doParentChild" title="show parent child relationships">
+          <input type="checkbox" name="" id="parentchild" @change="RefreshTree" v-model="doParentChild" title="show parent child relationships">
           <label for="parentchild" title="show parent child relationships">Parent-Child</label>
-          <input type="checkbox" name="" id="jointheirarchy" v-model="doJointHeirarchy" title="show skeleton joint heirarchy">
-          <label for="jointheirarchy" title="show skeleton joint heirarchy">Joint Heirarchy</label>
+          <input type="checkbox" name="" id="jointhierarchy" @change="RefreshTree" v-model="doJointHeirarchy" title="show skeleton joint heirarchy">
+          <label for="jointhierarchy" title="show skeleton joint hierarchy">Joint Hierarchy</label>
           <input type="checkbox" id="showbonenames" v-model="showBoneNames" title="show bones names when joint heirarchy is displayed">
           <label for="showbonenames" title="show bones names when joint heirarchy is displayed">Show Bone Names</label>
           <input type="checkbox" id="nurbscpselectauto" v-model="nurbscpselectauto" title="automatically convert nurbs selections for 3d manipulation">
@@ -491,14 +491,14 @@ export default {
     @menu-closed="refreshTree"
   >
   </vue-simple-context-menu>
-  <vue-simple-context-menu
+  <!-- <vue-simple-context-menu
     element-id="copyMenu"
     :options="dragOptionsCopy"
     ref="vueSimpleContextCopyMenu"
     @option-clicked="copyOptionClicked"
     @menu-closed="refreshTree"
   >
-  </vue-simple-context-menu>
+  </vue-simple-context-menu> -->
 
 
 </template>
