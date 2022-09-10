@@ -2,12 +2,9 @@ import { Delta } from '@vueup/vue-quill'
 
 export default {
    DeleteNode(item, connection, mytree) {
-      console.log("deletenode")
-      console.log(item.id)
 
       let data = {};
       data.command = "DeleteNode";
-      // data.path = item.treeNodeSpec.customizations.classes.fullpath;
 
       let sel = this.GetPathSelection();
       //remove context item if it is in the selected items list
@@ -54,28 +51,6 @@ export default {
       }
 
       connection.send(JSON.stringify(data));
-
-      // //find parent
-      // let matchArr = mytree.getMatching((themodel)=>{
-      //   if(themodel.children && themodel.children.length > 0) {
-      //     let childlength = themodel.children.length;
-
-      //     for(let i=0;i<childlength;i++) {
-      //       let child = themodel.children[i];
-      //       if(child.id == item.id) {
-      //         return true;
-      //       }
-      //     }
-      //   }
-      //   return false;
-      // });
-      // console.log(matchArr)
-      // //find index and splice remove
-      // let childIndex = matchArr[0].children.findIndex(child => {
-      //   return child.id == item.id;
-      // });
-      // console.log(childIndex);
-      // matchArr[0].children.splice(childIndex, 1);
 
     },
    LEOpenLocation(item, connection) {
@@ -186,12 +161,7 @@ export default {
       data.parent = item.treeNodeSpec.customizations.classes.fullpath;
 
       //parent to self - no
-      // if(children[0] == data.parent) {
       if(data.children[0] == data.parent) {
-        console.log(children)
-        console.log(data.parent)
-        console.log(data.children)
-        console.log("parent to self - NO")
         return;
       }
 
@@ -218,7 +188,7 @@ export default {
       data.children = [...new Set(data.children)];
 
       data.command = "UnParent";
-      console.log(this.model)
+
       data.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
       data.doParentChild = this.doParentChild;
       data.doJointHeirarchy = this.doJointHeirarchy;
@@ -228,9 +198,7 @@ export default {
       //must be same level
       if(this.lastselection && 
         model.treeNodeSpec.customizations.classes.treedepth == this.lastselection.treeNodeSpec.customizations.classes.treedepth) {
-          console.log("same level")
       } else {
-        console.log("nope")
         return;
       }
       //must be same parent node
@@ -261,7 +229,7 @@ export default {
       }
 
       //use parent to get inbetween based on index of id's
-      console.log(matchArr[0])
+
       let child1Index = matchArr[0].children.findIndex(elem => {
         return elem.id == child1ID;
       });
@@ -269,7 +237,6 @@ export default {
         return elem.id == child2ID;
       });
 
-      console.log(child1Index, child2Index)
       //order the indices
       if(child1Index > child2Index) {
         let tempIndex = child2Index;
@@ -287,7 +254,7 @@ export default {
         data.selection.push(matchArr[0].children[i].treeNodeSpec.customizations.classes.fullpath);
         matchArr[0].children[i].treeNodeSpec.state.selected = true;
       }
-      console.log(data)
+
       this.connection.send(JSON.stringify(data));
 
       return;
@@ -299,15 +266,11 @@ export default {
         themodel.treeNodeSpec.state.selected = false;
         return idmatch;
       });
-      console.log(matchArr)
+
       if(matchArr.length == 1) {
         matchArr[0].treeNodeSpec.state.selected = true;
         this.lastselection = matchArr[0];
         this.lastselectionlabel = matchArr[0].label;
-
-        // if($scope.jointboneselection == "bone" && sel.bone != null && sel.bone != "")
-        //     selobj.selecttext = sel.bonepath;
-        // else
         
         let data = {};
         data.command = "SelectItems";
@@ -337,23 +300,19 @@ export default {
       data.selection = [];
       if(matchArr.length > 0) {
         for(let i=0;i<matchArr.length;i++) {
-          // data.selection.push({fullpath: matchArr[i].treeNodeSpec.customizations.classes.fullpath});
           data.selection.push(matchArr[i].treeNodeSpec.customizations.classes.fullpath);
         }
       }
         
       this.connection.send(JSON.stringify(data));
-      console.log(data)
     },
     GetMaxDepthAndSetChildExpanded() {
       // note when de-expand the children will remain expanded so visual depth not one to one with expanded state
       if(this.newselection) return;
-      // console.log("GetMaxDepthAndSetChildExpanded")
       var maxval = -1;
       //getMatching does not include the root node of the tree
       let matchArr = this.$refs.mytree.getMatching((themodel)=>{
         if(!themodel.treeNodeSpec.customizations.classes) {
-          console.log("no classes")
           return false;
         }
         if(themodel.treeNodeSpec.customizations.classes.treedepth) {
@@ -367,7 +326,6 @@ export default {
             }
           }
           let td = themodel.treeNodeSpec.customizations.classes.treedepth;
-          // console.log(themodel.label, td, themodel.treeNodeSpec.state.expanded)
           if(td > maxval && themodel.treeNodeSpec.state.expanded) maxval = td;
         }
         return false;
@@ -394,18 +352,10 @@ export default {
     },
 
     handleClick1(event, item) {
-      console.log("handleclick1", event)
-      console.log("handleclick1", item)
-      // console.log(this.$refs.vueSimpleContextMenu1)
       this.lastContextEvent = event;
       this.$refs.vueSimpleContextMenu1.showMenu(event, item);
     },
     optionClicked1(event) {
-      // console.log(event)
-      //console.log(event.item.label)
-      //console.log(event.item.treeNodeSpec.customizations.classes.fullpath)
-      //console.log(event.option.slug)
-      
       this.lastContextItem = event.item;
 
       // window.alert(JSON.stringify(event));
@@ -438,9 +388,7 @@ export default {
       }
     },
     moveOptionClicked(event) {
-      console.log("move", event);
       this.lastContextItem = event.item;
-      console.log("item", this.lastContextItem)
 
       if(event.option.slug == 'parent') {
         this.DroppedParent();
@@ -453,9 +401,7 @@ export default {
       }
     },
     copyOptionClicked(event) {
-      console.log("copy", event);
       this.lastContextItem = event.item;
-      console.log("item", this.lastContextItem)
 
       if(event.option.slug == 'parentcopy') {
         this.DroppedParent();
@@ -471,7 +417,6 @@ export default {
     // based on https://github.com/andymark-by/click-outside-vue3#readme
     // still can't figure it
     refreshTree() {
-      console.log("refreshtree dropisactive", this.dropIsActive)
       if(this.dropIsActive) {
         let mydata = {};
         mydata.command = "GetSceneTree3";
@@ -495,19 +440,14 @@ export default {
       this.dropIsActive = false;
     },
     editname(model,e) {
-      console.log("editname")
-      console.log(e)
-      console.log(this.lastselection)
       this.shownameedit = true;
       this.edittop = e.pageY;
       this.editleft = e.pageX;
     },
     GetTreeToSelected() {
       let mydata = {};
-      // mydata.command = "GetSceneTreeToSelection";
       mydata.command = "GetSceneTree3";
       mydata.toselection = true;
-      //mydata.root = "current_scene";
       mydata.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
       if(!mydata.root) {
         mydata.root = "/";
@@ -520,7 +460,6 @@ export default {
       let matchArr = this.$refs.mytree.getMatching((themodel)=>{
         return themodel.treeNodeSpec.state.expanded;
       });
-      // console.log("expanded", matchArr)
 
       mydata.expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
       if(mydata.expandedNodes && mydata.expandedNodes[0] === undefined) {
@@ -530,7 +469,6 @@ export default {
       this.connection.send(JSON.stringify(mydata));
     },
     GetScene() {
-      // this.connection.send('{ "command" : "GetSceneTree3", "root": "current_scene" }');
       let mydata = {};
       mydata.command = "GetSceneTree3";
       mydata.root = "current_scene";
@@ -541,18 +479,15 @@ export default {
       let matchArr = this.$refs.mytree.getMatching((themodel)=>{
         return themodel.treeNodeSpec.state.expanded;
       });
-      // console.log("expanded", matchArr)
 
       mydata.expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
       if(mydata.expandedNodes && mydata.expandedNodes[0] === undefined) {
         mydata.expandedNodes.shift();
       }
 
-      // console.log("expanded", mydata.expandedNodes)
       this.connection.send(JSON.stringify(mydata));
     },
     GetRoot() {
-      // this.connection.send('{ "command" : "GetSceneTree3", "root": "/" }');
       let mydata = {};
       mydata.command = "GetSceneTree3";
       mydata.root = "/";
@@ -567,7 +502,6 @@ export default {
       if(mydata.expandedNodes && mydata.expandedNodes[0] === undefined) {
         mydata.expandedNodes.shift();
       }
-      // console.log(mydata.expandedNodes)
       //special case switch from scene root to actual root
       if(mydata.expandedNodes.length !== 0) {
         for(let anode of mydata.expandedNodes) {
@@ -579,13 +513,10 @@ export default {
         }
       }
       
-      console.log(mydata.expandedNodes)
       this.connection.send(JSON.stringify(mydata));
     },
 
     OrderNodes() {
-      console.log("order nodes");
-      console.log(this.alphaOrder);
       this.ReOrder(this.model[0]);
     },
     ReOrder(parentnode) {
@@ -644,7 +575,6 @@ export default {
       model.treeNodeSpec.state.selected = true;
     },
    CloseNoteEditor(html) {
-    console.log("closenoteeditor")
     this.showNoteEditor=false;
     if(html) {
       this.htmlnote = html;
@@ -653,17 +583,9 @@ export default {
 
     Dropped(event, model) {
       this.dropIsActive = true;
-      console.log(event)
-      console.log(model)
 
-      console.log("ctrl",event.ctrlKey)
-      console.log("path", event.path)
-      // console.log(event.dataTransfer.getData("text/plain"))
       let dropData = event.dataTransfer.getData("text/plain");
       let dropDataArr = JSON.parse(dropData)
-      console.log("source",dropDataArr.id)
-      console.log("source",dropDataArr.treeNodeSpec.customizations.classes.fullpath)
-      console.log("destination", event.path[3].id.split("-")[2])
 
       this.dataForTS = {};
       this.dataForTS.command = "DoDropped";
@@ -733,15 +655,12 @@ export default {
     onNodeRenamed(newName) {
       this.showrename = false;
       if(!newName) {
-        console.log("cancelled");
         return;
       }
-      console.log("onNodeRenamed", newName);
       this.SendGroup(newName);
     },
 
    SendGroup(data) {
-      console.log("sendgroup", data)
       //add name here
       this.dataForTS.groupName = data;
       this.connection.send(JSON.stringify(this.dataForTS));

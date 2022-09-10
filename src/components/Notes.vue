@@ -1,5 +1,3 @@
-
-
 <script>
 import { QuillEditor, Delta } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
@@ -13,19 +11,15 @@ export default {
       return {
          mycontent: new Delta([]),
          edittop: 0,
-         editleft: 0,
-         // showNoteEditor: true
+         editleft: 0
       };
     },
-   //  mounted: function() {
     beforeMount: function() {
-      console.log("notes before mounted")
       this.mycontent = this.initialDelta;
    },
 
     methods: {
        SaveNote() {
-         console.log("savenote")
          //send to tS here
          let msg = {command:"AddNotes"};
          msg.path = this.tsnode;

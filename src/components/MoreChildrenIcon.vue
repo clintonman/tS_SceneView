@@ -3,7 +3,6 @@ export default {
    props: ['connection', 'customClasses', 'doParentChild', 'doJointHeirarchy'],
    methods: {
        GetTreeBranch(tsnode, depth){
-      // console.log("load branch", tsnode);
       let data = {};
       data.command = "GetTreeBranch";
       data.root = tsnode;
@@ -12,7 +11,6 @@ export default {
       data.doParentChild = this.doParentChild;
       data.doJointHeirarchy = this.doJointHeirarchy;
       data.nurbscpselectauto = this.nurbscpselectauto;
-      console.log("GetTreeBranch", this.doParentChild, this.doJointHeirarchy);
       this.connection.send(JSON.stringify(data));
     },
    }

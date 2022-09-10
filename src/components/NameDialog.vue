@@ -12,17 +12,12 @@ export default {
     mounted() {
         this.$refs.nameinput.focus();
         this.$refs.nameinput.select();
-        // this.$nextTick(() => this.$refs.nameinput.select());
     },
     methods: {
         SetName() {
-            // console.log("emit")
-            // console.log(this.contextevent);
             this.$emit('onNodeRenamed', this.NodeName);
         },
         CancelName() {
-            // console.log("emit")
-            // console.log(this.contextevent);
             this.$emit('onNodeRenamed', "");
         },
         S4() {

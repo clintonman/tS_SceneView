@@ -4,8 +4,6 @@ export default {
    },
    DisplaySceneTree3(mydata) {
       console.log("errors", mydata.error)
-      // console.log(mydata.data.model)
-      // console.log(mydata.data.scenepath)
       this.scenepath = mydata.data.scenepath;
 
       this.ReOrder(mydata.data.model[0]);
@@ -20,12 +18,8 @@ export default {
       if(mydata.data.htmlnote != "") {
          this.htmlnote = mydata.data.htmlnote;
       }
-      //only good for first load, so also called in update but still issue switching root
-      // this.GetMaxDepthAndSetChildExpanded();
    },
    AddToTree(mydata){
-      // console.log(mydata.data.model)
-
       let id = mydata.data.model[0].id;
 
       let matchArr = this.$refs.mytree.getMatching((themodel)=>{
@@ -33,20 +27,11 @@ export default {
       });
 
       if(matchArr.length > 0) {
-         //prevent duplicate run
-         // if(matchArr[0].treeNodeSpec.state.expanded) {
-         //    return;
-         // }
-         console.log(mydata.data.model[0].children)
          matchArr[0].children = mydata.data.model[0].children;
          matchArr[0].treeNodeSpec.state.expanded = true;
-         // console.log(matchArr[0]);
       }
-      
-      // console.log(id);
 
       this.ReOrder(mydata.data.model[0]);
-
 
       if(mydata.data.htmlnote != "") {
          this.htmlnote = mydata.data.htmlnote;
@@ -55,7 +40,6 @@ export default {
       this.GetMaxDepthAndSetChildExpanded();
    },
    NewSelection(mydata) {
-      console.log(mydata.selection);
       this.newselection = true;
       //clear selection
       let matchArr = this.$refs.mytree.getMatching((themodel)=>{
@@ -73,12 +57,10 @@ export default {
           }
           return themodel.id == id;
         });
-      //   console.log(matchArr)
       }
       this.newselection = false;
    },
    RenameFailed(mydata) {
-      // var id = mydata.id;
       let matchArr = this.$refs.mytree.getMatching((themodel)=>{
          return themodel.id == mydata.id;
       });
@@ -87,7 +69,6 @@ export default {
       }
    },
    TSRefresh() {
-      console.log("TSRefresh")
       let mydata = {};
         mydata.command = "GetSceneTree3";
         mydata.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
@@ -107,7 +88,6 @@ export default {
         this.connection.send(JSON.stringify(mydata));
    },
    DoGroup3D() {
-      console.log("DoGroup3D")
       this.dataForTS = {};
       this.dataForTS.command = "Group3D";
       this.dataForTS.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
@@ -117,7 +97,6 @@ export default {
       this.showrename = true;
    },
    DoGroup() {
-      console.log("DoGroup")
       this.dataForTS = {};
       this.dataForTS.command = "Group";
       this.dataForTS.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;

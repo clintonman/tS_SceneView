@@ -2,37 +2,12 @@
 export default {
    props: ['connection', 'model', 'showtitle'],
    methods: {
-      HideNodeSoft(model){
-      // model.treeNodeSpec.customizations.classes.visible = "no";
-      this.$emit('onHideSoft', model);
-      // console.log("soft hide")
+      HideNodeSoft(model) {
+         this.$emit('onHideSoft', model);
       },
-    HideNode(model){
-      // model.treeNodeSpec.customizations.classes.visible = "no";
-      this.$emit('onHide', model);
-
-      console.log("hide")
-      // let data = {};
-      // data.command = "HideNode";   
-      // data.path = model.treeNodeSpec.customizations.classes.fullpath;
-
-      // //if ora created need to update tree
-      // data.root = this.initialmodel[0].treeNodeSpec.customizations.classes.fullpath;
-      // data.doParentChild = this.doParentChild;
-      // data.doJointHeirarchy = this.doJointHeirarchy;
-
-      // //send expanded nodes list so can keep open on load fresh
-      // let matchArr = this.$refs.mytree.getMatching((themodel)=>{
-      //   return themodel.treeNodeSpec.state.expanded;
-      // });
-
-      // data.expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
-      // if(data.expandedNodes && data.expandedNodes[0] === undefined) {
-      //   data.expandedNodes.shift();
-      // }
-
-      // this.connection.send(JSON.stringify(data));
-    }
+      HideNode(model) {
+         this.$emit('onHide', model);
+      }
    }
 }
 </script>

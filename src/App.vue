@@ -217,8 +217,6 @@ export default {
     var menu2 = document.getElementById("copyMenu");
     document.firstElementChild.appendChild(menu2);
 
-    console.log("mounted")
-
     this.SetSocketPort();
   },
 
@@ -240,16 +238,10 @@ export default {
       this.connection = new WebSocket(myurl);
 
       this.connection.onerror = (e) => {
-        console.log(location)
-        console.log(e)
         this.socketerror = true;
       }
 
       this.connection.onopen = (ev) => {
-        console.log(location)
-        console.log(process.env.NODE_ENV)
-          // connection.send('{ "command" : "GetSceneTree2" }');
-          //this.connection.send('{ "command" : "GetSceneTree3", "root": "current_scene" }');
           let mydata = {};
           mydata.command = "GetSceneTree3";
           mydata.root = "current_scene";
@@ -265,13 +257,8 @@ export default {
         // allow 1.0 second for actual repeat commands
         let now = Date.now();
         let diff = now - this.prevNow;//diff between 400 and 800 seems normal
-        // console.log("now",now)
-        // console.log("prevNow",this.prevNow)
-        // console.log("diff", now - this.prevNow)
-        // console.log(event.data)
+
         if(this.prevData == event.data && diff < 1000) {
-        // if(this.prevData == event.data) {
-          console.log("repeat message")
           return;
         }
         this.prevData = event.data;
@@ -279,7 +266,6 @@ export default {
         
         let mytree = document.getElementById("my-tree");
         this.model.scrolltop = mytree.scrollTop;
-        // this.model.pagescrolltop = document.body.scrollTop;
         this.model.pagescrolltop = document.documentElement.scrollTop;
 
         let mydata = {};
@@ -290,23 +276,19 @@ export default {
         if(mydata.command == "DisplaySceneTree3") { onmessage.DisplaySceneTree3.call(this, mydata); }
         if(mydata.command == "AddToTree") { onmessage.AddToTree.call(this, mydata); }
         if(mydata.command == "SetNoteStatus") {
-          console.log(mydata)
           let matchArr = this.$refs.mytree.getMatching((themodel)=>{
             return themodel.id == mydata.id;
           });
           if(matchArr.length > 0) {
-            console.log()
             matchArr[0].treeNodeSpec.customizations.classes.note = mydata.status;
           }
         }
         if(mydata.command == "OpenEditor") {
-          console.log(mydata)
           this.showNoteEditor=true;
           this.tsnode = mydata.path;
           this.mycontent = JSON.parse(mydata.delta);
         }
         if(mydata.command == "UpdateHTMLNote") {
-          console.log(mydata)
           this.showNoteEditor=false;
           this.htmlnote = mydata.html;
         }
@@ -316,30 +298,18 @@ export default {
         if(mydata.command == "DoGroup3D") { onmessage.DoGroup3D.call(this); }
         if(mydata.command == "DoGroup") { onmessage.DoGroup.call(this); }
 
-        // mytree.scrollTop = scrolltop;
         mytree = document.getElementById("my-tree");
-        // mytree.scroll(0, scrolltop);
-        console.log(this.model.scrolltop);
-        // mytree.scrollTop = scrolltop;
 
-        // if(mydata.command == "DisplaySceneTree3" || mydata.command == "AddToTree" || mydata.command == "TSRefresh" || mydata.command == "ErrorResult") {
         if(mydata.command == "DisplaySceneTree3") {
           this.$nextTick(function(){
             setTimeout(() => {
-              // console.log("next timeout",this.model.scrolltop);
-              // this.$refs.scrollList.scrollTop = 99999
               let mytree = document.getElementById("my-tree");
               mytree.scrollTop = this.model.scrolltop;
               document.documentElement.scrollTop = this.model.pagescrolltop;
           }, 100)
           });
         }
-        
-        // this.$nextTick((scrolltop) => {
-        //   let mytree = document.getElementById("my-tree");
-        //   console.log("nexttick",scrolltop)
-        //   mytree.scrollTop = scrolltop;
-        // });
+
       }
     }
   }
@@ -348,30 +318,7 @@ export default {
 
 <template>
   <div class="controls">
-    <h1>Scene View<!-- &nbsp;
-    <ActorIcon />
-    <AnimationIcon />
-    <BoneIcon />
-    <CameraIcon />
-    <ConstraintIcon />
-    <CurveIcon />
-    <GeometryIcon />
-    <GroupIcon />
-    <Group3DIcon />
-    <HairIcon />
-    <IKHandleIcon />
-    <IKLockIcon />
-    <LightIcon />
-    <MeshIcon />
-    <MaterialIcon />
-    <ModifierIcon />
-    <MoreChildrenIcon />
-    <ParticlesIcon/>
-    <PatchIcon/>
-    <PhysicsIcon/>
-    <SkeletonIcon />
-    <TextIcon /> -->
-    </h1>
+    <h1>Scene View</h1>
     <div v-if="socketerror" class="errordisplay">Connection Error - check address and port number</div>
     <div class="notes-head">
       <Notes 
@@ -398,11 +345,9 @@ export default {
       <VisibleIcon v-else style="height: 80%;"/>
       </label>
     </div>
-
     
       <input type="checkbox" name="showoptions" id="showoptions" class="showoptions" v-model="showoptions" hidden>
       
-
       <div class="options-groups" v-if="showoptions">
         <div class="order-by">
           <h3 title="arrange alphabetically, by ID number or by object type">Order by:</h3>
@@ -505,7 +450,6 @@ export default {
             @drop="Dropped($event, model)"
           >{{ model[model.treeNodeSpec.labelProperty] }}</span>
 
-          <!-- <span :style="{display:'block',width:1.25 + maxdepth*3 - customClasses.treedepth*3.2+'em'}"></span> -->
           <span :style="{display:'block',width:1.25 + maxdepth*3.4 - customClasses.treedepth*2.8+'em'}"></span>
 
           <VisibleIcon class="action-label action-label--inactive" v-if="customClasses.visible == 'yes'" :connection="connection" :model="model" @onHide="HideNode" @onHideSoft="HideNodeSoft" :showtitle="true"/>
@@ -568,9 +512,7 @@ export default {
   }
   .action-buttons {
     display: flex;
-    /* flex-wrap: wrap; */
     gap: 0.3em;
-    /* margin-left: 0.25em; */
     margin-top: 1em;
   }
   .action-buttons button {
@@ -592,9 +534,6 @@ export default {
     display: flex;
     gap: 0.5em;
     height: 2em;
-    /* margin-left: 0.5em; */
-    /* margin-top: 1.5em; */
-    /* padding: 0.05em 0.125em; */
     background-color: rgb(48, 15, 43);
     border: 2px outset rgb(94,58,89);
     border-radius: 6px;
