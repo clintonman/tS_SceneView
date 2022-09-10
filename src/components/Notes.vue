@@ -56,9 +56,11 @@ export default {
       v-model:content="mycontent" 
       ref="editor"
     />
-    <button @click="SaveNote">save</button>
-    <button @click="CancelNote">cancel</button>
-    <button @click="DeleteNote">delete</button>
+    <div class="button-group">
+       <button @click="SaveNote">Save</button>
+       <button @click="CancelNote">Cancel</button>
+       <button @click="DeleteNote">Delete</button>
+    </div>
     
   </div>
 
@@ -67,14 +69,25 @@ export default {
 
 <style>
    #quill-container {
-      padding: 0.3em;
+      padding: 0.3em !important;
       margin: 0 !important;
-      margin-bottom: 1em !important;
+      max-width:none !important;
    }
+
    .ql-toolbar.ql-snow {
       padding: 0;
    }
+   .ql-editing {
+      z-index: 1;
+   }
    .ql-editor {
-      max-height: 20vh;
+      max-height: 40vh;
+   }
+   .button-group {
+      display: grid;
+      grid-template-columns: 5em 5em 5em;
+      gap: 0.5em;
+      justify-content: end;
+      margin-top: 2em;
    }
 </style>

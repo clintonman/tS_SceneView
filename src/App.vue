@@ -653,9 +653,9 @@ export default {
     border:2px solid rgb(48, 16, 40);
      margin: 0.125em;
   }
-  /* .note-readonly-content {
-    padding: 0.125em;
-  } */
+  .note-readonly-content {
+    max-height: 10vh;
+  }
   .notes-head {
     background-color: initial;
     color: initial;
