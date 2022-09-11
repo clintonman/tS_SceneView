@@ -388,6 +388,9 @@ export default {
       }
     },
     moveOptionClicked(event) {
+      // clear timeout from menu close, if no menu choice timeout would run refreshing the tree view
+      clearTimeout(this.timerID);
+
       this.lastContextItem = event.item;
 
       if(event.option.slug == 'parent') {
@@ -400,46 +403,37 @@ export default {
         this.Dropped3D();
       }
     },
-    copyOptionClicked(event) {
-      this.lastContextItem = event.item;
-
-      if(event.option.slug == 'parentcopy') {
-        this.DroppedParent();
-      }
-      if(event.option.slug == 'copy2d') {
-        this.Dropped2D();
-      }
-      if(event.option.slug == 'copy3d') {
-        this.Dropped3D();
-      }
-    },
     // always firing, cannot find way to enable-disable the @menu-closed
     // based on https://github.com/andymark-by/click-outside-vue3#readme
-    // still can't figure it
-    refreshTree() {
+    // do refresh tree after 500ms of closing the context menu
+    // cancel timeout if a context selection is made
+    menuClosed() {
       if(this.dropIsActive) {
-        let mydata = {};
-        mydata.command = "GetSceneTree3";
-        mydata.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
-        mydata.doParentChild = this.doParentChild;
-        mydata.doJointHeirarchy = this.doJointHeirarchy;
-        mydata.nurbscpselectauto = this.nurbscpselectauto;
+        this.timerID = setTimeout(()=>{
+          let mydata = {};
+          mydata.command = "GetSceneTree3";
+          mydata.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+          mydata.doParentChild = this.doParentChild;
+          mydata.doJointHeirarchy = this.doJointHeirarchy;
+          mydata.nurbscpselectauto = this.nurbscpselectauto;
+  
+          //send expanded nodes list so can keep open on load fresh
+          let matchArr = this.$refs.mytree.getMatching((themodel)=>{
+            return themodel.treeNodeSpec.state.expanded;
+          });
+  
+          mydata.expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
+          if(mydata.expandedNodes && mydata.expandedNodes[0] === undefined) {
+            mydata.expandedNodes.shift();
+          }
+  
+          this.connection.send(JSON.stringify(mydata));
 
-        //send expanded nodes list so can keep open on load fresh
-        let matchArr = this.$refs.mytree.getMatching((themodel)=>{
-          return themodel.treeNodeSpec.state.expanded;
-        });
-
-        mydata.expandedNodes = matchArr.map(el => el.treeNodeSpec.customizations.classes.fullpath);
-        if(mydata.expandedNodes && mydata.expandedNodes[0] === undefined) {
-          mydata.expandedNodes.shift();
-        }
-
-        this.connection.send(JSON.stringify(mydata));
+        }, 500);
       }
       this.dropIsActive = false;
     },
-    editname(model,e) {
+    editname(e) {
       this.shownameedit = true;
       this.edittop = e.pageY;
       this.editleft = e.pageX;
@@ -601,22 +595,16 @@ export default {
       this.dataForTS.treeroot = this.model[0].treeNodeSpec.customizations.classes.fullpath;
       this.dataForTS.ctrlKey = event.ctrlKey;
 
-      if(event.ctrlKey) {
-        this.$refs.vueSimpleContextCopyMenu.showMenu(event, model);
-      } else {
-        this.$refs.vueSimpleContextMoveMenu.showMenu(event, model);
-      }
+      this.$refs.vueSimpleContextMoveMenu.showMenu(event, model);
     },
     DroppedParent() {
       this.dropIsActive = false;
       this.dataForTS.droptype = "parent";//parent, 2d, 3d
-      // copy parent
-      //temp always pass because of parent with child issue
-      //if(this.dataForTS.ctrlKey) {
-        this.dataForTS.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
-        this.dataForTS.doParentChild = this.doParentChild;
-        this.dataForTS.doJointHeirarchy = this.doJointHeirarchy;
-      //}
+
+      this.dataForTS.root = this.model[0].treeNodeSpec.customizations.classes.fullpath;
+      this.dataForTS.doParentChild = this.doParentChild;
+      this.dataForTS.doJointHeirarchy = this.doJointHeirarchy;
+
       this.connection.send(JSON.stringify(this.dataForTS));
     },
     Dropped2D() {

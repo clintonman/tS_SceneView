@@ -47,8 +47,7 @@ import onmessage from './components/onmessage'
 // https://medium.com/developer-rants/why-is-strict-mime-type-checking-blocking-the-static-serving-of-vue-frontend-files-4cbea1eedbd1
 
 //setup to serve from /web/sceneview2/
-//may need to manually edit the index.html links to the js and css files
-
+//may need to manually edit the index.html links to the js and css files, add "." to the front of the path
   
 export default {
   components: {
@@ -153,20 +152,6 @@ export default {
           slug: 'move3d',
         }
       ],
-      // dragOptionsCopy: [
-      //   {
-      //     name: 'Parent a Copy',
-      //     slug: 'parentcopy',
-      //   },
-      //   {
-      //     name: 'Copy into Group',
-      //     slug: 'copy2d',
-      //   },
-      //   {
-      //     name: 'Copy into Group 3D',
-      //     slug: 'copy3d',
-      //   }
-      // ],
       dropIsActive: false,
  
       mycontent: new Delta([]),
@@ -204,7 +189,8 @@ export default {
       socketerror: false,
       isDev: process.env.NODE_ENV == "development", // only show port number input if in dev mode
       prevData: "",
-      prevNow: 0
+      prevNow: 0,
+      timerID: 0
     }
   },
 
@@ -270,7 +256,6 @@ export default {
 
         let mydata = {};
         mydata = JSON.parse(event.data);
-
 
         if(mydata.command == "ErrorResult") { onmessage.ErrorResult.call(this, mydata); }
         if(mydata.command == "DisplaySceneTree3") { onmessage.DisplaySceneTree3.call(this, mydata); }
@@ -446,7 +431,7 @@ export default {
             @click.exact="selectonenode(model)"
             @click.ctrl.exact="toggleselection(model)"
             @click.shift.exact="rangeselection(model)"
-            @dblclick.exact="editname(model, $event)"
+            @dblclick.exact="editname($event)"
             @drop="Dropped($event, model)"
           >{{ model[model.treeNodeSpec.labelProperty] }}</span>
 
@@ -488,18 +473,9 @@ export default {
     :options="dragOptions"
     ref="vueSimpleContextMoveMenu"
     @option-clicked="moveOptionClicked"
-    @menu-closed="refreshTree"
+    @menu-closed="menuClosed"
   >
   </vue-simple-context-menu>
-  <!-- <vue-simple-context-menu
-    element-id="copyMenu"
-    :options="dragOptionsCopy"
-    ref="vueSimpleContextCopyMenu"
-    @option-clicked="copyOptionClicked"
-    @menu-closed="refreshTree"
-  >
-  </vue-simple-context-menu> -->
-
 
 </template>
 
