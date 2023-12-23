@@ -34,6 +34,7 @@ import SkeletonIcon from './components/SkeletonIcon.vue'
 import TextIcon from './components/TextIcon.vue'
 import UnlockedIcon from './components/UnlockedIcon.vue'
 import VisibleIcon from './components/VisibleIcon.vue'
+import NullIcon from './components/NullIcon.vue'
 import NAIcon from './components/NAIcon.vue'
 import MoreChildrenIcon from './components/MoreChildrenIcon.vue'
 import Notes from './components/Notes.vue'
@@ -82,6 +83,7 @@ export default {
     SkeletonIcon,
     UnlockedIcon,
     VisibleIcon,
+    NullIcon,
     NAIcon,
     MoreChildrenIcon,
     Notes,
@@ -423,6 +425,8 @@ export default {
           <JointIcon class="label-icon label-icon-root-joint" v-else-if="customClasses.type == 'rootjoint'" />
           <SkeletonIcon class="label-icon" v-else-if="customClasses.type == 'skeleton'" />
           <TextIcon class="label-icon" v-else-if="customClasses.type == 'text'" />
+          <NullIcon class="label-icon label-icon-group" v-else-if="customClasses.type == 'null'" />
+          <NullIcon class="label-icon label-icon-camera" v-else-if="customClasses.type == 'nullcam'" />
           <NAIcon class="label-icon--na" v-else />
 
           <span 
