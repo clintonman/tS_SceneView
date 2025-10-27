@@ -584,14 +584,17 @@ export default {
 
     Dropped(event, model) {
       this.dropIsActive = true;
-
+      
       let dropData = event.dataTransfer.getData("text/plain");
       let dropDataArr = JSON.parse(dropData)
 
       this.dataForTS = {};
       this.dataForTS.command = "DoDropped";
       this.dataForTS.sourcepath = dropDataArr.treeNodeSpec.customizations.classes.fullpath;
-      this.dataForTS.destinationid = event.path[3].id.split("-")[2];
+      
+      // this.dataForTS.destinationid = event.path[3].id.split("-")[2];
+      this.dataForTS.destinationid = event.target.parentNode.parentNode.parentNode.id.split("-")[2];
+
       this.dataForTS.treeroot = this.model[0].treeNodeSpec.customizations.classes.fullpath;
       this.dataForTS.ctrlKey = event.ctrlKey;
 

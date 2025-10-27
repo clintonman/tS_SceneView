@@ -186,7 +186,8 @@ export default {
       pagescrolltop: 0,
       scenepath: "/Project/Space 3D",
       nurbscpselectauto: true,
-      socketport: 8080,
+      // socketport: 8080,
+      socketport: 8090,
       showoptions: false,
       socketerror: false,
       isDev: process.env.NODE_ENV == "development", // only show port number input if in dev mode
